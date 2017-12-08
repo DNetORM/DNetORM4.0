@@ -652,7 +652,14 @@ namespace DNet.DataAccess
                 string fieldName = this.Es[typeName].TableName + "." + GetFieldName(typeName, memberExp.Member.Name);
                 if (!string.IsNullOrEmpty(fieldName))
                 {
-                    SqlBuilder.Append(fieldName);
+                    if (!IsGetFieldNameForTemplate)
+                    {
+                        SqlBuilder.Append(fieldName);
+                    }
+                    else
+                    {
+                        FieldNameForTemplate = fieldName;
+                    }
                 }
                 return memberExp;
             }
