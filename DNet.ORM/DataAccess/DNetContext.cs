@@ -155,7 +155,6 @@ namespace DNet.DataAccess
         public int Update<T>(Action<T> updateAction, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp) where T : class, new()
         {
             T entity = new T();
-            //var ss = updateAction.GetMethodInfo().GetInstructions();
             List<string> infos = (from instruction in updateAction.GetMethodInfo().GetInstructions()
                                   where instruction.OpCode.OperandType == OperandType.InlineMethod && instruction.OpCode.Name == "callvirt"
                                   select ((MethodInfo)instruction.Operand).Name.TrimStart("set_".ToCharArray())).ToList();
