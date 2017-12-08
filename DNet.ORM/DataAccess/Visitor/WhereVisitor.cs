@@ -710,12 +710,12 @@ namespace DNet.DataAccess
             if (dbType == DataBaseType.SqlServer)
             {
                 clrFormat = clrFormat
-                   .Replace("yyyy", "'+DATEPART(yy,{0})+'")
-                   .Replace("MM", "'+DATEPART(m,{0})+'")
-                   .Replace("dd", "'+DATEPART(d,{0})+'")
-                   .Replace("HH", "'+DATEPART(hh,{0})+'")
-                   .Replace("mm", "'+DATEPART(mi,{0})+'")
-                   .Replace("ss", "'+DATEPART(ss,{0})+'")
+                   .Replace("yyyy", "'+CAST(DATEPART(yy,{0}) AS VARCHAR)+'")
+                   .Replace("MM", "'+CAST(DATEPART(m,{0}) AS VARCHAR)+'")
+                   .Replace("dd", "'+CAST(DATEPART(d,{0}) AS VARCHAR)+'")
+                   .Replace("HH", "'+CAST(DATEPART(hh,{0}) AS VARCHAR)+'")
+                   .Replace("mm", "'+CAST(DATEPART(mi,{0}) AS VARCHAR)+'")
+                   .Replace("ss", "'+CAST(DATEPART(ss,{0}) AS VARCHAR)+'")
                    .TrimStart("'+".ToCharArray())
                    .TrimEnd("+'".ToCharArray());
             }
