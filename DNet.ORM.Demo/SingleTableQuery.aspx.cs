@@ -23,15 +23,6 @@ namespace DNet.ORM.Demo
             System.Diagnostics.Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start(); //  开始监视代码
 
-            //Expression<Func<Author,Book, bool>> ex1 = (m,n) => m.AuthorName.Contains("张三") &&n.AuthorID==3;
-            //Expression<Func<Book, bool>> ex2 = m =>"c#".Contains(m.BookName);
-            //ReplaceExpressionVisitor1 v1 = new ReplaceExpressionVisitor1();
-            //BinaryExpression bex = Expression.AndAlso(v1.Visit(ex1.Body), v1.Visit(ex2.Body));
-            //Expression<Func<Author, Book, bool>> b=  Expression.Lambda<Func<Author, Book, bool>>(bex, Expression.Parameter(typeof(Author)), Expression.Parameter(typeof(Book)));
-            //WhereVisitor where1 = new WhereVisitor(DataBaseType.SqlServer);
-            //var sql= where1.Translate<Author, Book>(b);
-
-
             using (DNetContext db = new DNetContext())
             {
                 var author = db.GetSingle<Author>(m => true, q => q.OrderBy(m => m.AuthorID));
