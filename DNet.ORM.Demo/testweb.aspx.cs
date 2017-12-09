@@ -1,4 +1,5 @@
 ﻿using DNet.DataAccess;
+using DNet.Entity;
 using DNet.ORM.Demo.Models;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace DNet.ORM.Demo
         {
             using (DNetContext db = new DNetContext())
             {
-               var r= db.GetMax<Test>(m=>m.id);
+                //var r= db.GetList<Book>(m=>Convert.ToDateTime(m.PublishDate).ToString("yyyy-MM-dd")=="2017-10-11");
+                var r = db.GetList<Book>(m => m.PublishDate>Convert.ToDateTime("2017-10-11"));
             }
         }
     }

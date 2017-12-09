@@ -67,11 +67,16 @@ namespace DNet.DataAccess
         public bool IsPreTreatBinary { get; set; }
 
         /// <summary>
-        /// 提取字段名for模板
+        /// 截取sql
         /// </summary>
-        public bool IsGetFieldNameForTemplate { get; set; }
+        public string BlockSql { get; set; }
 
-        public string FieldNameForTemplate { get; set; }
+        /// <summary>
+        /// 截断sql位置
+        /// </summary>
+        public int BlockPosition { get; set; }
+
+        public Type MemberType { get; set; }
 
         public WhereVisitor(DataBaseType dbType)
         {
@@ -323,16 +328,17 @@ namespace DNet.DataAccess
                             string timeFormat = ((ConstantExpression)methodExp.Arguments[0]).Value as string;
                             if (DbType == DataBaseType.SqlServer)
                             {
-                                this.IsGetFieldNameForTemplate = true;
+                                this.BlockPosition = SqlBuilder.Length;
                                 this.Visit(methodExp.Object);
-                                this.IsGetFieldNameForTemplate = false;
+                                this.BlockSql = SqlBuilder.ToString().Substring(this.BlockPosition);
                                 //非列就转向了
-                                if (string.IsNullOrEmpty(FieldNameForTemplate))
+                                if (string.IsNullOrEmpty(BlockSql))
                                 {
                                     goto default;
                                 }
-                                SqlBuilder.AppendFormat("(" + ParseTimeFormat(timeFormat, DataBaseType.SqlServer) + ")", FieldNameForTemplate);
-                                FieldNameForTemplate = string.Empty;
+                                SqlBuilder.Remove(BlockPosition, BlockSql.Length);
+                                SqlBuilder.AppendFormat("(" + ParseTimeFormat(timeFormat, DataBaseType.SqlServer) + ")", BlockSql);
+                                BlockSql = string.Empty;
                             }
                             else if (DbType == DataBaseType.MySql)
                             {
@@ -373,6 +379,40 @@ namespace DNet.DataAccess
                             SqlBuilder.Append(") ");
                         }
                         return methodExp;
+                    }
+                    goto default;
+                case "ToDateTime":
+                    if (methodExp.Method.DeclaringType == typeof(System.Convert))
+                    {
+                        MemberTypeVisitor mtVisitor = new MemberTypeVisitor();
+                        MemberType = mtVisitor.Translate(methodExp.Arguments[0]);
+                        if(MemberType == typeof(Nullable<DateTime>) || MemberType == typeof(DateTime))
+                        {
+                            this.Visit(methodExp.Arguments[0]);
+                            return methodExp;
+                        }
+                        else if (MemberType==typeof(string))
+                        {
+                            if (DbType == DataBaseType.SqlServer)
+                            {
+                                SqlBuilder.Append(" CAST(");
+                                this.Visit(methodExp.Arguments[0]);
+                                SqlBuilder.Append(" AS DATETIME) ");
+                            }
+                            else if (DbType == DataBaseType.MySql)
+                            {
+                                SqlBuilder.Append(" CAST(");
+                                this.Visit(methodExp.Arguments[0]);
+                                SqlBuilder.Append(" AS DATETIME) ");
+                            }
+                            else if (DbType == DataBaseType.Oracle)
+                            {
+                                SqlBuilder.Append(" TO_DATE(");
+                                this.Visit(methodExp.Arguments[0]);
+                                SqlBuilder.Append(",'yyyy-MM-dd HH24:mi:ss') ");
+                            }
+                            return methodExp;
+                        }
                     }
                     goto default;
                 case "StartsWith":
@@ -639,7 +679,7 @@ namespace DNet.DataAccess
             {
                 string paramName = string.Format("{0}_{1}", CallIndex, ParameterIndex++);
                 this.parameters.Add(GetDbParameter(paramName, constantExp.Value));
-                SqlBuilder.Append(ParameterPrefix+paramName);
+                SqlBuilder.Append(ParameterPrefix + paramName);
             }
             return constantExp;
         }
@@ -652,14 +692,8 @@ namespace DNet.DataAccess
                 string fieldName = this.Es[typeName].TableName + "." + GetFieldName(typeName, memberExp.Member.Name);
                 if (!string.IsNullOrEmpty(fieldName))
                 {
-                    if (!IsGetFieldNameForTemplate)
-                    {
-                        SqlBuilder.Append(fieldName);
-                    }
-                    else
-                    {
-                        FieldNameForTemplate = fieldName;
-                    }
+                    SqlBuilder.Append(fieldName);
+                    MemberType = memberExp.Type;
                 }
                 return memberExp;
             }
