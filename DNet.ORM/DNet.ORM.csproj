@@ -67,6 +67,11 @@
     <Compile Include="Cache\PropertyAccessor\MethodInvoker.cs" />
     <Compile Include="Cache\PropertyAccessor\PropertyAccessorExpression.cs" />
     <Compile Include="DataAccess\DbContext.cs" />
+    <Compile Include="DataAccess\Dialect\ISqlDialect.cs" />
+    <Compile Include="DataAccess\Dialect\MySqlDialect.cs" />
+    <Compile Include="DataAccess\Dialect\OracleDialect.cs" />
+    <Compile Include="DataAccess\Dialect\SqlDialectFactory.cs" />
+    <Compile Include="DataAccess\Dialect\SqlServerDialect.cs" />
     <Compile Include="DataAccess\DNetContext.cs" />
     <Compile Include="DataAccess\DbFactory.cs" />
     <Compile Include="DataAccess\DbParameterFactory.cs" />

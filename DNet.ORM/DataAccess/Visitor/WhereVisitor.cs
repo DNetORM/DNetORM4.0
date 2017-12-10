@@ -1,5 +1,6 @@
 ﻿
 using DNet.Cache;
+using DNet.DataAccess.Dialect;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,11 +47,6 @@ namespace DNet.DataAccess
             }
         }
 
-        /// <summary>
-        /// 身份标志
-        /// </summary>
-        public string ParameterID { get; set; }
-
         public StringBuilder SqlBuilder
         {
             get;
@@ -66,17 +62,9 @@ namespace DNet.DataAccess
         /// </summary>
         public bool IsPreTreatBinary { get; set; }
 
-        /// <summary>
-        /// 截取sql
-        /// </summary>
-        public string BlockSql { get; set; }
-
-        /// <summary>
-        /// 截断sql位置
-        /// </summary>
-        public int BlockPosition { get; set; }
-
         public Type MemberType { get; set; }
+
+        public ISqlDialect SqlDialect { get; set; }
 
         public WhereVisitor(DataBaseType dbType)
         {
@@ -85,6 +73,7 @@ namespace DNet.DataAccess
             this.DbType = dbType;
             CallIndex = 0;
             ParameterIndex = 0;
+            SqlDialect = SqlDialectFactory.CreateSqlDialectr(dbType);
         }
 
         public WhereVisitor(DataBaseType dbType, int callIndex) : this(dbType)
@@ -92,9 +81,17 @@ namespace DNet.DataAccess
             CallIndex = callIndex;
         }
 
+        public string Translate(Expression exp)
+        {
+            int position = SqlBuilder.Length;
+            this.Visit(exp);
+            string clause = SqlBuilder.ToString().Substring(position);
+            SqlBuilder.Remove(position, clause.Length);
+            return clause;
+        }
+
         public string Translate<T1>(Expression<Func<T1, bool>> exp) where T1 : class
         {
-            ParameterID = typeof(T1).Name;
             Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
             this.SqlBuilder = new StringBuilder();
             //m=>true
@@ -111,7 +108,6 @@ namespace DNet.DataAccess
 
         public string Translate<T1, T2>(Expression<Func<T1, T2, bool>> exp) where T1 : class where T2 : class
         {
-            ParameterID = typeof(T1).Name + "_" + typeof(T2).Name;
             Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
             Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
             this.SqlBuilder = new StringBuilder();
@@ -128,7 +124,6 @@ namespace DNet.DataAccess
 
         public string Translate<T1, T2, T3>(Expression<Func<T1, T2, T3, bool>> exp) where T1 : class where T2 : class where T3 : class
         {
-            ParameterID = typeof(T1).Name + "_" + typeof(T2).Name;
             Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
             Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
             Es[typeof(T3).Name] = Caches.EntityInfoCache.Get(typeof(T3));
@@ -170,18 +165,7 @@ namespace DNet.DataAccess
                     if (methodExp.Method.DeclaringType == typeof(string))
                     {
                         this.Visit(methodExp.Object);
-                        if (DbType == DataBaseType.SqlServer)
-                        {
-                            SqlBuilder.Append(" LIKE '%'+");
-                            this.Visit(methodExp.Arguments[0]);
-                            SqlBuilder.Append("+'%' ");
-                        }
-                        else
-                        {
-                            SqlBuilder.Append(" LIKE CONCAT(CONCAT('%',");
-                            this.Visit(methodExp.Arguments[0]);
-                            SqlBuilder.Append("),'%')");
-                        }
+                        SqlBuilder.AppendFormat(SqlDialect.Contains(), Translate(methodExp.Arguments[0]));
                         return methodExp;
                     }
                     else
@@ -237,30 +221,7 @@ namespace DNet.DataAccess
                     this.Visit(methodExp.Arguments[0]);
                     return methodExp;
                 case "IndexOf":
-                    if (DbType == DataBaseType.SqlServer)
-                    {
-                        SqlBuilder.Append(" CHARINDEX(");
-                        this.Visit(methodExp.Arguments[0]);
-                        SqlBuilder.Append(",");
-                        this.Visit(methodExp.Object);
-                        SqlBuilder.Append(")-1 ");
-                    }
-                    else if (DbType == DataBaseType.MySql)
-                    {
-                        SqlBuilder.Append(" LOCATE(");
-                        this.Visit(methodExp.Arguments[0]);
-                        SqlBuilder.Append(",");
-                        this.Visit(methodExp.Object);
-                        SqlBuilder.Append(")-1 ");
-                    }
-                    else if (DbType == DataBaseType.Oracle)
-                    {
-                        SqlBuilder.Append(" INSTR(");
-                        this.Visit(methodExp.Object);
-                        SqlBuilder.Append(",");
-                        this.Visit(methodExp.Arguments[0]);
-                        SqlBuilder.Append(")-1 ");
-                    }
+                    SqlBuilder.AppendFormat(SqlDialect.IndexOf(), Translate(methodExp.Arguments[0]), Translate(methodExp.Object));
                     return methodExp;
                 case "IsNullOrEmpty":
                     string template = " ({0} IS NULL OR {0}='') ";
@@ -279,46 +240,12 @@ namespace DNet.DataAccess
                     //Convert.ToString()
                     if (methodExp.Method.DeclaringType == typeof(System.Convert))
                     {
-                        if (DbType == DataBaseType.SqlServer)
-                        {
-                            SqlBuilder.Append(" CAST(");
-                            this.Visit(methodExp.Arguments[0]);
-                            SqlBuilder.Append(" AS VARCHAR) ");
-                        }
-                        else if (DbType == DataBaseType.MySql)
-                        {
-                            SqlBuilder.Append(" CAST(");
-                            this.Visit(methodExp.Arguments[0]);
-                            SqlBuilder.Append(" AS CHAR) ");
-                        }
-                        else if (DbType == DataBaseType.Oracle)
-                        {
-                            SqlBuilder.Append(" TO_CHAR(");
-                            this.Visit(methodExp.Arguments[0]);
-                            SqlBuilder.Append(") ");
-                        }
+                        SqlBuilder.AppendFormat(SqlDialect.ToChar(), Translate(methodExp.Arguments[0]));
                         return methodExp;
                     }
                     else if (methodExp.Method.DeclaringType == typeof(System.Object))
                     {
-                        if (DbType == DataBaseType.SqlServer)
-                        {
-                            SqlBuilder.Append(" CAST(");
-                            this.Visit(methodExp.Object);
-                            SqlBuilder.Append(" AS VARCHAR) ");
-                        }
-                        else if (DbType == DataBaseType.MySql)
-                        {
-                            SqlBuilder.Append(" CAST(");
-                            this.Visit(methodExp.Object);
-                            SqlBuilder.Append(" AS CHAR) ");
-                        }
-                        else if (DbType == DataBaseType.Oracle)
-                        {
-                            SqlBuilder.Append(" TO_CHAR(");
-                            this.Visit(methodExp.Object);
-                            SqlBuilder.Append(") ");
-                        }
+                        SqlBuilder.AppendFormat(SqlDialect.ToChar(), Translate(methodExp.Object));
                         return methodExp;
                     }
                     else if (methodExp.Method.DeclaringType == typeof(Nullable<DateTime>) || methodExp.Method.DeclaringType == typeof(DateTime))
@@ -328,29 +255,17 @@ namespace DNet.DataAccess
                             string timeFormat = ((ConstantExpression)methodExp.Arguments[0]).Value as string;
                             if (DbType == DataBaseType.SqlServer)
                             {
-                                this.BlockPosition = SqlBuilder.Length;
-                                this.Visit(methodExp.Object);
-                                this.BlockSql = SqlBuilder.ToString().Substring(this.BlockPosition);
+                                string clause = Translate(methodExp.Object);
                                 //非列就转向了
-                                if (string.IsNullOrEmpty(BlockSql))
+                                if (string.IsNullOrEmpty(clause))
                                 {
                                     goto default;
                                 }
-                                SqlBuilder.Remove(BlockPosition, BlockSql.Length);
-                                SqlBuilder.AppendFormat("(" + ParseTimeFormat(timeFormat, DataBaseType.SqlServer) + ")", BlockSql);
-                                BlockSql = string.Empty;
+                                SqlBuilder.AppendFormat("(" + SqlDialect.ParseTimeFormat(timeFormat) + ")", clause);
                             }
-                            else if (DbType == DataBaseType.MySql)
+                            else
                             {
-                                SqlBuilder.Append(" DATE_FORMAT(");
-                                this.Visit(methodExp.Object);
-                                SqlBuilder.AppendFormat(" ,'{0}') ", ParseTimeFormat(timeFormat, DataBaseType.MySql));
-                            }
-                            else if (DbType == DataBaseType.Oracle)
-                            {
-                                SqlBuilder.Append(" TO_CHAR(");
-                                this.Visit(methodExp.Object);
-                                SqlBuilder.AppendFormat(" ,'{0}') ", ParseTimeFormat(timeFormat, DataBaseType.MySql));
+                                SqlBuilder.AppendFormat(SqlDialect.DateTimeToChar(), Translate(methodExp.Object), SqlDialect.ParseTimeFormat(timeFormat));
                             }
                             return methodExp;
                         }
@@ -360,24 +275,7 @@ namespace DNet.DataAccess
                     //Convert.ToInt32()
                     if (methodExp.Method.DeclaringType == typeof(System.Convert))
                     {
-                        if (DbType == DataBaseType.SqlServer)
-                        {
-                            SqlBuilder.Append(" CAST(");
-                            this.Visit(methodExp.Arguments[0]);
-                            SqlBuilder.Append(" AS INT) ");
-                        }
-                        else if (DbType == DataBaseType.MySql)
-                        {
-                            SqlBuilder.Append(" CAST(");
-                            this.Visit(methodExp.Arguments[0]);
-                            SqlBuilder.Append(" AS INT) ");
-                        }
-                        else if (DbType == DataBaseType.Oracle)
-                        {
-                            SqlBuilder.Append(" TO_NUMBER(");
-                            this.Visit(methodExp.Arguments[0]);
-                            SqlBuilder.Append(") ");
-                        }
+                        SqlBuilder.AppendFormat(SqlDialect.ToNumber(), Translate(methodExp.Arguments[0]));
                         return methodExp;
                     }
                     goto default;
@@ -386,65 +284,25 @@ namespace DNet.DataAccess
                     {
                         MemberTypeVisitor mtVisitor = new MemberTypeVisitor();
                         MemberType = mtVisitor.Translate(methodExp.Arguments[0]);
-                        if(MemberType == typeof(Nullable<DateTime>) || MemberType == typeof(DateTime))
+                        if (MemberType == typeof(Nullable<DateTime>) || MemberType == typeof(DateTime))
                         {
                             this.Visit(methodExp.Arguments[0]);
                             return methodExp;
                         }
-                        else if (MemberType==typeof(string))
+                        else if (MemberType == typeof(string))
                         {
-                            if (DbType == DataBaseType.SqlServer)
-                            {
-                                SqlBuilder.Append(" CAST(");
-                                this.Visit(methodExp.Arguments[0]);
-                                SqlBuilder.Append(" AS DATETIME) ");
-                            }
-                            else if (DbType == DataBaseType.MySql)
-                            {
-                                SqlBuilder.Append(" CAST(");
-                                this.Visit(methodExp.Arguments[0]);
-                                SqlBuilder.Append(" AS DATETIME) ");
-                            }
-                            else if (DbType == DataBaseType.Oracle)
-                            {
-                                SqlBuilder.Append(" TO_DATE(");
-                                this.Visit(methodExp.Arguments[0]);
-                                SqlBuilder.Append(",'yyyy-MM-dd HH24:mi:ss') ");
-                            }
+                            SqlBuilder.AppendFormat(SqlDialect.ToDateTime(), Translate(methodExp.Arguments[0]));
                             return methodExp;
                         }
                     }
                     goto default;
                 case "StartsWith":
                     this.Visit(methodExp.Object);
-                    if (DbType == DataBaseType.SqlServer)
-                    {
-                        SqlBuilder.Append(" LIKE ");
-                        this.Visit(methodExp.Arguments[0]);
-                        SqlBuilder.Append("+'%' ");
-                    }
-                    else
-                    {
-                        SqlBuilder.Append(" LIKE CONCAT(");
-                        this.Visit(methodExp.Arguments[0]);
-                        SqlBuilder.Append(",'%')");
-                    }
+                    SqlBuilder.AppendFormat(SqlDialect.StartsWith(), Translate(methodExp.Arguments[0]));
                     return methodExp;
-
                 case "EndsWith":
                     this.Visit(methodExp.Object);
-                    if (DbType == DataBaseType.SqlServer)
-                    {
-                        SqlBuilder.Append(" LIKE '%'+");
-                        this.Visit(methodExp.Arguments[0]);
-                        SqlBuilder.Append(" ");
-                    }
-                    else
-                    {
-                        SqlBuilder.Append(" LIKE CONCAT('%',");
-                        this.Visit(methodExp.Arguments[0]);
-                        SqlBuilder.Append(")");
-                    }
+                    SqlBuilder.AppendFormat(SqlDialect.EndsWith(), Translate(methodExp.Arguments[0]));
                     return methodExp;
                 case "TrimStart":
                     SqlBuilder.Append(" LTRIM(");
@@ -731,45 +589,6 @@ namespace DNet.DataAccess
         public DbParameter GetDbParameter(string parameterName, object value)
         {
             return DbParameterFactory.CreateDbParameter(parameterName, value, DbType);
-        }
-
-        /// <summary>
-        /// 时间格式转化
-        /// </summary>
-        /// <param name="clrFormat"></param>
-        /// <param name="dbType"></param>
-        /// <returns></returns>
-        private string ParseTimeFormat(string clrFormat, DataBaseType dbType)
-        {
-            if (dbType == DataBaseType.SqlServer)
-            {
-                clrFormat = clrFormat
-                   .Replace("yyyy", "'+CAST(DATEPART(yy,{0}) AS VARCHAR)+'")
-                   .Replace("MM", "'+CAST(DATEPART(m,{0}) AS VARCHAR)+'")
-                   .Replace("dd", "'+CAST(DATEPART(d,{0}) AS VARCHAR)+'")
-                   .Replace("HH", "'+CAST(DATEPART(hh,{0}) AS VARCHAR)+'")
-                   .Replace("mm", "'+CAST(DATEPART(mi,{0}) AS VARCHAR)+'")
-                   .Replace("ss", "'+CAST(DATEPART(ss,{0}) AS VARCHAR)+'")
-                   .TrimStart("'+".ToCharArray())
-                   .TrimEnd("+'".ToCharArray());
-            }
-            else if (dbType == DataBaseType.MySql)
-            {
-                clrFormat = clrFormat
-                    .Replace("yyyy", "%Y")
-                    .Replace("MM", "%m")
-                    .Replace("dd", "%d")
-                    .Replace("HH", "%H")
-                    .Replace("mm", "%i")
-                    .Replace("ss", "%s");
-            }
-            else if (dbType == DataBaseType.Oracle)
-            {
-                clrFormat = clrFormat
-                    .Replace("HH", "HH24")
-                    .Replace("mm", "mi");
-            }
-            return clrFormat;
         }
     }
 }

@@ -3,6 +3,7 @@ using DNet.Entity;
 using DNet.ORM.Demo.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -14,11 +15,17 @@ namespace DNet.ORM.Demo
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            System.Diagnostics.Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start(); //  开始监视代
             using (DNetContext db = new DNetContext())
             {
                 //var r= db.GetList<Book>(m=>Convert.ToDateTime(m.PublishDate).ToString("yyyy-MM-dd")=="2017-10-11");
-                var r = db.GetList<Book>(m => m.PublishDate>Convert.ToDateTime("2017-10-11"));
+                var r = db.GetList<Book>(m => m.BookName.IndexOf("c")>=0&&Convert.ToDateTime(m.PublishDate).ToString("yyyy-MM-dd") == "2017-10-11");
             }
+            stopwatch.Stop(); //  停止监视  
+            TimeSpan timespan = stopwatch.Elapsed; //  获取当前实例测量得出的总时间  
+            double milliseconds = timespan.TotalMilliseconds;  //  总毫秒数 
+            Response.Write("执行时间：" + milliseconds + "毫秒");
         }
     }
 }
