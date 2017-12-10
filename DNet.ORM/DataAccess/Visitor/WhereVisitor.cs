@@ -73,7 +73,7 @@ namespace DNet.DataAccess
             this.DbType = dbType;
             CallIndex = 0;
             ParameterIndex = 0;
-            SqlDialect = SqlDialectFactory.CreateSqlDialectr(dbType);
+            SqlDialect = SqlDialectFactory.CreateSqlDialect(dbType);
         }
 
         public WhereVisitor(DataBaseType dbType, int callIndex) : this(dbType)

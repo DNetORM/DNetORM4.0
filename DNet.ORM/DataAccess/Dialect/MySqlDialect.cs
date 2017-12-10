@@ -40,6 +40,11 @@ namespace DNet.DataAccess.Dialect
             return clrFormat;
         }
 
+        public string SelectIdentity()
+        {
+            return "; SELECT LAST_INSERT_ID()";
+        }
+
         public string StartsWith()
         {
             return " LIKE CONCAT({0},'%')";

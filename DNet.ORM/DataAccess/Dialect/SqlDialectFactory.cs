@@ -8,11 +8,10 @@ namespace DNet.DataAccess.Dialect
 {
     public class SqlDialectFactory
     {
-        public static ISqlDialect CreateSqlDialectr(DataBaseType dbType)
+        public static ISqlDialect CreateSqlDialect(DataBaseType dbType)
         {
             try
             {
-              
                 if (dbType == DataBaseType.SqlServer)
                 {
                     return new SqlServerDialect();

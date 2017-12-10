@@ -36,6 +36,11 @@ namespace DNet.DataAccess.Dialect
             return clrFormat;
         }
 
+        public string SelectIdentity()
+        {
+            throw new NotImplementedException();
+        }
+
         public string StartsWith()
         {
             return " LIKE CONCAT({0}),'%')";

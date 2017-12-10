@@ -42,6 +42,11 @@ namespace DNet.DataAccess.Dialect
             return clrFormat;
         }
 
+        public string SelectIdentity()
+        {
+            return ";SELECT SCOPE_IDENTITY()";
+        }
+
         public string StartsWith()
         {
             return " LIKE {0}+'%' ";

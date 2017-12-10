@@ -25,5 +25,7 @@ namespace DNet.DataAccess.Dialect
         string StartsWith();
 
         string IndexOf();
+
+        string SelectIdentity();
     }
 }
