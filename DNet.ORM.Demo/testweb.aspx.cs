@@ -20,7 +20,7 @@ namespace DNet.ORM.Demo
             using (DNetContext db = new DNetContext())
             {
                 //var r= db.GetList<Book>(m=>Convert.ToDateTime(m.PublishDate).ToString("yyyy-MM-dd")=="2017-10-11");
-                var r = db.GetList<Book>(m => m.BookName.IndexOf("c")>=0&&Convert.ToDateTime(m.PublishDate).ToString("yyyy-MM-dd") == "2017-10-11");
+                var r = db.GetList<Book>(m => m.BookName.IndexOf("c")>=0&&Convert.ToDateTime(m.PublishDate).ToString("yyyy-MM-dd") ==DateTime.Now.ToString("2017-10-11"));
             }
             stopwatch.Stop(); //  停止监视  
             TimeSpan timespan = stopwatch.Elapsed; //  获取当前实例测量得出的总时间  

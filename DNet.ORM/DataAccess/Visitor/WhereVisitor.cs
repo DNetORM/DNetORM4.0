@@ -240,34 +240,49 @@ namespace DNet.DataAccess
                     //Convert.ToString()
                     if (methodExp.Method.DeclaringType == typeof(System.Convert))
                     {
-                        SqlBuilder.AppendFormat(SqlDialect.ToChar(), Translate(methodExp.Arguments[0]));
-                        return methodExp;
+                        MemberTypeVisitor mtVisitor = new MemberTypeVisitor();
+                        MemberType = mtVisitor.Translate(methodExp.Arguments[0]);
+                        if (MemberType != null)
+                        {
+                            SqlBuilder.AppendFormat(SqlDialect.ToChar(), Translate(methodExp.Arguments[0]));
+                            return methodExp;
+                        }
                     }
                     else if (methodExp.Method.DeclaringType == typeof(System.Object))
                     {
-                        SqlBuilder.AppendFormat(SqlDialect.ToChar(), Translate(methodExp.Object));
-                        return methodExp;
+                        MemberTypeVisitor mtVisitor = new MemberTypeVisitor();
+                        MemberType = mtVisitor.Translate(methodExp.Object);
+                        if (MemberType != null)
+                        {
+                            SqlBuilder.AppendFormat(SqlDialect.ToChar(), Translate(methodExp.Object));
+                            return methodExp;
+                        }
                     }
                     else if (methodExp.Method.DeclaringType == typeof(Nullable<DateTime>) || methodExp.Method.DeclaringType == typeof(DateTime))
                     {
                         if (methodExp.Arguments[0] is ConstantExpression)
                         {
-                            string timeFormat = ((ConstantExpression)methodExp.Arguments[0]).Value as string;
-                            if (DbType == DataBaseType.SqlServer)
+                            MemberTypeVisitor mtVisitor = new MemberTypeVisitor();
+                            MemberType = mtVisitor.Translate(methodExp.Object);
+                            if (MemberType != null)
                             {
-                                string clause = Translate(methodExp.Object);
-                                //非列就转向了
-                                if (string.IsNullOrEmpty(clause))
+                                string timeFormat = ((ConstantExpression)methodExp.Arguments[0]).Value as string;
+                                if (DbType == DataBaseType.SqlServer)
                                 {
-                                    goto default;
+                                    string clause = Translate(methodExp.Object);
+                                    //非列就转向了
+                                    if (string.IsNullOrEmpty(clause))
+                                    {
+                                        goto default;
+                                    }
+                                    SqlBuilder.AppendFormat("(" + SqlDialect.ParseTimeFormat(timeFormat) + ")", clause);
                                 }
-                                SqlBuilder.AppendFormat("(" + SqlDialect.ParseTimeFormat(timeFormat) + ")", clause);
+                                else
+                                {
+                                    SqlBuilder.AppendFormat(SqlDialect.DateTimeToChar(), Translate(methodExp.Object), SqlDialect.ParseTimeFormat(timeFormat));
+                                }
+                                return methodExp;
                             }
-                            else
-                            {
-                                SqlBuilder.AppendFormat(SqlDialect.DateTimeToChar(), Translate(methodExp.Object), SqlDialect.ParseTimeFormat(timeFormat));
-                            }
-                            return methodExp;
                         }
                     }
                     goto default;
@@ -275,8 +290,13 @@ namespace DNet.DataAccess
                     //Convert.ToInt32()
                     if (methodExp.Method.DeclaringType == typeof(System.Convert))
                     {
-                        SqlBuilder.AppendFormat(SqlDialect.ToNumber(), Translate(methodExp.Arguments[0]));
-                        return methodExp;
+                        MemberTypeVisitor mtVisitor = new MemberTypeVisitor();
+                        MemberType = mtVisitor.Translate(methodExp.Arguments[0]);
+                        if (MemberType != null)
+                        {
+                            SqlBuilder.AppendFormat(SqlDialect.ToNumber(), Translate(methodExp.Arguments[0]));
+                            return methodExp;
+                        }
                     }
                     goto default;
                 case "ToDateTime":
