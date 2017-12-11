@@ -18,15 +18,15 @@ namespace DNet.ORM.Demo
             stopwatch.Start(); //  开始监视代
             using (DNetContext db = new DNetContext())
             {
-                var author = db.GetSingle<Author>(m => true, q => q.OrderBy(m => m.AuthorID));
-                if (author!=null)
-                {
-                    author.AuthorName = "暗夜精灵";
-                    var effect = db.Update(author);
-                }
+                //var author = db.GetSingle<Author>(m => true, q => q.OrderBy(m => m.AuthorID));
+                //if (author!=null)
+                //{
+                //    author.AuthorName = "jim";
+                //    var effect = db.Update(author);
+                //}
 
-                int authorid = db.GetMax<Author>(m => (int)m.AuthorID);
-                db.Update<Author>(m => m.AuthorName = "恶魔猎手", m => m.AuthorID == authorid);
+                //int authorid = db.GetMax<Author>(m => (int)m.AuthorID);
+                db.Update<Author>(new Author { Age=12, AuthorName="111", AuthorID=3 },m=>m.Age, m => m.AuthorID == 1);
 
             }
             stopwatch.Stop(); //  停止监视  

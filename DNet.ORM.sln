@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNet.ORM", "DNet.ORM\DNet.ORM.csproj", "{6A95EEAB-41A1-4988-AA84-EED71124B25F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNet.ORM.Demo", "DNet.ORM.Demo\DNet.ORM.Demo.csproj", "{BABEB65F-A408-4D35-BE39-909BA399AE62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNet.ORM.MySql", "DNet.ORM.MySql\DNet.ORM.MySql.csproj", "{68532F70-E307-463B-9E73-C0057A3331BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNet.ORM.Oracle", "DNet.ORM.Oracle\DNet.ORM.Oracle.csproj", "{F05C8E4C-B495-40DB-BA32-AFCF34C02857}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNet.ORM.SqlServer", "DNet.ORM.SqlServer\DNet.ORM.SqlServer.csproj", "{AD45509E-7AF1-4BEE-AFDC-FDF470611B02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,18 @@ Global
 		{BABEB65F-A408-4D35-BE39-909BA399AE62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BABEB65F-A408-4D35-BE39-909BA399AE62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BABEB65F-A408-4D35-BE39-909BA399AE62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68532F70-E307-463B-9E73-C0057A3331BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68532F70-E307-463B-9E73-C0057A3331BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68532F70-E307-463B-9E73-C0057A3331BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68532F70-E307-463B-9E73-C0057A3331BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F05C8E4C-B495-40DB-BA32-AFCF34C02857}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F05C8E4C-B495-40DB-BA32-AFCF34C02857}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F05C8E4C-B495-40DB-BA32-AFCF34C02857}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F05C8E4C-B495-40DB-BA32-AFCF34C02857}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD45509E-7AF1-4BEE-AFDC-FDF470611B02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD45509E-7AF1-4BEE-AFDC-FDF470611B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD45509E-7AF1-4BEE-AFDC-FDF470611B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD45509E-7AF1-4BEE-AFDC-FDF470611B02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
