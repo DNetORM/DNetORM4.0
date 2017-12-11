@@ -24,6 +24,7 @@ namespace DNet.ORM.Demo
                 var books = db.JoinQuery.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
                      .Fields<Book, Author>((m, n) => new { m, n.AuthorName })
                      .OrderByAsc<Book>(m => m.BookName)
+                     .Where<Book, Author>((m, n) => m.Price > 10 && n.IsValid == true)
                      .Select<Book>();
 
                 var join = db.JoinQuery.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
