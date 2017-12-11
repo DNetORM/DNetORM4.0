@@ -129,6 +129,19 @@ namespace DNet.DataAccess
         }
 
         /// <summary>
+        /// 忽略指定字段更新
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="ignoreFields"></param>
+        /// <param name="exp"></param>
+        /// <returns></returns>
+        public int Update<T>(T entity, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp) where T : class, new()
+        {
+            return base.UpdateT(entity, ignoreFields, exp);
+        }
+
+        /// <summary>
         /// 更新指定字段
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -162,7 +175,7 @@ namespace DNet.DataAccess
             infos.Add("UpdateTime");
             DynamicVisitor visitor = new DynamicVisitor();
             visitor.Translate<T, dynamic>(ignoreFields);
-            visitor.DynamicMembers.ForEach(m => infos.Remove(m.Field.Split('.')[1]));
+            visitor.DynamicMembers.ForEach(m => infos.Remove(m.Key));
             updateAction(entity);
             return base.UpdateT(entity, infos.Distinct().ToList(), exp);
         }

@@ -415,6 +415,60 @@ namespace DNet.DataAccess
         }
 
         /// <summary>
+        ///  忽略指定字段更新
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="ignoreFields"></param>
+        /// <param name="exp"></param>
+        /// <returns></returns>
+        protected int UpdateT<T>(T entity, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp) where T : class, new()
+        {
+            try
+            {
+                DynamicVisitor visitor = new DynamicVisitor();
+                visitor.Translate<T, dynamic>(ignoreFields);
+                List<string> ignores = visitor.DynamicMembers.Select(m => m.Key).ToList();
+                EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(T));
+                StringBuilder updateSql = new StringBuilder();
+                List<DbParameter> parms = new List<DbParameter>();
+                updateSql.AppendFormat(" UPDATE {0} SET ", entityInfo.TableName);
+                StringBuilder updateValues = new StringBuilder();
+                StringBuilder whereClause = new StringBuilder();
+                foreach (PropertyInfo property in entityInfo.NotKeyColumnProperties)
+                {
+                    object propertyValue = null;
+                    if ((propertyValue = property.GetValue(entity, null)) != null && !ignores.Contains(property.Name))
+                    {
+                        updateValues.AppendFormat("{0}={1}{2},", entityInfo.Columns[property.Name], DataBase.ParameterPrefix, property.Name);
+                        parms.Add(DataBase.GetDbParameter(property.Name, propertyValue));
+                    }
+                }
+                updateSql.Append(updateValues.ToString().TrimEnd(','));
+                updateSql.Append(" WHERE ");
+                if (exp != null)
+                {
+                    WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
+                    string where = lambdaTranslator.Translate<T>(exp);
+                    updateSql.Append(where);
+                    foreach (DbParameter parm in lambdaTranslator.Parameters)
+                    {
+                        parms.Add(parm);
+                    }
+                    return DataBase.ExecuteSql(updateSql.ToString(), parms.ToArray());
+                }
+                else
+                {
+                    throw new LambdaLossException("进行Update操作时，lambda表达式为null");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// 根据指定字段更新
         /// </summary>
         /// <typeparam name="T"></typeparam>
