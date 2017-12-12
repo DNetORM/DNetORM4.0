@@ -290,13 +290,13 @@ namespace DNet.DataAccess
         /// </summary>
         /// <typeparam name="TModel"></typeparam>
         /// <returns></returns>
-        public List<TModel> Select<TModel>() where TModel : new()
+        public List<TModel> GetList<TModel>() where TModel : new()
         {
             List<string> tables = new List<string>();
             SqlBuilder.Append(" SELECT ");
             if (TableSelects.Count == 0)
             {
-                this.Select<TModel>();
+                this.GetList<TModel>();
             }
             foreach (TableSelect s in TableSelects)
             {
@@ -355,7 +355,7 @@ namespace DNet.DataAccess
         /// 返回数量
         /// </summary>
         /// <returns></returns>
-        public int SelectCount()
+        public int GetCount()
         {
             List<string> tables = new List<string>();
             SqlBuilder.Append(" SELECT COUNT(1) AS CT FROM ");
@@ -411,13 +411,13 @@ namespace DNet.DataAccess
         /// <typeparam name="TModel"></typeparam>
         /// <param name="page"></param>
         /// <returns></returns>
-        public PageDataSource<TModel> SelectPage<TModel>(PageFilter page) where TModel : new()
+        public PageDataSource<TModel> GetPage<TModel>(PageFilter page) where TModel : new()
         {
             List<string> tables = new List<string>();
             SqlBuilder.Append(" SELECT ");
             if (TableSelects.Count == 0)
             {
-                this.Select<TModel>();
+                this.GetList<TModel>();
             }
             foreach (TableSelect s in TableSelects)
             {
