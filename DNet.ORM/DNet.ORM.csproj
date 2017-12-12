@@ -59,6 +59,7 @@
     <Compile Include="Cache\PropertyAccessor\MethodInvoker.cs" />
     <Compile Include="Cache\PropertyAccessor\PropertyAccessorExpression.cs" />
     <Compile Include="DataAccess\Dialect\ISqlDialect.cs" />
+    <Compile Include="DataAccess\Function\Group.cs" />
     <Compile Include="DataAccess\IDatabase.cs" />
     <Compile Include="DataAccess\Join\DynamicMember.cs" />
     <Compile Include="DataAccess\Join\JoinRelation.cs" />

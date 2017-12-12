@@ -25,13 +25,15 @@ namespace DNet.DataAccess
         /// </summary>
         public List<DynamicMember> DynamicMembers { get; set; }
 
+        private string FieldTemplate { get; set; }
+
         public DynamicVisitor()
         {
             Es = new Dictionary<string, EntityInfo>();
             DynamicMembers = new List<DynamicMember>();
         }
 
-        public void Translate<T1,TResult>(Expression<Func<T1, TResult>> exp)
+        public void Translate<T1, TResult>(Expression<Func<T1, TResult>> exp)
         {
             Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
             this.DynamicMembers.Clear();
@@ -41,7 +43,7 @@ namespace DNet.DataAccess
             }
         }
 
-        public void Translate<T1,T2, TResult>(Expression<Func<T1,T2, TResult>> exp)
+        public void Translate<T1, T2, TResult>(Expression<Func<T1, T2, TResult>> exp)
         {
             Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
             Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
@@ -52,7 +54,7 @@ namespace DNet.DataAccess
             }
         }
 
-        public void Translate<T1, T2,T3, TResult>(Expression<Func<T1, T2,T3, TResult>> exp)
+        public void Translate<T1, T2, T3, TResult>(Expression<Func<T1, T2, T3, TResult>> exp)
         {
             Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
             Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
@@ -64,7 +66,7 @@ namespace DNet.DataAccess
             }
         }
 
-        public void Translate<T1, T2, T3,T4, TResult>(Expression<Func<T1, T2, T3,T4, TResult>> exp)
+        public void Translate<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> exp)
         {
             Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
             Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
@@ -113,7 +115,12 @@ namespace DNet.DataAccess
             if (memberExp.Expression != null && memberExp.Expression.NodeType == ExpressionType.Parameter)
             {
                 var typeName = memberExp.Expression.Type.Name;
-                string fieldName = Es[typeName].TableName + "." + GetFieldName(typeName,memberExp.Member.Name);
+                string fieldName = Es[typeName].TableName + "." + GetFieldName(typeName, memberExp.Member.Name);
+                if(!string.IsNullOrEmpty(FieldTemplate))
+                {
+                    fieldName = string.Format(FieldTemplate, fieldName);
+                    FieldTemplate = null;
+                }
                 if (DynamicMembers.Count > 0)
                 {
                     DynamicMembers.Last().Field = fieldName;
@@ -137,6 +144,27 @@ namespace DNet.DataAccess
 
         protected override Expression VisitMethodCall(MethodCallExpression methodExp)
         {
+            if (methodExp.Method.DeclaringType == typeof(GroupBy))
+            {
+                switch (methodExp.Method.Name.ToUpper())
+                {
+                    case "COUNT":
+                        FieldTemplate = "COUNT({0})";
+                        break;
+                    case "COUNTDISTINCT":
+                        FieldTemplate = "COUNT(DISTINCT {0})";
+                        break;
+                    case "MAX":
+                        FieldTemplate = "MAX({0})";
+                        break;
+                    case "MIN":
+                        FieldTemplate = "MIN({0})";
+                        break;
+                    case "AVG":
+                        FieldTemplate = "AVG({0})";
+                        break;
+                }
+            }
             if (methodExp.Object != null && methodExp.Object.NodeType == ExpressionType.MemberAccess)
             {
                 Expression obj = this.Visit(methodExp.Object);
@@ -193,7 +221,7 @@ namespace DNet.DataAccess
             throw new NotImplementedException();
         }
 
-        public string GetFieldName(string typeName,string memberName)
+        public string GetFieldName(string typeName, string memberName)
         {
             if (this.Es[typeName].Columns.Keys.Contains(memberName))
             {
