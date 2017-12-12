@@ -89,9 +89,5 @@
     <Compile Include="Transaction\DNetTransaction.cs" />
     <Compile Include="Transaction\ITransaction.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="DLL\MySql.Data.dll" />
-    <Content Include="DLL\Oracle.ManagedDataAccess.dll" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
