@@ -45,6 +45,12 @@ namespace DNet.DataAccess
         protected StringBuilder OrderBy { get; set; }
 
         /// <summary>
+        /// 分组
+        /// 最后拼接SQL的时候要Trim掉','
+        /// </summary>
+        protected StringBuilder GroupByFields { get; set; }
+
+        /// <summary>
         /// select筛选
         /// </summary>
         protected List<TableSelect> TableSelects { get; set; }
@@ -59,6 +65,7 @@ namespace DNet.DataAccess
             WhereClause = new StringBuilder();
             Parameters = new List<DbParameter>();
             OrderBy = new StringBuilder();
+            GroupByFields = new StringBuilder();
         }
 
         private void Clear()
@@ -69,6 +76,7 @@ namespace DNet.DataAccess
             WhereClause.Clear();
             Parameters.Clear();
             OrderBy.Clear();
+            GroupByFields.Clear();
         }
 
         public JoinQuery(DNetContext db) : this()
@@ -244,6 +252,39 @@ namespace DNet.DataAccess
             return this;
         }
 
+        public JoinQuery GroupBy<TEntity>(Expression<Func<TEntity, dynamic>> select = null)
+        {
+            DynamicVisitor visitor = new DynamicVisitor();
+            visitor.Translate<TEntity, dynamic>(select);
+            foreach (DynamicMember c in visitor.DynamicMembers)
+            {
+                GroupByFields.Append(c.Field + ",");
+            }
+            return this;
+        }
+
+        public JoinQuery GroupBy<T1, T2>(Expression<Func<T1, T2, dynamic>> select = null)
+        {
+            DynamicVisitor visitor = new DynamicVisitor();
+            visitor.Translate<T1, T2, dynamic>(select);
+            foreach (DynamicMember c in visitor.DynamicMembers)
+            {
+                GroupByFields.Append(c.Field + ",");
+            }
+            return this;
+        }
+
+        public JoinQuery GroupBy<T1, T2, T3>(Expression<Func<T1, T2, T3, dynamic>> select = null)
+        {
+            DynamicVisitor visitor = new DynamicVisitor();
+            visitor.Translate<T1, T2, T3, dynamic>(select);
+            foreach (DynamicMember c in visitor.DynamicMembers)
+            {
+                GroupByFields.Append(c.Field + ",");
+            }
+            return this;
+        }
+
         /// <summary>
         /// 查询
         /// </summary>
@@ -293,6 +334,12 @@ namespace DNet.DataAccess
                 SqlBuilder.Append(WhereClause.ToString());
                 SqlBuilder.Remove(SqlBuilder.Length - 4, 4);//去掉'AND '
             }
+            if (GroupByFields.Length > 0)
+            {
+                SqlBuilder.Append(" GROUP BY ");
+                SqlBuilder.Append(GroupByFields.ToString());
+                SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
+            }
             if (OrderBy.Length > 0)
             {
                 SqlBuilder.Append(" ORDER BY ");
@@ -341,6 +388,12 @@ namespace DNet.DataAccess
                 SqlBuilder.Append(" WHERE ");
                 SqlBuilder.Append(WhereClause.ToString());
                 SqlBuilder.Remove(SqlBuilder.Length - 4, 4);//去掉'AND '
+            }
+            if (GroupByFields.Length > 0)
+            {
+                SqlBuilder.Append(" GROUP BY ");
+                SqlBuilder.Append(GroupByFields.ToString());
+                SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
             }
             if (OrderBy.Length > 0)
             {
@@ -396,11 +449,17 @@ namespace DNet.DataAccess
                 SqlBuilder.Append(" ON ");
                 SqlBuilder.Append(j.OnSql.TrimEnd("AND".ToCharArray()));
             }
-            if (WhereClause.Length > 0)
+            if (GroupByFields.Length > 0)
             {
-                SqlBuilder.Append(" WHERE ");
-                SqlBuilder.Append(WhereClause.ToString());
-                SqlBuilder.Remove(SqlBuilder.Length - 3, 3);//去掉'AND'
+                SqlBuilder.Append(" GROUP BY ");
+                SqlBuilder.Append(GroupByFields.ToString());
+                SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
+            }
+            if (OrderBy.Length > 0)
+            {
+                SqlBuilder.Append(" ORDER BY ");
+                SqlBuilder.Append(OrderBy.ToString());
+                SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
             }
             //开始组装sql
             return DbContext.GetPage<TModel>(SqlBuilder.ToString(), page, Parameters.ToArray());
