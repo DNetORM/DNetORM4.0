@@ -97,7 +97,7 @@ namespace DNet.DataAccess
             WhereVisitor visitor = new WhereVisitor(DbContext.DataBase.DBType, callIndex++);
             link.LeftTable = Caches.EntityInfoCache.Get(typeof(TLeft)).TableName;
             link.RightTable = Caches.EntityInfoCache.Get(typeof(TRight)).TableName;
-            link.OnSql = visitor.Translate<TLeft, TRight>(on);
+            link.OnSql = visitor.Translate(on);
             Parameters.AddRange(visitor.Parameters);
             JoinRelations.Add(link);
             return this;
@@ -116,7 +116,7 @@ namespace DNet.DataAccess
             WhereVisitor visitor = new WhereVisitor(DbContext.DataBase.DBType, callIndex++);
             link.LeftTable = Caches.EntityInfoCache.Get(typeof(TLeft)).TableName;
             link.RightTable = Caches.EntityInfoCache.Get(typeof(TRight)).TableName;
-            link.OnSql = visitor.Translate<TLeft, TRight>(on);
+            link.OnSql = visitor.Translate(on);
             Parameters.AddRange(visitor.Parameters);
             JoinRelations.Add(link);
             return this;
@@ -131,7 +131,7 @@ namespace DNet.DataAccess
         public JoinQuery Where<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class, new()
         {
             WhereVisitor visitor = new WhereVisitor(DbContext.DataBase.DBType, callIndex++);
-            visitor.Translate<TEntity>(where);
+            visitor.Translate(where);
             WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
             Parameters.AddRange(visitor.Parameters);
             return this;
@@ -140,7 +140,7 @@ namespace DNet.DataAccess
         public JoinQuery Where<T1, T2>(Expression<Func<T1, T2, bool>> where) where T1 : class, new() where T2 : class, new()
         {
             WhereVisitor visitor = new WhereVisitor(DbContext.DataBase.DBType, callIndex++);
-            visitor.Translate<T1, T2>(where);
+            visitor.Translate(where);
             WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
             Parameters.AddRange(visitor.Parameters);
             return this;
@@ -149,7 +149,7 @@ namespace DNet.DataAccess
         public JoinQuery Where<T1, T2, T3>(Expression<Func<T1, T2, T3, bool>> where) where T1 : class, new() where T2 : class, new() where T3 : class, new()
         {
             WhereVisitor visitor = new WhereVisitor(DbContext.DataBase.DBType, callIndex++);
-            visitor.Translate<T1, T2, T3>(where);
+            visitor.Translate(where);
             WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
             Parameters.AddRange(visitor.Parameters);
             return this;

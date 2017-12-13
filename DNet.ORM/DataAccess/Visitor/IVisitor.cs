@@ -13,7 +13,7 @@ namespace DNet.DataAccess
 
         DbParameter GetDbParameter(string parameterName, object value);
 
-        string GetFieldName(string typeName,string memberName);
+        //string GetFieldName(string typeName,string memberName);
 
     }
 }

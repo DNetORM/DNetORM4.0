@@ -217,7 +217,7 @@ namespace DNet.DataAccess
                 if (exp != null)
                 {
                     WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
-                    string where = lambdaTranslator.Translate<T>(exp);
+                    string where = lambdaTranslator.Translate(exp);
                     deleteSql.Append(where);
                     foreach (DbParameter parm in lambdaTranslator.Parameters)
                     {
@@ -371,7 +371,7 @@ namespace DNet.DataAccess
                 if (exp != null)
                 {
                     WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
-                    string where = lambdaTranslator.Translate<T>(exp);
+                    string where = lambdaTranslator.Translate(exp);
                     updateSql.Append(where);
                     foreach (DbParameter parm in lambdaTranslator.Parameters)
                     {
@@ -425,7 +425,7 @@ namespace DNet.DataAccess
                 if (exp != null)
                 {
                     WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
-                    string where = lambdaTranslator.Translate<T>(exp);
+                    string where = lambdaTranslator.Translate(exp);
                     updateSql.Append(where);
                     foreach (DbParameter parm in lambdaTranslator.Parameters)
                     {
@@ -480,7 +480,7 @@ namespace DNet.DataAccess
                 if (exp != null)
                 {
                     WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
-                    string where = lambdaTranslator.Translate<T>(exp);
+                    string where = lambdaTranslator.Translate(exp);
                     updateSql.Append(where);
                     foreach (DbParameter parm in lambdaTranslator.Parameters)
                     {
@@ -571,25 +571,20 @@ namespace DNet.DataAccess
             EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(TIn));
             selectSql.Append("SELECT ");
             StringBuilder fieldBuilder = new StringBuilder();
-            DynamicVisitor visitor = new DynamicVisitor();
-            visitor.Translate<TIn, TResult>(select);
+            WhereVisitor selectTranslator = new WhereVisitor(this.DataBase.DBType, 0);
+            string fields = selectTranslator.Translate(select);
             switch (selectType)
             {
                 case SelectType.Distinct:
                     selectSql.Append("DISTINCT ");
-                    foreach (DynamicMember dynamicMember in visitor.DynamicMembers.Where(m => !string.IsNullOrEmpty(m.Field)))
-                    {
-                        var key = entityInfo.Columns.FirstOrDefault(m => m.Value == dynamicMember.Field.Split('.')[1]).Key;
-                        fieldBuilder.AppendFormat("{0} AS {1},", dynamicMember.Field.Split('.')[1], key);
-                    }
-                    selectSql.Append(fieldBuilder.ToString().TrimEnd(','));
+                    selectSql.Append(fields.TrimEnd(','));
                     break;
                 case SelectType.Max:
-                    fieldBuilder.AppendFormat("MAX({0}) ", visitor.DynamicMembers[0].Field.Split('.')[1]);
+                    fieldBuilder.AppendFormat("MAX({0}) ", fields.TrimEnd(','));
                     selectSql.Append(fieldBuilder.ToString().TrimEnd(','));
                     break;
                 case SelectType.Min:
-                    fieldBuilder.AppendFormat("MIN({0}) ", visitor.DynamicMembers[0].Field.Split('.')[1]);
+                    fieldBuilder.AppendFormat("MIN({0}) ", fields.TrimEnd(','));
                     selectSql.Append(fieldBuilder.ToString().TrimEnd(','));
                     break;
                 case SelectType.Count:
@@ -600,8 +595,8 @@ namespace DNet.DataAccess
             selectSql.Append(entityInfo.TableName);
             if (exp != null)
             {
-                WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
-                string where = lambdaTranslator.Translate<TIn>(exp);
+                WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType,1);
+                string where = lambdaTranslator.Translate(exp);
                 selectSql.Append(" WHERE ");
                 selectSql.Append(where);
                 foreach (DbParameter parm in lambdaTranslator.Parameters)
@@ -622,20 +617,15 @@ namespace DNet.DataAccess
             EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(TIn));
             selectSql.Append("SELECT ");
             StringBuilder fieldBuilder = new StringBuilder();
-            DynamicVisitor visitor = new DynamicVisitor();
-            visitor.Translate<TIn, TResult>(select);
-            foreach (DynamicMember dynamicMember in visitor.DynamicMembers.Where(m => !string.IsNullOrEmpty(m.Field)))
-            {
-                var key = entityInfo.Columns.FirstOrDefault(m => m.Value == dynamicMember.Field.Split('.')[1]).Key;
-                fieldBuilder.AppendFormat("{0} AS {1},", dynamicMember.Field.Split('.')[1], key);
-            }
-            selectSql.Append(fieldBuilder.ToString().TrimEnd(','));
+            WhereVisitor selectTranslator = new WhereVisitor(this.DataBase.DBType, 0);
+            string fields=selectTranslator.Translate(select);
+            selectSql.Append(fields.TrimEnd(','));
             selectSql.Append(" FROM ");
             selectSql.Append(entityInfo.TableName);
             if (exp != null)
             {
-                WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
-                string where = lambdaTranslator.Translate<TIn>(exp);
+                WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType,1);
+                string where = lambdaTranslator.Translate(exp);
                 selectSql.Append(" WHERE ");
                 selectSql.Append(where);
                 foreach (DbParameter parm in lambdaTranslator.Parameters)
@@ -663,7 +653,7 @@ namespace DNet.DataAccess
             if (exp != null)
             {
                 WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
-                string where = lambdaTranslator.Translate<T>(exp);
+                string where = lambdaTranslator.Translate(exp);
                 selectSql.Append(" WHERE ");
                 selectSql.Append(where);
                 foreach (DbParameter parm in lambdaTranslator.Parameters)
@@ -690,7 +680,7 @@ namespace DNet.DataAccess
             if (exp != null)
             {
                 WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
-                string where = lambdaTranslator.Translate<T>(exp);
+                string where = lambdaTranslator.Translate(exp);
                 selectSql.Append(" WHERE ");
                 selectSql.Append(where);
                 foreach (DbParameter parm in lambdaTranslator.Parameters)
@@ -715,7 +705,7 @@ namespace DNet.DataAccess
             if (exp != null)
             {
                 WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
-                string where = lambdaTranslator.Translate<T>(exp);
+                string where = lambdaTranslator.Translate(exp);
                 selectSql.Append(" WHERE ");
                 selectSql.Append(where);
                 foreach (DbParameter parm in lambdaTranslator.Parameters)
