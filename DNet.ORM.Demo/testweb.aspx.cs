@@ -21,7 +21,7 @@ namespace DNet.ORM.Demo
             using (DNetContext db = new DNetContext())
             {
                 Expression<Func<Author, dynamic>> ex = m => new { m.AuthorID, AuthorName = m.AuthorName + "aaa" };
-                WhereVisitor wv = new WhereVisitor(DataBaseType.SqlServer);
+                SqlVisitor wv = new SqlVisitor(DataBaseType.SqlServer);
                 wv.Translate(ex);
               
                 //获取动态类型

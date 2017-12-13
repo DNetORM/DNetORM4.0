@@ -144,27 +144,6 @@ namespace DNet.DataAccess
 
         protected override Expression VisitMethodCall(MethodCallExpression methodExp)
         {
-            if (methodExp.Method.DeclaringType == typeof(GroupBy))
-            {
-                switch (methodExp.Method.Name.ToUpper())
-                {
-                    case "COUNT":
-                        FieldTemplate = "COUNT({0})";
-                        break;
-                    case "COUNTDISTINCT":
-                        FieldTemplate = "COUNT(DISTINCT {0})";
-                        break;
-                    case "MAX":
-                        FieldTemplate = "MAX({0})";
-                        break;
-                    case "MIN":
-                        FieldTemplate = "MIN({0})";
-                        break;
-                    case "AVG":
-                        FieldTemplate = "AVG({0})";
-                        break;
-                }
-            }
             if (methodExp.Object != null && methodExp.Object.NodeType == ExpressionType.MemberAccess)
             {
                 Expression obj = this.Visit(methodExp.Object);

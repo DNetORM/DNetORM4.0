@@ -19,7 +19,7 @@ namespace DNet.DataAccess
     /// Lambda转where SQL
     /// Author Jack Liu
     /// </summary>
-    public class WhereVisitor : ExpressionVisitor, IVisitor
+    public class SqlVisitor : ExpressionVisitor, IVisitor
     {
         private DataBaseType DbType;
 
@@ -63,7 +63,7 @@ namespace DNet.DataAccess
 
         public ISqlDialect SqlDialect { get; set; }
 
-        public WhereVisitor(DataBaseType dbType)
+        public SqlVisitor(DataBaseType dbType)
         {
             this.parameters = new List<DbParameter>();
             this.DbType = dbType;
@@ -72,7 +72,7 @@ namespace DNet.DataAccess
             SqlDialect = SqlDialectFactory.CreateSqlDialect();
         }
 
-        public WhereVisitor(DataBaseType dbType, int callIndex) : this(dbType)
+        public SqlVisitor(DataBaseType dbType, int callIndex) : this(dbType)
         {
             CallIndex = callIndex;
         }
@@ -286,6 +286,29 @@ namespace DNet.DataAccess
                     this.Visit(methodExp.Object);
                     SqlBuilder.Append("))");
                     return methodExp;
+                case "Count":
+                    if (methodExp.Method.DeclaringType == typeof(GroupBy))
+                    {
+                        SqlBuilder.AppendFormat("COUNT({0})", TranslateClause(methodExp.Arguments[0]));
+                        return methodExp;
+                    }
+                    goto default;
+                case "CountDistinct":
+                    if (methodExp.Method.DeclaringType == typeof(GroupBy))
+                    {
+                        SqlBuilder.AppendFormat("COUNT(DISTINCT {0})", TranslateClause(methodExp.Arguments[0]));
+                        return methodExp;
+                    }
+                    goto default;
+                case "Max":
+                case "Min":
+                case "Avg":
+                    if (methodExp.Method.DeclaringType == typeof(GroupBy))
+                    {
+                        SqlBuilder.AppendFormat("{0}({1})", methodExp.Method.Name, TranslateClause(methodExp.Arguments[0]));
+                        return methodExp;
+                    }
+                    goto default;
                 default:
                     try
                     {
@@ -543,7 +566,10 @@ namespace DNet.DataAccess
             for (int i = 0; i < node.Arguments.Count; i++)
             {
                 this.Visit(node.Arguments[i]);
-                SqlBuilder.AppendFormat(" AS {0},", node.Members[i].Name);
+                if (node.Arguments[i].NodeType != ExpressionType.Parameter)
+                {
+                    SqlBuilder.AppendFormat(" AS {0},", node.Members[i].Name);
+                }
             }
             return node;
         }

@@ -29,7 +29,7 @@ namespace DNet.DataAccess
             {
                 if (!string.IsNullOrEmpty(c.Field))
                 {
-                    cb.Append(c.Field);
+                    cb.Append(c.Field.TrimEnd(','));
                     if (!string.IsNullOrEmpty(c.Key) && c.Key != "*")
                     {
                         cb.Append(" AS ");

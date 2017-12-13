@@ -216,7 +216,7 @@ namespace DNet.DataAccess
                 deleteSql.AppendFormat(" DELETE FROM {0} WHERE ", entityInfo.TableName);
                 if (exp != null)
                 {
-                    WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
+                    SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType);
                     string where = lambdaTranslator.Translate(exp);
                     deleteSql.Append(where);
                     foreach (DbParameter parm in lambdaTranslator.Parameters)
@@ -370,7 +370,7 @@ namespace DNet.DataAccess
                 updateSql.Append(" WHERE ");
                 if (exp != null)
                 {
-                    WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
+                    SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType);
                     string where = lambdaTranslator.Translate(exp);
                     updateSql.Append(where);
                     foreach (DbParameter parm in lambdaTranslator.Parameters)
@@ -424,7 +424,7 @@ namespace DNet.DataAccess
                 updateSql.Append(" WHERE ");
                 if (exp != null)
                 {
-                    WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
+                    SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType);
                     string where = lambdaTranslator.Translate(exp);
                     updateSql.Append(where);
                     foreach (DbParameter parm in lambdaTranslator.Parameters)
@@ -479,7 +479,7 @@ namespace DNet.DataAccess
                 updateSql.Append(" WHERE ");
                 if (exp != null)
                 {
-                    WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
+                    SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType);
                     string where = lambdaTranslator.Translate(exp);
                     updateSql.Append(where);
                     foreach (DbParameter parm in lambdaTranslator.Parameters)
@@ -571,8 +571,12 @@ namespace DNet.DataAccess
             EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(TIn));
             selectSql.Append("SELECT ");
             StringBuilder fieldBuilder = new StringBuilder();
-            WhereVisitor selectTranslator = new WhereVisitor(this.DataBase.DBType, 0);
+            SqlVisitor selectTranslator = new SqlVisitor(this.DataBase.DBType, 0);
             string fields = selectTranslator.Translate(select);
+            foreach (DbParameter parm in selectTranslator.Parameters)
+            {
+                parms.Add(parm);
+            }
             switch (selectType)
             {
                 case SelectType.Distinct:
@@ -595,7 +599,7 @@ namespace DNet.DataAccess
             selectSql.Append(entityInfo.TableName);
             if (exp != null)
             {
-                WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType,1);
+                SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType, 1);
                 string where = lambdaTranslator.Translate(exp);
                 selectSql.Append(" WHERE ");
                 selectSql.Append(where);
@@ -617,14 +621,18 @@ namespace DNet.DataAccess
             EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(TIn));
             selectSql.Append("SELECT ");
             StringBuilder fieldBuilder = new StringBuilder();
-            WhereVisitor selectTranslator = new WhereVisitor(this.DataBase.DBType, 0);
-            string fields=selectTranslator.Translate(select);
+            SqlVisitor selectTranslator = new SqlVisitor(this.DataBase.DBType, 0);
+            string fields = selectTranslator.Translate(select);
+            foreach (DbParameter parm in selectTranslator.Parameters)
+            {
+                parms.Add(parm);
+            }
             selectSql.Append(fields.TrimEnd(','));
             selectSql.Append(" FROM ");
             selectSql.Append(entityInfo.TableName);
             if (exp != null)
             {
-                WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType,1);
+                SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType, 1);
                 string where = lambdaTranslator.Translate(exp);
                 selectSql.Append(" WHERE ");
                 selectSql.Append(where);
@@ -652,7 +660,7 @@ namespace DNet.DataAccess
             selectSql.Append(entityInfo.TableName);
             if (exp != null)
             {
-                WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
+                SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType);
                 string where = lambdaTranslator.Translate(exp);
                 selectSql.Append(" WHERE ");
                 selectSql.Append(where);
@@ -679,7 +687,7 @@ namespace DNet.DataAccess
             selectSql.Append(entityInfo.TableName);
             if (exp != null)
             {
-                WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
+                SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType);
                 string where = lambdaTranslator.Translate(exp);
                 selectSql.Append(" WHERE ");
                 selectSql.Append(where);
@@ -704,7 +712,7 @@ namespace DNet.DataAccess
             selectSql.Append(entityInfo.TableName);
             if (exp != null)
             {
-                WhereVisitor lambdaTranslator = new WhereVisitor(this.DataBase.DBType);
+                SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType);
                 string where = lambdaTranslator.Translate(exp);
                 selectSql.Append(" WHERE ");
                 selectSql.Append(where);
