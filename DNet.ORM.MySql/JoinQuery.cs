@@ -290,7 +290,7 @@ namespace DNet.DataAccess
         /// </summary>
         /// <typeparam name="TModel"></typeparam>
         /// <returns></returns>
-        public List<TModel> GetList<TModel>() where TModel : new()
+        public List<TModel> GetList<TModel>() 
         {
             List<string> tables = new List<string>();
             SqlBuilder.Append(" SELECT ");
@@ -411,7 +411,7 @@ namespace DNet.DataAccess
         /// <typeparam name="TModel"></typeparam>
         /// <param name="page"></param>
         /// <returns></returns>
-        public PageDataSource<TModel> GetPage<TModel>(PageFilter page) where TModel : new()
+        public PageDataSource<TModel> GetPage<TModel>(PageFilter page) 
         {
             List<string> tables = new List<string>();
             SqlBuilder.Append(" SELECT ");

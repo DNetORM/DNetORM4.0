@@ -612,7 +612,7 @@ namespace DNet.DataAccess
         /// <param name="sql"></param>
         /// <param name="pageFilter"></param>
         /// <returns></returns>
-        public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter) where TObject : new()
+        public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter)
         {
             sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             PageDataSource<TObject> dataSource = new PageDataSource<TObject>();
@@ -627,9 +627,7 @@ namespace DNet.DataAccess
 
                 while (reader.Read())
                 {
-                    TObject entityWhile = new TObject();
-                    SetEntityMembers<TObject>(reader, entityWhile);
-                    dataSource.DataSource.Add(entityWhile);
+                    dataSource.DataSource.Add(GetDynamicObject<TObject>(reader));
                 }
                 return dataSource;
             }
@@ -644,7 +642,7 @@ namespace DNet.DataAccess
         /// <param name="pageFilter"></param>
         /// <param name="cmdParms"></param>
         /// <returns></returns>
-        public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter, params DbParameter[] cmdParms) where TObject : new()
+        public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter, params DbParameter[] cmdParms) 
         {
             sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             PageDataSource<TObject> dataSource = new PageDataSource<TObject>();
@@ -660,9 +658,7 @@ namespace DNet.DataAccess
 
                 while (reader.Read())
                 {
-                    TObject entityWhile = new TObject();
-                    SetEntityMembers<TObject>(reader, entityWhile);
-                    dataSource.DataSource.Add(entityWhile);
+                    dataSource.DataSource.Add(GetDynamicObject<TObject>(reader));
                 }
                 return dataSource;
             }
