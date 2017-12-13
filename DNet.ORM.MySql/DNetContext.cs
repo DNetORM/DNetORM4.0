@@ -192,32 +192,6 @@ namespace DNet.DataAccess
         }
 
         /// <summary>
-        /// 查询单一数据
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="exp"></param>
-        /// <returns></returns>
-        public T GetSingle<T>(Expression<Func<T, bool>> exp) where T : class, new()
-        {
-            StringBuilder selectSql = new StringBuilder();
-            List<DbParameter> parms = new List<DbParameter>();
-            GetSQLByLambda(selectSql, parms, exp);
-            using (var reader = DataBase.ExecuteReader(selectSql.ToString(), parms.ToArray()))
-            {
-                if (reader.Read())
-                {
-                    T entity = new T();
-                    SetEntityMembers<T>(reader, entity);
-                    return entity;
-                }
-                else
-                {
-                    return default(T);
-                }
-            }
-        }
-
-        /// <summary>
         /// 判断数据是否存在
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -357,6 +331,32 @@ namespace DNet.DataAccess
                 else
                 {
                     return 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 查询单一数据
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="exp"></param>
+        /// <returns></returns>
+        public T GetSingle<T>(Expression<Func<T, bool>> exp) where T : class, new()
+        {
+            StringBuilder selectSql = new StringBuilder();
+            List<DbParameter> parms = new List<DbParameter>();
+            GetSQLByLambda(selectSql, parms, exp);
+            using (var reader = DataBase.ExecuteReader(selectSql.ToString(), parms.ToArray()))
+            {
+                if (reader.Read())
+                {
+                    T entity = new T();
+                    SetEntityMembers<T>(reader, entity);
+                    return entity;
+                }
+                else
+                {
+                    return default(T);
                 }
             }
         }
