@@ -19,7 +19,8 @@ namespace DNet.ORM.Demo
             stopwatch.Start(); //  开始监视代
             using (DNetContext db = new DNetContext())
             {
-                //var r= db.GetList<Book>(m=>Convert.ToDateTime(m.PublishDate).ToString("yyyy-MM-dd")=="2017-10-11");
+                //获取动态类型
+                List<dynamic> name = db.GetDistinctList<Author>(m => m.AuthorName.StartsWith("王五") && m.IsValid == true, m =>new  {m.AuthorID ,AuthorName= m.AuthorName + "aaa" });
                 var r = db.GetList<Test>(m =>true);
             }
             stopwatch.Stop(); //  停止监视  

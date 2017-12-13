@@ -32,7 +32,7 @@ namespace DNet.ORM.Demo
                 var authors= db.GetList<Author>(m => m.AuthorName.StartsWith("张三") && m.IsValid == true);
 
                 //获取动态类型
-                List<dynamic> name = db.GetDistinctList<Author>(m => m.AuthorName.StartsWith("王五") && m.IsValid == true,m=>m.AuthorName);
+                List<dynamic> name = db.GetDistinctList<Author>(m => m.AuthorName.StartsWith("王五") && m.IsValid == true,m=>m.AuthorName+"aaa");
                 
                 List<string> name1 = db.GetDistinctList<Author,string>(m => m.AuthorName.StartsWith("王五") && m.IsValid == true, m => m.AuthorName);
                 
