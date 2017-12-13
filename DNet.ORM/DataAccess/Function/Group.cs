@@ -8,11 +8,11 @@ namespace DNet.DataAccess
 {
     public class GroupBy
     {
-        public static int Count(dynamic member)
+        public static dynamic Count(dynamic member)
         {
             return member;
         }
-        public static int CountDistinct(dynamic member)
+        public static dynamic CountDistinct(dynamic member)
         {
             return member;
         }
