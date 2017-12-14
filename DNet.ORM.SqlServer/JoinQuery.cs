@@ -52,18 +52,12 @@ namespace DNet.DataAccess
 
         protected StringBuilder SelectFields { get; set; }
 
-        /// <summary>
-        /// select筛选
-        /// </summary>
-        protected List<TableSelect> TableSelects { get; set; }
-
         protected DNetContext DbContext { get; set; }
 
         public JoinQuery()
         {
             SqlBuilder = new StringBuilder();
             JoinRelations = new List<JoinRelation>();
-            TableSelects = new List<TableSelect>();
             WhereClause = new StringBuilder();
             Parameters = new List<DbParameter>();
             OrderBy = new StringBuilder();
@@ -75,7 +69,6 @@ namespace DNet.DataAccess
         {
             SqlBuilder.Clear();
             JoinRelations.Clear();
-            TableSelects.Clear();
             WhereClause.Clear();
             Parameters.Clear();
             OrderBy.Clear();
@@ -220,7 +213,6 @@ namespace DNet.DataAccess
         {
             EntityInfo e1 = Caches.EntityInfoCache.Get(typeof(T1));
             EntityInfo e2 = Caches.EntityInfoCache.Get(typeof(T2));
-            TableSelect tableSelect = new TableSelect { Table = e1.TableName };
             if (select == null)
             {
                 SelectFields.AppendFormat("{0},{1},", e1.SelectFields, e2.SelectFields);
@@ -240,7 +232,6 @@ namespace DNet.DataAccess
             EntityInfo e1 = Caches.EntityInfoCache.Get(typeof(T1));
             EntityInfo e2 = Caches.EntityInfoCache.Get(typeof(T2));
             EntityInfo e3 = Caches.EntityInfoCache.Get(typeof(T3));
-            TableSelect tableSelect = new TableSelect { Table = e1.TableName };
             if (select == null)
             {
                 SelectFields.AppendFormat("{0},{1},{2},", e1.SelectFields, e2.SelectFields, e3.SelectFields);
@@ -252,7 +243,6 @@ namespace DNet.DataAccess
                 SelectFields.Append(fields);
                 Parameters.AddRange(visitor.Parameters);
             }
-            TableSelects.Add(tableSelect);
             return this;
         }
 
