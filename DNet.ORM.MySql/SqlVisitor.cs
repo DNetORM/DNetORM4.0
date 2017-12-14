@@ -19,7 +19,7 @@ namespace DNet.DataAccess
     /// Lambda转where SQL
     /// Author Jack Liu
     /// </summary>
-    public class WhereVisitor : ExpressionVisitor, IVisitor
+    public class SqlVisitor : ExpressionVisitor, IVisitor
     {
         private DataBaseType DbType;
 
@@ -35,9 +35,6 @@ namespace DNet.DataAccess
                 return this.parameters;
             }
         }
-
-        protected Dictionary<string, EntityInfo> Es { get; set; }
-
 
         public string ParameterPrefix
         {
@@ -66,22 +63,21 @@ namespace DNet.DataAccess
 
         public ISqlDialect SqlDialect { get; set; }
 
-        public WhereVisitor(DataBaseType dbType)
+        public SqlVisitor(DataBaseType dbType)
         {
             this.parameters = new List<DbParameter>();
-            Es = new Dictionary<string, EntityInfo>();
             this.DbType = dbType;
             CallIndex = 0;
             ParameterIndex = 0;
             SqlDialect = SqlDialectFactory.CreateSqlDialect();
         }
 
-        public WhereVisitor(DataBaseType dbType, int callIndex) : this(dbType)
+        public SqlVisitor(DataBaseType dbType, int callIndex) : this(dbType)
         {
             CallIndex = callIndex;
         }
 
-        public string Translate(Expression exp)
+        public string TranslateClause(Expression exp)
         {
             int position = SqlBuilder.Length;
             this.Visit(exp);
@@ -90,72 +86,21 @@ namespace DNet.DataAccess
             return clause;
         }
 
-        public string Translate<T1>(Expression<Func<T1, bool>> exp) where T1 : class
+        public string Translate(Expression exp)
         {
-            Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
             this.SqlBuilder = new StringBuilder();
             //m=>true
-            if (exp.Body.NodeType == ExpressionType.Constant)
+            if (((LambdaExpression)exp).Body.NodeType == ExpressionType.Constant)
             {
-                if (Convert.ToBoolean((exp.Body as ConstantExpression).Value) == true)
+                if (Convert.ToBoolean((((LambdaExpression)exp).Body as ConstantExpression).Value) == true)
                 {
                     return " 1=1 ";
                 }
             }
-            this.Visit(exp.Body);
+            this.Visit(((LambdaExpression)exp).Body);
             return this.SqlBuilder.ToString();
         }
 
-        public string Translate<T1, T2>(Expression<Func<T1, T2, bool>> exp) where T1 : class where T2 : class
-        {
-            Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
-            Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
-            this.SqlBuilder = new StringBuilder();
-            if (exp.Body.NodeType == ExpressionType.Constant)
-            {
-                if (Convert.ToBoolean((exp.Body as ConstantExpression).Value) == true)
-                {
-                    return " 1=1 ";
-                }
-            }
-            this.Visit(exp.Body);
-            return this.SqlBuilder.ToString();
-        }
-
-        public string Translate<T1, T2, T3>(Expression<Func<T1, T2, T3, bool>> exp) where T1 : class where T2 : class where T3 : class
-        {
-            Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
-            Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
-            Es[typeof(T3).Name] = Caches.EntityInfoCache.Get(typeof(T3));
-            this.SqlBuilder = new StringBuilder();
-            if (exp.Body.NodeType == ExpressionType.Constant)
-            {
-                if (Convert.ToBoolean((exp.Body as ConstantExpression).Value) == true)
-                {
-                    return " 1=1 ";
-                }
-            }
-            this.Visit(exp.Body);
-            return this.SqlBuilder.ToString();
-        }
-
-        public string Translate<T1, T2, T3, T4>(Expression<Func<T1, T2, T3, T4, bool>> exp) where T1 : class where T2 : class where T3 : class where T4 : class
-        {
-            Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
-            Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
-            Es[typeof(T3).Name] = Caches.EntityInfoCache.Get(typeof(T3));
-            Es[typeof(T4).Name] = Caches.EntityInfoCache.Get(typeof(T4));
-            this.SqlBuilder = new StringBuilder();
-            if (exp.Body.NodeType == ExpressionType.Constant)
-            {
-                if (Convert.ToBoolean((exp.Body as ConstantExpression).Value) == true)
-                {
-                    return " 1=1 ";
-                }
-            }
-            this.Visit(exp.Body);
-            return this.SqlBuilder.ToString();
-        }
 
         protected override Expression VisitMethodCall(MethodCallExpression methodExp)
         {
@@ -165,7 +110,7 @@ namespace DNet.DataAccess
                     if (methodExp.Method.DeclaringType == typeof(string))
                     {
                         this.Visit(methodExp.Object);
-                        SqlBuilder.AppendFormat(SqlDialect.Contains(), Translate(methodExp.Arguments[0]));
+                        SqlBuilder.AppendFormat(SqlDialect.Contains(), TranslateClause(methodExp.Arguments[0]));
                         return methodExp;
                     }
                     else
@@ -221,7 +166,7 @@ namespace DNet.DataAccess
                     this.Visit(methodExp.Arguments[0]);
                     return methodExp;
                 case "IndexOf":
-                    SqlBuilder.AppendFormat(SqlDialect.IndexOf(), Translate(methodExp.Arguments[0]), Translate(methodExp.Object));
+                    SqlBuilder.AppendFormat(SqlDialect.IndexOf(), TranslateClause(methodExp.Arguments[0]), TranslateClause(methodExp.Object));
                     return methodExp;
                 case "IsNullOrEmpty":
                     string template = " ({0} IS NULL OR {0}='') ";
@@ -281,7 +226,7 @@ namespace DNet.DataAccess
                         MemberType = mtVisitor.Translate(methodExp.Arguments[0]);
                         if (MemberType != null)
                         {
-                            SqlBuilder.AppendFormat(SqlDialect.ToNumber(), Translate(methodExp.Arguments[0]));
+                            SqlBuilder.AppendFormat(SqlDialect.ToNumber(), TranslateClause(methodExp.Arguments[0]));
                             return methodExp;
                         }
                     }
@@ -305,11 +250,11 @@ namespace DNet.DataAccess
                     goto default;
                 case "StartsWith":
                     this.Visit(methodExp.Object);
-                    SqlBuilder.AppendFormat(SqlDialect.StartsWith(), Translate(methodExp.Arguments[0]));
+                    SqlBuilder.AppendFormat(SqlDialect.StartsWith(), TranslateClause(methodExp.Arguments[0]));
                     return methodExp;
                 case "EndsWith":
                     this.Visit(methodExp.Object);
-                    SqlBuilder.AppendFormat(SqlDialect.EndsWith(), Translate(methodExp.Arguments[0]));
+                    SqlBuilder.AppendFormat(SqlDialect.EndsWith(), TranslateClause(methodExp.Arguments[0]));
                     return methodExp;
                 case "TrimStart":
                     SqlBuilder.Append(" LTRIM(");
@@ -326,6 +271,29 @@ namespace DNet.DataAccess
                     this.Visit(methodExp.Object);
                     SqlBuilder.Append("))");
                     return methodExp;
+                case "Count":
+                    if (methodExp.Method.DeclaringType == typeof(GroupBy))
+                    {
+                        SqlBuilder.AppendFormat("COUNT({0})", TranslateClause(methodExp.Arguments[0]));
+                        return methodExp;
+                    }
+                    goto default;
+                case "CountDistinct":
+                    if (methodExp.Method.DeclaringType == typeof(GroupBy))
+                    {
+                        SqlBuilder.AppendFormat("COUNT(DISTINCT {0})", TranslateClause(methodExp.Arguments[0]));
+                        return methodExp;
+                    }
+                    goto default;
+                case "Max":
+                case "Min":
+                case "Avg":
+                    if (methodExp.Method.DeclaringType == typeof(GroupBy))
+                    {
+                        SqlBuilder.AppendFormat("{0}({1})", methodExp.Method.Name, TranslateClause(methodExp.Arguments[0]));
+                        return methodExp;
+                    }
+                    goto default;
                 default:
                     try
                     {
@@ -517,13 +485,14 @@ namespace DNet.DataAccess
         {
             try
             {
-                if (exp.NodeType == ExpressionType.MemberAccess)
+                if (exp.NodeType == ExpressionType.MemberAccess && ((MemberExpression)exp).Expression.NodeType == ExpressionType.Parameter)
                 {
-                    var tName = ((MemberExpression)exp).Expression.Type.Name;
-                    if (Es.ContainsKey(tName))
-                    {
-                        return false;
-                    }
+                    //var entityInfo = Caches.EntityInfoCache.Get(((MemberExpression)exp).Expression.Type);
+                    //if (entityInfo!=null)
+                    //{
+                    //    return false;
+                    //}
+                    return false;
                 }
                 object result = Expression.Lambda(exp).Compile().DynamicInvoke();
                 return result == null;
@@ -553,8 +522,8 @@ namespace DNet.DataAccess
         {
             if (memberExp.Expression != null && memberExp.Expression.NodeType == ExpressionType.Parameter)
             {
-                var typeName = memberExp.Expression.Type.Name;
-                string fieldName = this.Es[typeName].TableName + "." + GetFieldName(typeName, memberExp.Member.Name);
+                var entityInfo = Caches.EntityInfoCache.Get(memberExp.Expression.Type);
+                string fieldName = entityInfo.TableName + "." + GetFieldName(memberExp.Expression.Type, memberExp.Member.Name);
                 if (!string.IsNullOrEmpty(fieldName))
                 {
                     SqlBuilder.Append(fieldName);
@@ -581,11 +550,39 @@ namespace DNet.DataAccess
             throw new NotSupportedException(string.Format("成员 '{0}’不支持", memberExp.Member.Name));
         }
 
-        public string GetFieldName(string typeName, string memberName)
+        protected override Expression VisitParameter(ParameterExpression node)
         {
-            if (this.Es[typeName].Columns.Keys.Contains(memberName))
+            var entityInfo = Caches.EntityInfoCache.Get(node.Type);
+            SqlBuilder.AppendFormat("{0},", entityInfo.SelectFields);
+            return node;
+        }
+
+        protected override Expression VisitNew(NewExpression node)
+        {
+            for (int i = 0; i < node.Arguments.Count; i++)
             {
-                return this.Es[typeName].Columns[memberName];
+                this.Visit(node.Arguments[i]);
+                if (node.Arguments[i].NodeType != ExpressionType.Parameter)
+                {
+                    SqlBuilder.AppendFormat(" AS {0},", node.Members[i].Name);
+                }
+            }
+            return node;
+        }
+
+        protected override MemberAssignment VisitMemberAssignment(MemberAssignment assignment)
+        {
+            Expression e = this.Visit(assignment.Expression);
+            SqlBuilder.AppendFormat(" AS {0},", assignment.Member.Name);
+            return assignment;
+        }
+
+        public string GetFieldName(Type tableType, string memberName)
+        {
+            var entityInfo = Caches.EntityInfoCache.Get(tableType);
+            if (entityInfo.Columns.Keys.Contains(memberName))
+            {
+                return entityInfo.Columns[memberName];
             }
             else
             {

@@ -405,10 +405,7 @@ namespace DNet.DataAccess
             {
                 if (reader.Read())
                 {
-                    T entityWhile = new T();
-                    SetEntityMembers<T>(reader, entityWhile);
-                    Func<T, dynamic> func = select.Compile();
-                    return func(entityWhile);
+                    return GetDynamicObject<dynamic>(reader);
                 }
                 else
                 {
@@ -454,14 +451,13 @@ namespace DNet.DataAccess
             List<DbParameter> parms = new List<DbParameter>();
             GetSQLByLambda(selectSql, parms, exp, select);
             List<T> objs = new List<T>();
-            Func<T, T> func = select.Compile();
             using (var reader = DataBase.ExecuteReader(selectSql.ToString(), parms.ToArray()))
             {
                 while (reader.Read())
                 {
                     T entityWhile = new T();
                     SetEntityMembers<T>(reader, entityWhile);
-                    objs.Add(func(entityWhile));
+                    objs.Add(entityWhile);
                 }
             }
             return objs;
@@ -506,14 +502,11 @@ namespace DNet.DataAccess
             List<DbParameter> parms = new List<DbParameter>();
             GetSQLByLambda(selectSql, parms, exp, select);
             List<TObject> objs = new List<TObject>();
-            Func<T, TObject> func = select.Compile();
             using (var reader = DataBase.ExecuteReader(selectSql.ToString(), parms.ToArray()))
             {
                 while (reader.Read())
                 {
-                    T entityWhile = new T();
-                    SetEntityMembers<T>(reader, entityWhile);
-                    objs.Add(func(entityWhile));
+                    objs.Add(GetDynamicObject<TObject>(reader));
                 }
             }
             return objs;
@@ -533,14 +526,11 @@ namespace DNet.DataAccess
             List<DbParameter> parms = new List<DbParameter>();
             GetSQLByLambda(selectSql, parms, exp, select, SelectType.Distinct);
             List<TObject> objs = new List<TObject>();
-            Func<T, dynamic> func = select.Compile();
             using (var reader = DataBase.ExecuteReader(selectSql.ToString(), parms.ToArray()))
             {
                 while (reader.Read())
                 {
-                    T entityWhile = new T();
-                    SetEntityMembers<T>(reader, entityWhile);
-                    objs.Add(func(entityWhile));
+                    objs.Add(GetDynamicObject<TObject>(reader));
                 }
             }
             return objs;
@@ -559,14 +549,13 @@ namespace DNet.DataAccess
             List<DbParameter> parms = new List<DbParameter>();
             GetSQLByLambda(selectSql, parms, exp, select, SelectType.Distinct);
             List<dynamic> objs = new List<dynamic>();
-            Func<T, dynamic> func = select.Compile();
             using (var reader = DataBase.ExecuteReader(selectSql.ToString(), parms.ToArray()))
             {
                 while (reader.Read())
                 {
                     T entityWhile = new T();
                     SetEntityMembers<T>(reader, entityWhile);
-                    objs.Add(func(entityWhile));
+                    objs.Add(entityWhile);
                 }
             }
             return objs;
@@ -614,7 +603,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             PageDataSource<TObject> dataSource = new PageDataSource<TObject>();
             int recordCount, pageCount, pageIndex;
             using (var reader = DataBase.ExecutePageReader(sql, pageFilter.OrderText, pageFilter.PageIndex, pageFilter.PageSize, out recordCount, out pageCount, out pageIndex))
@@ -642,9 +630,8 @@ namespace DNet.DataAccess
         /// <param name="pageFilter"></param>
         /// <param name="cmdParms"></param>
         /// <returns></returns>
-        public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter, params DbParameter[] cmdParms) 
+        public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter, params DbParameter[] cmdParms)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             PageDataSource<TObject> dataSource = new PageDataSource<TObject>();
             int recordCount, pageCount, pageIndex;
 
@@ -672,7 +659,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public List<TObject> GetList<TObject>(string sql)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             List<TObject> dataSource = new List<TObject>();
             using (var reader = DataBase.ExecuteReader(sql))
             {
@@ -693,7 +679,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public List<TObject> GetList<TObject>(string sql, params DbParameter[] cmdParms)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             List<TObject> dataSource = new List<TObject>();
             using (var reader = DataBase.ExecuteReader(sql, cmdParms.ToArray()))
             {
@@ -714,7 +699,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public TObject GetSingle<TObject>(string sql, params DbParameter[] cmdParms)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             using (var reader = DataBase.ExecuteReader(sql, cmdParms.ToArray()))
             {
                 if (reader.Read())
@@ -736,7 +720,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public TObject GetSingle<TObject>(string sql)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             using (var reader = DataBase.ExecuteReader(sql))
             {
                 if (reader.Read())
