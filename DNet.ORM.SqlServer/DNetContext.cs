@@ -171,8 +171,6 @@ namespace DNet.DataAccess
             List<string> infos = (from instruction in updateAction.GetMethodInfo().GetInstructions()
                                   where instruction.OpCode.OperandType == OperandType.InlineMethod && instruction.OpCode.Name == "callvirt" && ((MethodInfo)instruction.Operand).Name.StartsWith("set_")
                                   select ((MethodInfo)instruction.Operand).Name.TrimStart("set_".ToCharArray())).ToList();
-            infos.Add("UpdateUser");
-            infos.Add("UpdateTime");
             DynamicVisitor visitor = new DynamicVisitor();
             visitor.Translate<T, dynamic>(ignoreFields);
             visitor.DynamicMembers.ForEach(m => infos.Remove(m.Key));
