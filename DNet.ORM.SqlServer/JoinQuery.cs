@@ -204,7 +204,7 @@ namespace DNet.DataAccess
             EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(TEntity));
             if (select == null)
             {
-                SelectFields.AppendFormat("{0}.*,", entityInfo.TableName);
+                SelectFields.AppendFormat("{0},", entityInfo.SelectFields);
             }
             else
             {
@@ -223,7 +223,7 @@ namespace DNet.DataAccess
             TableSelect tableSelect = new TableSelect { Table = e1.TableName };
             if (select == null)
             {
-                SelectFields.AppendFormat("{0}.*,{1}.*,", e1.TableName, e2.TableName);
+                SelectFields.AppendFormat("{0},{1},", e1.SelectFields, e2.SelectFields);
             }
             else
             {
@@ -243,7 +243,7 @@ namespace DNet.DataAccess
             TableSelect tableSelect = new TableSelect { Table = e1.TableName };
             if (select == null)
             {
-                SelectFields.AppendFormat("{0}.*,{1}.*,{2}.*,", e1.TableName, e2.TableName, e3.TableName);
+                SelectFields.AppendFormat("{0},{1},{2},", e1.SelectFields, e2.SelectFields, e3.SelectFields);
             }
             else
             {

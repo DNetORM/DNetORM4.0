@@ -557,7 +557,7 @@ namespace DNet.DataAccess
         protected override Expression VisitParameter(ParameterExpression node)
         {
             var entityInfo = Caches.EntityInfoCache.Get(node.Type);
-            SqlBuilder.AppendFormat("{0}.*,", entityInfo.TableName);
+            SqlBuilder.AppendFormat("{0},", entityInfo.SelectFields);
             return node;
         }
 
