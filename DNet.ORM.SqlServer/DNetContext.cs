@@ -152,7 +152,7 @@ namespace DNet.DataAccess
         {
             T entity = new T();
             List<string> infos = (from instruction in updateAction.GetMethodInfo().GetInstructions()
-                                  where instruction.OpCode.OperandType == OperandType.InlineMethod && instruction.OpCode.Name == "callvirt"
+                                  where instruction.OpCode.OperandType == OperandType.InlineMethod && instruction.OpCode.Name == "callvirt" && ((MethodInfo)instruction.Operand).Name.StartsWith("set_")
                                   select ((MethodInfo)instruction.Operand).Name.TrimStart("set_".ToCharArray())).ToList();
             updateAction(entity);
             return base.UpdateT(entity, infos.Distinct().ToList(), exp);
@@ -169,7 +169,7 @@ namespace DNet.DataAccess
         {
             T entity = new T();
             List<string> infos = (from instruction in updateAction.GetMethodInfo().GetInstructions()
-                                  where instruction.OpCode.OperandType == OperandType.InlineMethod && instruction.OpCode.Name == "callvirt"
+                                  where instruction.OpCode.OperandType == OperandType.InlineMethod && instruction.OpCode.Name == "callvirt" && ((MethodInfo)instruction.Operand).Name.StartsWith("set_")
                                   select ((MethodInfo)instruction.Operand).Name.TrimStart("set_".ToCharArray())).ToList();
             infos.Add("UpdateUser");
             infos.Add("UpdateTime");
