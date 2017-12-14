@@ -603,6 +603,7 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter)
         {
+            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             PageDataSource<TObject> dataSource = new PageDataSource<TObject>();
             int recordCount, pageCount, pageIndex;
             using (var reader = DataBase.ExecutePageReader(sql, pageFilter.OrderText, pageFilter.PageIndex, pageFilter.PageSize, out recordCount, out pageCount, out pageIndex))
@@ -632,6 +633,7 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter, params DbParameter[] cmdParms)
         {
+            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             PageDataSource<TObject> dataSource = new PageDataSource<TObject>();
             int recordCount, pageCount, pageIndex;
 
@@ -659,6 +661,7 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public List<TObject> GetList<TObject>(string sql)
         {
+            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             List<TObject> dataSource = new List<TObject>();
             using (var reader = DataBase.ExecuteReader(sql))
             {
@@ -679,6 +682,7 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public List<TObject> GetList<TObject>(string sql, params DbParameter[] cmdParms)
         {
+            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             List<TObject> dataSource = new List<TObject>();
             using (var reader = DataBase.ExecuteReader(sql, cmdParms.ToArray()))
             {
@@ -699,6 +703,7 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public TObject GetSingle<TObject>(string sql, params DbParameter[] cmdParms)
         {
+            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             using (var reader = DataBase.ExecuteReader(sql, cmdParms.ToArray()))
             {
                 if (reader.Read())
@@ -720,6 +725,7 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public TObject GetSingle<TObject>(string sql)
         {
+            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             using (var reader = DataBase.ExecuteReader(sql))
             {
                 if (reader.Read())

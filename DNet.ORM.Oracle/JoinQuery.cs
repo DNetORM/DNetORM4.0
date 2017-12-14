@@ -50,6 +50,8 @@ namespace DNet.DataAccess
         /// </summary>
         protected StringBuilder GroupByFields { get; set; }
 
+        protected StringBuilder SelectFields { get; set; }
+
         /// <summary>
         /// select筛选
         /// </summary>
@@ -66,6 +68,7 @@ namespace DNet.DataAccess
             Parameters = new List<DbParameter>();
             OrderBy = new StringBuilder();
             GroupByFields = new StringBuilder();
+            SelectFields = new StringBuilder();
         }
 
         private void Clear()
@@ -77,6 +80,7 @@ namespace DNet.DataAccess
             Parameters.Clear();
             OrderBy.Clear();
             GroupByFields.Clear();
+            SelectFields.Clear();
         }
 
         public JoinQuery(DNetContext db) : this()
@@ -94,10 +98,10 @@ namespace DNet.DataAccess
         public JoinQuery LeftJoin<TLeft, TRight>(Expression<Func<TLeft, TRight, bool>> on) where TLeft : class, new() where TRight : class, new()
         {
             JoinRelation link = new JoinRelation { JoinType = JoinType.Outer };
-            WhereVisitor visitor = new WhereVisitor(DbContext.DataBase.DBType, callIndex++);
+            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
             link.LeftTable = Caches.EntityInfoCache.Get(typeof(TLeft)).TableName;
             link.RightTable = Caches.EntityInfoCache.Get(typeof(TRight)).TableName;
-            link.OnSql = visitor.Translate<TLeft, TRight>(on);
+            link.OnSql = visitor.Translate(on);
             Parameters.AddRange(visitor.Parameters);
             JoinRelations.Add(link);
             return this;
@@ -113,10 +117,10 @@ namespace DNet.DataAccess
         public JoinQuery InnerJoin<TLeft, TRight>(Expression<Func<TLeft, TRight, bool>> on) where TLeft : class, new() where TRight : class, new()
         {
             JoinRelation link = new JoinRelation { JoinType = JoinType.Inner };
-            WhereVisitor visitor = new WhereVisitor(DbContext.DataBase.DBType, callIndex++);
+            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
             link.LeftTable = Caches.EntityInfoCache.Get(typeof(TLeft)).TableName;
             link.RightTable = Caches.EntityInfoCache.Get(typeof(TRight)).TableName;
-            link.OnSql = visitor.Translate<TLeft, TRight>(on);
+            link.OnSql = visitor.Translate(on);
             Parameters.AddRange(visitor.Parameters);
             JoinRelations.Add(link);
             return this;
@@ -130,8 +134,8 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public JoinQuery Where<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class, new()
         {
-            WhereVisitor visitor = new WhereVisitor(DbContext.DataBase.DBType, callIndex++);
-            visitor.Translate<TEntity>(where);
+            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+            visitor.Translate(where);
             WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
             Parameters.AddRange(visitor.Parameters);
             return this;
@@ -139,8 +143,8 @@ namespace DNet.DataAccess
 
         public JoinQuery Where<T1, T2>(Expression<Func<T1, T2, bool>> where) where T1 : class, new() where T2 : class, new()
         {
-            WhereVisitor visitor = new WhereVisitor(DbContext.DataBase.DBType, callIndex++);
-            visitor.Translate<T1, T2>(where);
+            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+            visitor.Translate(where);
             WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
             Parameters.AddRange(visitor.Parameters);
             return this;
@@ -148,8 +152,8 @@ namespace DNet.DataAccess
 
         public JoinQuery Where<T1, T2, T3>(Expression<Func<T1, T2, T3, bool>> where) where T1 : class, new() where T2 : class, new() where T3 : class, new()
         {
-            WhereVisitor visitor = new WhereVisitor(DbContext.DataBase.DBType, callIndex++);
-            visitor.Translate<T1, T2, T3>(where);
+            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+            visitor.Translate(where);
             WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
             Parameters.AddRange(visitor.Parameters);
             return this;
@@ -198,18 +202,17 @@ namespace DNet.DataAccess
         public JoinQuery Fields<TEntity>(Expression<Func<TEntity, dynamic>> select = null)
         {
             EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(TEntity));
-            TableSelect tableSelect = new TableSelect { Table = entityInfo.TableName };
             if (select == null)
             {
-                tableSelect.Fields.Add(new DynamicMember { Field = entityInfo.TableName + ".*" });
+                SelectFields.AppendFormat("{0},", entityInfo.SelectFields);
             }
             else
             {
-                DynamicVisitor visitor = new DynamicVisitor();
-                visitor.Translate<TEntity, dynamic>(select);
-                tableSelect.Fields.AddRange(visitor.DynamicMembers.ToArray());
+                SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+                string fields = visitor.Translate(select);
+                SelectFields.Append(fields);
+                Parameters.AddRange(visitor.Parameters);
             }
-            TableSelects.Add(tableSelect);
             return this;
         }
 
@@ -220,15 +223,15 @@ namespace DNet.DataAccess
             TableSelect tableSelect = new TableSelect { Table = e1.TableName };
             if (select == null)
             {
-                tableSelect.Fields.Add(new DynamicMember { Field = e1.TableName + ".*," + e2.TableName + ".*" });
+                SelectFields.AppendFormat("{0},{1},", e1.SelectFields, e2.SelectFields);
             }
             else
             {
-                DynamicVisitor visitor = new DynamicVisitor();
-                visitor.Translate<T1, T2, dynamic>(select);
-                tableSelect.Fields.AddRange(visitor.DynamicMembers.ToArray());
+                SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+                string fields = visitor.Translate(select);
+                SelectFields.Append(fields);
+                Parameters.AddRange(visitor.Parameters);
             }
-            TableSelects.Add(tableSelect);
             return this;
         }
 
@@ -240,13 +243,14 @@ namespace DNet.DataAccess
             TableSelect tableSelect = new TableSelect { Table = e1.TableName };
             if (select == null)
             {
-                tableSelect.Fields.Add(new DynamicMember { Field = e1.TableName + ".*," + e2.TableName + ".*," + e3.TableName + ".*" });
+                SelectFields.AppendFormat("{0},{1},{2},", e1.SelectFields, e2.SelectFields, e3.SelectFields);
             }
             else
             {
-                DynamicVisitor visitor = new DynamicVisitor();
-                visitor.Translate<T1, T2, T3, dynamic>(select);
-                tableSelect.Fields.AddRange(visitor.DynamicMembers.ToArray());
+                SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+                string fields = visitor.Translate(select);
+                SelectFields.Append(fields);
+                Parameters.AddRange(visitor.Parameters);
             }
             TableSelects.Add(tableSelect);
             return this;
@@ -294,15 +298,7 @@ namespace DNet.DataAccess
         {
             List<string> tables = new List<string>();
             SqlBuilder.Append(" SELECT ");
-            if (TableSelects.Count == 0)
-            {
-                this.GetList<TModel>();
-            }
-            foreach (TableSelect s in TableSelects)
-            {
-                SqlBuilder.Append(s.GetSelect());
-            }
-            SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
+            SqlBuilder.Append(SelectFields.ToString().TrimEnd(','));
             SqlBuilder.Append(" FROM ");
             SqlBuilder.Append(JoinRelations[0].LeftTable);
             foreach (JoinRelation j in JoinRelations)
@@ -331,20 +327,17 @@ namespace DNet.DataAccess
             if (WhereClause.Length > 0)
             {
                 SqlBuilder.Append(" WHERE ");
-                SqlBuilder.Append(WhereClause.ToString());
-                SqlBuilder.Remove(SqlBuilder.Length - 4, 4);//去掉'AND '
+                SqlBuilder.Append(WhereClause.ToString().Trim().TrimEnd("AND".ToCharArray()));
             }
             if (GroupByFields.Length > 0)
             {
                 SqlBuilder.Append(" GROUP BY ");
-                SqlBuilder.Append(GroupByFields.ToString());
-                SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
+                SqlBuilder.Append(GroupByFields.ToString().Trim().TrimEnd(','));
             }
             if (OrderBy.Length > 0)
             {
                 SqlBuilder.Append(" ORDER BY ");
-                SqlBuilder.Append(OrderBy.ToString());
-                SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
+                SqlBuilder.Append(OrderBy.ToString().Trim().TrimEnd(','));
             }
             //开始组装sql
             return DbContext.GetList<TModel>(SqlBuilder.ToString(), Parameters.ToArray());
@@ -386,20 +379,17 @@ namespace DNet.DataAccess
             if (WhereClause.Length > 0)
             {
                 SqlBuilder.Append(" WHERE ");
-                SqlBuilder.Append(WhereClause.ToString());
-                SqlBuilder.Remove(SqlBuilder.Length - 4, 4);//去掉'AND '
+                SqlBuilder.Append(WhereClause.ToString().Trim().TrimEnd("AND".ToCharArray()));
             }
             if (GroupByFields.Length > 0)
             {
                 SqlBuilder.Append(" GROUP BY ");
-                SqlBuilder.Append(GroupByFields.ToString());
-                SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
+                SqlBuilder.Append(GroupByFields.ToString().Trim().TrimEnd(','));
             }
             if (OrderBy.Length > 0)
             {
                 SqlBuilder.Append(" ORDER BY ");
-                SqlBuilder.Append(OrderBy.ToString());
-                SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
+                SqlBuilder.Append(OrderBy.ToString().Trim().TrimEnd(','));
             }
             //开始组装sql
             return DbContext.GetSingle<int>(SqlBuilder.ToString(), Parameters.ToArray());
@@ -411,19 +401,11 @@ namespace DNet.DataAccess
         /// <typeparam name="TModel"></typeparam>
         /// <param name="page"></param>
         /// <returns></returns>
-        public PageDataSource<TModel> GetPage<TModel>(PageFilter page) 
+        public PageDataSource<TModel> GetPage<TModel>(PageFilter page)
         {
             List<string> tables = new List<string>();
             SqlBuilder.Append(" SELECT ");
-            if (TableSelects.Count == 0)
-            {
-                this.GetList<TModel>();
-            }
-            foreach (TableSelect s in TableSelects)
-            {
-                SqlBuilder.Append(s.GetSelect());
-            }
-            SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
+            SqlBuilder.Append(SelectFields.ToString().TrimEnd(','));
             SqlBuilder.Append(" FROM ");
             SqlBuilder.Append(JoinRelations[0].LeftTable);
             foreach (JoinRelation j in JoinRelations)
@@ -449,17 +431,20 @@ namespace DNet.DataAccess
                 SqlBuilder.Append(" ON ");
                 SqlBuilder.Append(j.OnSql.TrimEnd("AND".ToCharArray()));
             }
+            if (WhereClause.Length > 0)
+            {
+                SqlBuilder.Append(" WHERE ");
+                SqlBuilder.Append(WhereClause.ToString().Trim().TrimEnd("AND".ToCharArray()));
+            }
             if (GroupByFields.Length > 0)
             {
                 SqlBuilder.Append(" GROUP BY ");
-                SqlBuilder.Append(GroupByFields.ToString());
-                SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
+                SqlBuilder.Append(GroupByFields.ToString().Trim().TrimEnd(','));
             }
             if (OrderBy.Length > 0)
             {
                 SqlBuilder.Append(" ORDER BY ");
-                SqlBuilder.Append(OrderBy.ToString());
-                SqlBuilder.Remove(SqlBuilder.Length - 1, 1);//去掉','
+                SqlBuilder.Append(OrderBy.ToString().Trim().TrimEnd(','));
             }
             //开始组装sql
             return DbContext.GetPage<TModel>(SqlBuilder.ToString(), page, Parameters.ToArray());

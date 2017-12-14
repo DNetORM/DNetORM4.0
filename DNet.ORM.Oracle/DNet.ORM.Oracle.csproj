@@ -57,7 +57,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlBuilder.cs" />
     <Compile Include="SqlDialectFactory.cs" />
-    <Compile Include="WhereVisitor.cs" />
+    <Compile Include="SqlVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DNet.ORM\DNet.ORM.csproj">
