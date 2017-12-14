@@ -26,7 +26,7 @@ namespace DNet.ORM.Demo
                 //}
 
                 //int authorid = db.GetMax<Author>(m => (int)m.AuthorID);
-                db.Update<Author>(m=>m.AuthorID= m.AuthorID+2, m=>m.Age, m => m.AuthorID == 1);
+                db.Update<Author>(m=>m.AuthorID= m.AuthorID, m=>m.Age, m => m.AuthorID == 1);
 
             }
             stopwatch.Stop(); //  停止监视  

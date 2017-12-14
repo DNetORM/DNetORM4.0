@@ -84,7 +84,7 @@ namespace DNet.Cache
             StringBuilder sqlBuilder = new StringBuilder();
             foreach (string columnKey in dicColumn.Keys)
             {
-                sqlBuilder.AppendFormat("{0} AS {1},", dicColumn[columnKey], columnKey);
+                sqlBuilder.AppendFormat("{2}.{0} AS {1},", dicColumn[columnKey], columnKey, entityInfo.TableName);
             }
             entityInfo.SelectFields = sqlBuilder.ToString().TrimEnd(',');
             sqlBuilder.Clear();

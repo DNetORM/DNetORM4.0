@@ -18,71 +18,30 @@ namespace DNet.DataAccess
     /// </summary>
     public class DynamicVisitor : ExpressionVisitor, IVisitor
     {
-        protected Dictionary<string, EntityInfo> Es { get; set; }
 
         /// <summary>
         /// 动态属性
         /// </summary>
         public List<DynamicMember> DynamicMembers { get; set; }
 
-        private string FieldTemplate { get; set; }
-
         public DynamicVisitor()
         {
-            Es = new Dictionary<string, EntityInfo>();
             DynamicMembers = new List<DynamicMember>();
         }
 
-        public void Translate<T1, TResult>(Expression<Func<T1, TResult>> exp)
+        public void Translate(Expression exp)
         {
-            Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
             this.DynamicMembers.Clear();
             if (exp != null)
             {
-                this.Visit(exp.Body);
-            }
-        }
-
-        public void Translate<T1, T2, TResult>(Expression<Func<T1, T2, TResult>> exp)
-        {
-            Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
-            Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
-            this.DynamicMembers.Clear();
-            if (exp != null)
-            {
-                this.Visit(exp.Body);
-            }
-        }
-
-        public void Translate<T1, T2, T3, TResult>(Expression<Func<T1, T2, T3, TResult>> exp)
-        {
-            Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
-            Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
-            Es[typeof(T3).Name] = Caches.EntityInfoCache.Get(typeof(T3));
-            this.DynamicMembers.Clear();
-            if (exp != null)
-            {
-                this.Visit(exp.Body);
-            }
-        }
-
-        public void Translate<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> exp)
-        {
-            Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
-            Es[typeof(T2).Name] = Caches.EntityInfoCache.Get(typeof(T2));
-            Es[typeof(T3).Name] = Caches.EntityInfoCache.Get(typeof(T3));
-            Es[typeof(T4).Name] = Caches.EntityInfoCache.Get(typeof(T3));
-            this.DynamicMembers.Clear();
-            if (exp != null)
-            {
-                this.Visit(exp.Body);
+                this.Visit(((LambdaExpression)exp).Body);
             }
         }
 
         protected override Expression VisitParameter(ParameterExpression node)
         {
-            string typeName = node.Type.Name;
-            DynamicMembers.Add(new DynamicMember { Key = "*", Field = Es[typeName].TableName + ".*" });
+            var entityInfo = Caches.EntityInfoCache.Get(node.Type);
+            DynamicMembers.Add(new DynamicMember { Key = "*", Field = entityInfo.SelectFields });
             return node;
         }
 
@@ -114,13 +73,8 @@ namespace DNet.DataAccess
         {
             if (memberExp.Expression != null && memberExp.Expression.NodeType == ExpressionType.Parameter)
             {
-                var typeName = memberExp.Expression.Type.Name;
-                string fieldName = Es[typeName].TableName + "." + GetFieldName(typeName, memberExp.Member.Name);
-                if(!string.IsNullOrEmpty(FieldTemplate))
-                {
-                    fieldName = string.Format(FieldTemplate, fieldName);
-                    FieldTemplate = null;
-                }
+                var entityInfo = Caches.EntityInfoCache.Get(memberExp.Expression.Type);
+                string fieldName = entityInfo.TableName + "." + GetFieldName(memberExp.Expression.Type, memberExp.Member.Name);
                 if (DynamicMembers.Count > 0)
                 {
                     DynamicMembers.Last().Field = fieldName;
@@ -200,11 +154,12 @@ namespace DNet.DataAccess
             throw new NotImplementedException();
         }
 
-        public string GetFieldName(string typeName, string memberName)
+        public string GetFieldName(Type tableType, string memberName)
         {
-            if (this.Es[typeName].Columns.Keys.Contains(memberName))
+            var entityInfo = Caches.EntityInfoCache.Get(tableType);
+            if (entityInfo.Columns.Keys.Contains(memberName))
             {
-                return this.Es[typeName].Columns[memberName];
+                return entityInfo.Columns[memberName];
             }
             else
             {

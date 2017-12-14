@@ -173,7 +173,7 @@ namespace DNet.DataAccess
                                   select ((MethodInfo)instruction.Operand).Name.TrimStart("set_".ToCharArray())).ToList();
 
             DynamicVisitor visitor = new DynamicVisitor();
-            visitor.Translate<T, dynamic>(ignoreFields);
+            visitor.Translate(ignoreFields);
             visitor.DynamicMembers.ForEach(m => infos.Remove(m.Key));
             updateAction(entity);
             return base.UpdateT(entity, infos.Distinct().ToList(), exp);

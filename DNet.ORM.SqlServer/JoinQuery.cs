@@ -161,7 +161,7 @@ namespace DNet.DataAccess
         public JoinQuery OrderByAsc<TEntity>(Expression<Func<TEntity, dynamic>> orderBy)
         {
             DynamicVisitor visitor = new DynamicVisitor();
-            visitor.Translate<TEntity, dynamic>(orderBy);
+            visitor.Translate(orderBy);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
                 OrderBy.Append(c.Field + " ASC,");
@@ -178,7 +178,7 @@ namespace DNet.DataAccess
         public JoinQuery OrderByDesc<TEntity>(Expression<Func<TEntity, dynamic>> orderBy)
         {
             DynamicVisitor visitor = new DynamicVisitor();
-            visitor.Translate<TEntity, dynamic>(orderBy);
+            visitor.Translate(orderBy);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
                 OrderBy.Append(c.Field + " DESC,");
@@ -249,7 +249,7 @@ namespace DNet.DataAccess
         public JoinQuery GroupBy<TEntity>(Expression<Func<TEntity, dynamic>> select = null)
         {
             DynamicVisitor visitor = new DynamicVisitor();
-            visitor.Translate<TEntity, dynamic>(select);
+            visitor.Translate(select);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
                 GroupByFields.Append(c.Field + ",");
@@ -260,7 +260,7 @@ namespace DNet.DataAccess
         public JoinQuery GroupBy<T1, T2>(Expression<Func<T1, T2, dynamic>> select = null)
         {
             DynamicVisitor visitor = new DynamicVisitor();
-            visitor.Translate<T1, T2, dynamic>(select);
+            visitor.Translate(select);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
                 GroupByFields.Append(c.Field + ",");
@@ -271,7 +271,7 @@ namespace DNet.DataAccess
         public JoinQuery GroupBy<T1, T2, T3>(Expression<Func<T1, T2, T3, dynamic>> select = null)
         {
             DynamicVisitor visitor = new DynamicVisitor();
-            visitor.Translate<T1, T2, T3, dynamic>(select);
+            visitor.Translate(select);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
                 GroupByFields.Append(c.Field + ",");

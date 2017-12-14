@@ -408,7 +408,7 @@ namespace DNet.DataAccess
             try
             {
                 DynamicVisitor visitor = new DynamicVisitor();
-                visitor.Translate<T, dynamic>(ignoreFields);
+                visitor.Translate(ignoreFields);
                 List<string> ignores = visitor.DynamicMembers.Select(m => m.Key).ToList();
                 EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(T));
                 StringBuilder updateSql = new StringBuilder();

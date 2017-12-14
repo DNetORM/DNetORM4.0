@@ -18,8 +18,6 @@ namespace DNet.DataAccess
         public static string GetSelectAllFields<T>()
         {
             string selectFields = Caches.EntityInfoCache.Get(typeof(T)).SelectFields;
-            string tableName = Caches.EntityInfoCache.Get(typeof(T)).TableName;
-            selectFields = tableName + "." + selectFields.Replace(",", "," + tableName + ".");
             return selectFields;
         }
 
@@ -31,8 +29,9 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public static string GetSelectAllFields<T>(string tableAlias)
         {
+            var entityInfo = Caches.EntityInfoCache.Get(typeof(T));
             string selectFields = Caches.EntityInfoCache.Get(typeof(T)).SelectFields;
-            selectFields = tableAlias + "." + selectFields.Replace(",", "," + tableAlias + ".");
+            selectFields = selectFields.Replace(entityInfo.TableName + ".", "," + tableAlias + ".");
             return selectFields;
         }
 
