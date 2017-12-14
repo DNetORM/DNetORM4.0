@@ -151,7 +151,7 @@ namespace DNet.DataAccess
         public int Update<T>(Action<T> updateAction, Expression<Func<T, bool>> exp) where T : class, new()
         {
             T entity = new T();
-            List<string> infos = (from instruction in updateAction.GetMethodInfo().GetInstructions()
+            List<string> infos = (from instruction in updateAction.Method.GetInstructions()
                                   where instruction.OpCode.OperandType == OperandType.InlineMethod && instruction.OpCode.Name == "callvirt" && ((MethodInfo)instruction.Operand).Name.StartsWith("set_")
                                   select ((MethodInfo)instruction.Operand).Name.TrimStart("set_".ToCharArray())).ToList();
             updateAction(entity);
@@ -168,7 +168,7 @@ namespace DNet.DataAccess
         public int Update<T>(Action<T> updateAction, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp) where T : class, new()
         {
             T entity = new T();
-            List<string> infos = (from instruction in updateAction.GetMethodInfo().GetInstructions()
+            List<string> infos = (from instruction in updateAction.Method.GetInstructions()
                                   where instruction.OpCode.OperandType == OperandType.InlineMethod && instruction.OpCode.Name == "callvirt" && ((MethodInfo)instruction.Operand).Name.StartsWith("set_")
                                   select ((MethodInfo)instruction.Operand).Name.TrimStart("set_".ToCharArray())).ToList();
             DynamicVisitor visitor = new DynamicVisitor();

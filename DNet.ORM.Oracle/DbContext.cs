@@ -334,7 +334,7 @@ namespace DNet.DataAccess
                 foreach (PropertyInfo property in entityInfo.KeyProperties)
                 {
                     whereClause.AppendFormat(" {0}={1}{2} AND", entityInfo.Columns[property.Name], DataBase.ParameterPrefix, property.Name);
-                    parms.Add(DataBase.GetDbParameter(property.Name, property.GetValue(entity)));
+                    parms.Add(DataBase.GetDbParameter(property.Name, property.GetValue(entity,null)));
                 }
                 updateSql.Append(whereClause.ToString().TrimEnd("AND".ToArray()));
                 return DataBase.ExecuteSql(updateSql.ToString(), parms.ToArray());
@@ -556,7 +556,7 @@ namespace DNet.DataAccess
                         foreach (PropertyInfo property in entityInfo.KeyProperties)
                         {
                             whereClause.AppendFormat(" {0}={1}{2}{3} AND", entityInfo.Columns[property.Name], DataBase.ParameterPrefix, property.Name, itemIndex.ToString());
-                            parms.Add(DataBase.GetDbParameter(property.Name + itemIndex.ToString(), property.GetValue(entities[itemIndex])));
+                            parms.Add(DataBase.GetDbParameter(property.Name + itemIndex.ToString(), property.GetValue(entities[itemIndex],null)));
                         }
                         updateSql.Append(whereClause.ToString().TrimEnd("AND".ToArray()));
                         updateBatchSql.Append(updateSql.ToString() + ";");

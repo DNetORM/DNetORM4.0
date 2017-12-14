@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DNet.ORM</RootNamespace>
     <AssemblyName>DNet.ORM</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -46,7 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attri\ColumnAttribute.cs" />
+    <Compile Include="Attri\KeyAttribute.cs" />
+    <Compile Include="Attri\NotColumnAttribute.cs" />
     <Compile Include="Attri\SequenceAttribute.cs" />
+    <Compile Include="Attri\TableAttribute.cs" />
     <Compile Include="Cache\Base\BaseCache.cs" />
     <Compile Include="Cache\Base\CacheExpire.cs" />
     <Compile Include="Cache\Base\IBaseCache.cs" />
