@@ -43,7 +43,7 @@ namespace DNet.DataAccess
         /// <param name="columnName"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public static SqlConstructor GetInSql(string tableNameOrAlias, string columnName, IEnumerable<int> values,DataBaseType dbType)
+        public static SqlConstructor GetInSql(string tableNameOrAlias, string columnName, IEnumerable<int> values)
         {
             SqlConstructor result = new SqlConstructor();
             if (values != null && values.Any())
