@@ -129,6 +129,18 @@ namespace DNet.DataAccess
         }
 
         /// <summary>
+        /// 依赖字段更新
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="updateExp"></param>
+        /// <param name="exp"></param>
+        /// <returns></returns>
+        public int Update<T>(Expression<Func<T, T>> updateExp, Expression<Func<T, bool>> exp) where T : class, new()
+        {
+            return base.UpdateT(updateExp, exp);
+        }
+
+        /// <summary>
         /// 忽略指定字段更新
         /// </summary>
         /// <typeparam name="T"></typeparam>

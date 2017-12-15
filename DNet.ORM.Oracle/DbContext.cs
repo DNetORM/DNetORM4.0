@@ -395,6 +395,45 @@ namespace DNet.DataAccess
             }
         }
 
+        protected int UpdateT<T>(Expression<Func<T, T>> updateExp, Expression<Func<T, bool>> exp) where T : class, new()
+        {
+            try
+            {
+                EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(T));
+                StringBuilder updateSql = new StringBuilder();
+                List<DbParameter> parms = new List<DbParameter>();
+                updateSql.AppendFormat(" UPDATE {0} SET ", entityInfo.TableName);
+                SqlVisitor updateVisitor = new SqlVisitor(this.DataBase.DBType, 0, VisitorType.UpdateSet);
+                string updateSet = updateVisitor.Translate(updateExp);
+                foreach (DbParameter parm in updateVisitor.Parameters)
+                {
+                    parms.Add(parm);
+                }
+                StringBuilder whereClause = new StringBuilder();
+                updateSql.Append(updateSet.TrimEnd(','));
+                updateSql.Append(" WHERE ");
+                if (exp != null)
+                {
+                    SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType, 1);
+                    string where = lambdaTranslator.Translate(exp);
+                    updateSql.Append(where);
+                    foreach (DbParameter parm in lambdaTranslator.Parameters)
+                    {
+                        parms.Add(parm);
+                    }
+                    return DataBase.ExecuteSql(updateSql.ToString(), parms.ToArray());
+                }
+                else
+                {
+                    throw new LambdaLossException("进行Update操作时，lambda表达式为null");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         /// <summary>
         ///  忽略指定字段更新
         /// </summary>

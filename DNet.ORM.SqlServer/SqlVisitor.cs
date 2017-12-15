@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace DNet.DataAccess
 {
     /// <summary>
-    /// Lambda转where SQL
+    /// Lambda转where\select\update SQL
     /// Author Jack Liu
     /// </summary>
     public class SqlVisitor : ExpressionVisitor, IVisitor
@@ -63,6 +63,8 @@ namespace DNet.DataAccess
 
         public ISqlDialect SqlDialect { get; set; }
 
+        public VisitorType SqlVisitorType { get; set; }
+
         public SqlVisitor(DataBaseType dbType)
         {
             this.parameters = new List<DbParameter>();
@@ -75,6 +77,11 @@ namespace DNet.DataAccess
         public SqlVisitor(DataBaseType dbType, int callIndex) : this(dbType)
         {
             CallIndex = callIndex;
+        }
+
+        public SqlVisitor(DataBaseType dbType, int callIndex, VisitorType visitorType) : this(dbType, callIndex)
+        {
+            this.SqlVisitorType = visitorType;
         }
 
         public string TranslateClause(Expression exp)
@@ -576,8 +583,18 @@ namespace DNet.DataAccess
 
         protected override MemberAssignment VisitMemberAssignment(MemberAssignment assignment)
         {
-            Expression e = this.Visit(assignment.Expression);
-            SqlBuilder.AppendFormat(" AS {0},", assignment.Member.Name);
+            if (this.SqlVisitorType == VisitorType.UpdateSet)
+            {
+                var entityInfo = Caches.EntityInfoCache.Get(assignment.Member.DeclaringType);
+                SqlBuilder.AppendFormat(" {0}=", entityInfo.Columns[assignment.Member.Name]);
+                this.Visit(assignment.Expression);
+                SqlBuilder.AppendFormat(",");
+            }
+            else
+            {
+                this.Visit(assignment.Expression);
+                SqlBuilder.AppendFormat(" AS {0},", assignment.Member.Name);
+            }
             return assignment;
         }
 
