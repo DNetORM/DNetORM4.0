@@ -41,7 +41,10 @@ namespace DNet.DataAccess
         protected override Expression VisitParameter(ParameterExpression node)
         {
             var entityInfo = Caches.EntityInfoCache.Get(node.Type);
-            DynamicMembers.Add(new DynamicMember { Key = "*", Field = entityInfo.SelectFields });
+            foreach (string key in entityInfo.Columns.Keys)
+            {
+                DynamicMembers.Add(new DynamicMember { Key = key, Field = entityInfo.TableName + "." + entityInfo.Columns[key] });
+            }
             return node;
         }
 
