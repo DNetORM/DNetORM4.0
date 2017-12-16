@@ -442,7 +442,7 @@ namespace DNet.DataAccess
         /// <param name="ignoreFields"></param>
         /// <param name="exp"></param>
         /// <returns></returns>
-        protected int UpdateT<T>(T entity, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp) where T : class, new()
+        protected int UpdateTIgnoreFields<T>(T entity, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp) where T : class, new()
         {
             try
             {
@@ -486,6 +486,14 @@ namespace DNet.DataAccess
             {
                 throw ex;
             }
+        }
+
+        protected int UpdateTOnlyFields<T>(T entity, Expression<Func<T, dynamic>> onlyFields, Expression<Func<T, bool>> exp) where T : class, new()
+        {
+            DynamicVisitor visitor = new DynamicVisitor();
+            visitor.Translate(onlyFields);
+            List<string> onlys = visitor.DynamicMembers.Select(m => m.Key).ToList();
+            return UpdateT<T>(entity, onlys, exp);
         }
 
         /// <summary>

@@ -141,19 +141,6 @@ namespace DNet.DataAccess
         }
 
         /// <summary>
-        /// 忽略指定字段更新
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entity"></param>
-        /// <param name="ignoreFields"></param>
-        /// <param name="exp"></param>
-        /// <returns></returns>
-        public int Update<T>(T entity, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp) where T : class, new()
-        {
-            return base.UpdateT(entity, ignoreFields, exp);
-        }
-    
-        /// <summary>
         /// 更新指定字段
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -170,25 +157,6 @@ namespace DNet.DataAccess
             return base.UpdateT(entity, infos.Distinct().ToList(), exp);
         }
 
-        /// <summary>
-        /// 更新指定字段 带忽略字段
-        /// </summary>
-        /// <param name="updateAction"></param>
-        /// <param name="ignoreFields"></param>
-        /// <param name="exp"></param>
-        /// <returns></returns>
-        public int Update<T>(Action<T> updateAction, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp) where T : class, new()
-        {
-            T entity = new T();
-            List<string> infos = (from instruction in updateAction.Method.GetInstructions()
-                                  where instruction.OpCode.OperandType == OperandType.InlineMethod && instruction.OpCode.Name == "callvirt" && ((MethodInfo)instruction.Operand).Name.StartsWith("set_")
-                                  select ((MethodInfo)instruction.Operand).Name.TrimStart("set_".ToCharArray())).ToList();
-            DynamicVisitor visitor = new DynamicVisitor();
-            visitor.Translate(ignoreFields);
-            visitor.DynamicMembers.ForEach(m => infos.Remove(m.Key));
-            updateAction(entity);
-            return base.UpdateT(entity, infos.Distinct().ToList(), exp);
-        }
 
         /// <summary>
         /// 更新批量数据(实体类含有主键特性)
@@ -199,6 +167,32 @@ namespace DNet.DataAccess
         public int Update<T>(List<T> entities) where T : class, new()
         {
             return base.UpdateBatchT(entities);
+        }
+
+        /// <summary>
+        /// 忽略指定字段更新
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="ignoreFields"></param>
+        /// <param name="exp"></param>
+        /// <returns></returns>
+        public int UpdateIgnoreFields<T>(T entity, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp) where T : class, new()
+        {
+            return base.UpdateTIgnoreFields(entity, ignoreFields, exp);
+        }
+
+        /// <summary>
+        /// 仅更新指定字段
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="onlyFields"></param>
+        /// <param name="exp"></param>
+        /// <returns></returns>
+        public int UpdateOnlyFields<T>(T entity, Expression<Func<T, dynamic>> onlyFields, Expression<Func<T, bool>> exp) where T : class, new()
+        {
+            return base.UpdateTOnlyFields(entity, onlyFields, exp);
         }
 
         /// <summary>
@@ -613,7 +607,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             PageDataSource<TObject> dataSource = new PageDataSource<TObject>();
             int recordCount, pageCount, pageIndex;
             using (var reader = DataBase.ExecutePageReader(sql, pageFilter.OrderText, pageFilter.PageIndex, pageFilter.PageSize, out recordCount, out pageCount, out pageIndex))
@@ -643,7 +636,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public PageDataSource<TObject> GetPage<TObject>(string sql, PageFilter pageFilter, params DbParameter[] cmdParms)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             PageDataSource<TObject> dataSource = new PageDataSource<TObject>();
             int recordCount, pageCount, pageIndex;
 
@@ -671,7 +663,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public List<TObject> GetList<TObject>(string sql)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             List<TObject> dataSource = new List<TObject>();
             using (var reader = DataBase.ExecuteReader(sql))
             {
@@ -692,7 +683,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public List<TObject> GetList<TObject>(string sql, params DbParameter[] cmdParms)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             List<TObject> dataSource = new List<TObject>();
             using (var reader = DataBase.ExecuteReader(sql, cmdParms.ToArray()))
             {
@@ -713,7 +703,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public TObject GetSingle<TObject>(string sql, params DbParameter[] cmdParms)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             using (var reader = DataBase.ExecuteReader(sql, cmdParms.ToArray()))
             {
                 if (reader.Read())
@@ -735,7 +724,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public TObject GetSingle<TObject>(string sql)
         {
-            sql = sql.Replace("@", this.DataBase.ParameterPrefix);
             using (var reader = DataBase.ExecuteReader(sql))
             {
                 if (reader.Read())
