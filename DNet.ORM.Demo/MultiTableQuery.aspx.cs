@@ -22,8 +22,9 @@ namespace DNet.ORM.Demo
             using (DNetContext db = new DNetContext())
             {
 
-                var join = db.JoinQuery.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
-                    .Fields<Book>(m => new Book { BookName=m.BookName+"123" })
+                var join = db.JoinQueryAlias.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
+                    .InnerJoin<Book, Author>((m1, n) => m1.AuthorID == n.AuthorID && n.IsValid == true)
+                    .Fields<Book>(m1 => new Book { BookName=m1.BookName+"123" })
                     .OrderByAsc<Book>(m => m.BookName);
                 PageFilter page = new PageFilter { PageIndex = 1, PageSize = 10 };//分页参数前台传来
                 join.GetPage<Book>(page);

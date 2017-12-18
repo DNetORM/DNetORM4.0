@@ -51,9 +51,10 @@ namespace DNet.DataAccess
         protected StringBuilder GroupByFields { get; set; }
 
         protected StringBuilder SelectFields { get; set; }
-     
 
         protected DNetContext DbContext { get; set; }
+
+        protected bool WithAlias { get; set; }
 
         public JoinQuery()
         {
@@ -82,6 +83,11 @@ namespace DNet.DataAccess
             DbContext = db;
         }
 
+        public JoinQuery(DNetContext db, bool withAlias) : this(db)
+        {
+            this.WithAlias = withAlias;
+        }
+
         /// <summary>
         /// 左外连接 参数决定顺序
         /// </summary>
@@ -92,9 +98,17 @@ namespace DNet.DataAccess
         public JoinQuery LeftJoin<TLeft, TRight>(Expression<Func<TLeft, TRight, bool>> on) where TLeft : class, new() where TRight : class, new()
         {
             JoinRelation link = new JoinRelation { JoinType = JoinType.Outer };
-            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
             link.LeftTable = Caches.EntityInfoCache.Get(typeof(TLeft)).TableName;
+            if (WithAlias)
+            {
+                link.LeftTableAlias = on.Parameters[0].Name;
+            }
             link.RightTable = Caches.EntityInfoCache.Get(typeof(TRight)).TableName;
+            if (WithAlias)
+            {
+                link.RightTableAlias = on.Parameters[1].Name;
+            }
             link.OnSql = visitor.Translate(on);
             Parameters.AddRange(visitor.Parameters);
             JoinRelations.Add(link);
@@ -111,9 +125,17 @@ namespace DNet.DataAccess
         public JoinQuery InnerJoin<TLeft, TRight>(Expression<Func<TLeft, TRight, bool>> on) where TLeft : class, new() where TRight : class, new()
         {
             JoinRelation link = new JoinRelation { JoinType = JoinType.Inner };
-            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
             link.LeftTable = Caches.EntityInfoCache.Get(typeof(TLeft)).TableName;
+            if (WithAlias)
+            {
+                link.LeftTableAlias = on.Parameters[0].Name;
+            }
             link.RightTable = Caches.EntityInfoCache.Get(typeof(TRight)).TableName;
+            if (WithAlias)
+            {
+                link.RightTableAlias = on.Parameters[1].Name;
+            }
             link.OnSql = visitor.Translate(on);
             Parameters.AddRange(visitor.Parameters);
             JoinRelations.Add(link);
@@ -128,7 +150,7 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public JoinQuery Where<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class, new()
         {
-            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
             visitor.Translate(where);
             WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
             Parameters.AddRange(visitor.Parameters);
@@ -137,7 +159,7 @@ namespace DNet.DataAccess
 
         public JoinQuery Where<T1, T2>(Expression<Func<T1, T2, bool>> where) where T1 : class, new() where T2 : class, new()
         {
-            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
             visitor.Translate(where);
             WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
             Parameters.AddRange(visitor.Parameters);
@@ -146,7 +168,7 @@ namespace DNet.DataAccess
 
         public JoinQuery Where<T1, T2, T3>(Expression<Func<T1, T2, T3, bool>> where) where T1 : class, new() where T2 : class, new() where T3 : class, new()
         {
-            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+            SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
             visitor.Translate(where);
             WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
             Parameters.AddRange(visitor.Parameters);
@@ -161,7 +183,7 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public JoinQuery OrderByAsc<TEntity>(Expression<Func<TEntity, dynamic>> orderBy)
         {
-            DynamicVisitor visitor = new DynamicVisitor();
+            DynamicVisitor visitor = new DynamicVisitor(WithAlias);
             visitor.Translate(orderBy);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
@@ -178,7 +200,7 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public JoinQuery OrderByDesc<TEntity>(Expression<Func<TEntity, dynamic>> orderBy)
         {
-            DynamicVisitor visitor = new DynamicVisitor();
+            DynamicVisitor visitor = new DynamicVisitor(WithAlias);
             visitor.Translate(orderBy);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
@@ -202,7 +224,7 @@ namespace DNet.DataAccess
             }
             else
             {
-                SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+                SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
                 string fields = visitor.Translate(select);
                 SelectFields.Append(fields);
                 Parameters.AddRange(visitor.Parameters);
@@ -220,7 +242,7 @@ namespace DNet.DataAccess
             }
             else
             {
-                SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+                SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
                 string fields = visitor.Translate(select);
                 SelectFields.Append(fields);
                 Parameters.AddRange(visitor.Parameters);
@@ -239,7 +261,7 @@ namespace DNet.DataAccess
             }
             else
             {
-                SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++);
+                SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
                 string fields = visitor.Translate(select);
                 SelectFields.Append(fields);
                 Parameters.AddRange(visitor.Parameters);
@@ -249,7 +271,7 @@ namespace DNet.DataAccess
 
         public JoinQuery GroupBy<TEntity>(Expression<Func<TEntity, dynamic>> select = null)
         {
-            DynamicVisitor visitor = new DynamicVisitor();
+            DynamicVisitor visitor = new DynamicVisitor(WithAlias);
             visitor.Translate(select);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
@@ -260,7 +282,7 @@ namespace DNet.DataAccess
 
         public JoinQuery GroupBy<T1, T2>(Expression<Func<T1, T2, dynamic>> select = null)
         {
-            DynamicVisitor visitor = new DynamicVisitor();
+            DynamicVisitor visitor = new DynamicVisitor(WithAlias);
             visitor.Translate(select);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
@@ -271,7 +293,7 @@ namespace DNet.DataAccess
 
         public JoinQuery GroupBy<T1, T2, T3>(Expression<Func<T1, T2, T3, dynamic>> select = null)
         {
-            DynamicVisitor visitor = new DynamicVisitor();
+            DynamicVisitor visitor = new DynamicVisitor(WithAlias);
             visitor.Translate(select);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
@@ -287,11 +309,15 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public List<TModel> GetList<TModel>()
         {
-            List<string> tables = new List<string>();
+            List<JoinRelation> tables = new List<JoinRelation>();
             SqlBuilder.Append(" SELECT ");
             SqlBuilder.Append(SelectFields.ToString().TrimEnd(','));
             SqlBuilder.Append(" FROM ");
             SqlBuilder.Append(JoinRelations[0].LeftTable);
+            if (WithAlias)
+            {
+                SqlBuilder.AppendFormat(" AS {0}", JoinRelations[0].LeftTableAlias);
+            }
             foreach (JoinRelation j in JoinRelations)
             {
                 if (j.JoinType == JoinType.Outer)
@@ -302,15 +328,31 @@ namespace DNet.DataAccess
                 {
                     SqlBuilder.Append(" INNER JOIN ");
                 }
-                if (tables.Count(m => m == j.RightTable) == 0)
+                if (WithAlias)
                 {
-                    SqlBuilder.Append(j.RightTable);
-                    tables.Add(j.RightTable);
+                    if (tables.Count(m => m.LeftTableAlias == j.RightTableAlias || m.RightTableAlias == j.RightTableAlias) == 0)
+                    {
+                        SqlBuilder.AppendFormat("{0} AS {1}", j.RightTable, j.RightTableAlias);
+                        tables.Add(j);
+                    }
+                    else
+                    {
+                        SqlBuilder.AppendFormat("{0} AS {1}", j.LeftTable, j.LeftTableAlias);
+                        tables.Add(j);
+                    }
                 }
                 else
                 {
-                    SqlBuilder.Append(j.LeftTable);
-                    tables.Add(j.LeftTable);
+                    if (tables.Count(m => m.LeftTable == j.RightTable || m.RightTable == j.RightTable) == 0)
+                    {
+                        SqlBuilder.Append(j.RightTable);
+                        tables.Add(j);
+                    }
+                    else
+                    {
+                        SqlBuilder.Append(j.LeftTable);
+                        tables.Add(j);
+                    }
                 }
                 SqlBuilder.Append(" ON ");
                 SqlBuilder.Append(j.OnSql.TrimEnd("AND".ToCharArray()));
@@ -341,9 +383,13 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public int GetCount()
         {
-            List<string> tables = new List<string>();
+            List<JoinRelation> tables = new List<JoinRelation>();
             SqlBuilder.Append(" SELECT COUNT(1) AS CT FROM ");
             SqlBuilder.Append(JoinRelations[0].LeftTable);
+            if (WithAlias)
+            {
+                SqlBuilder.AppendFormat(" AS {0}", JoinRelations[0].LeftTableAlias);
+            }
             foreach (JoinRelation j in JoinRelations)
             {
                 if (j.JoinType == JoinType.Outer)
@@ -354,15 +400,31 @@ namespace DNet.DataAccess
                 {
                     SqlBuilder.Append(" INNER JOIN ");
                 }
-                if (tables.Count(m => m == j.RightTable) == 0)
+                if (WithAlias)
                 {
-                    SqlBuilder.Append(j.RightTable);
-                    tables.Add(j.RightTable);
+                    if (tables.Count(m => m.LeftTableAlias == j.RightTableAlias || m.RightTableAlias == j.RightTableAlias) == 0)
+                    {
+                        SqlBuilder.AppendFormat("{0} AS {1}", j.RightTable, j.RightTableAlias);
+                        tables.Add(j);
+                    }
+                    else
+                    {
+                        SqlBuilder.AppendFormat("{0} AS {1}", j.LeftTable, j.LeftTableAlias);
+                        tables.Add(j);
+                    }
                 }
                 else
                 {
-                    SqlBuilder.Append(j.LeftTable);
-                    tables.Add(j.LeftTable);
+                    if (tables.Count(m => m.LeftTable == j.RightTable || m.RightTable == j.RightTable) == 0)
+                    {
+                        SqlBuilder.Append(j.RightTable);
+                        tables.Add(j);
+                    }
+                    else
+                    {
+                        SqlBuilder.Append(j.LeftTable);
+                        tables.Add(j);
+                    }
                 }
                 SqlBuilder.Append(" ON ");
                 SqlBuilder.Append(j.OnSql.TrimEnd("AND".ToCharArray()));
@@ -394,11 +456,15 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public PageDataSource<TModel> GetPage<TModel>(PageFilter page)
         {
-            List<string> tables = new List<string>();
+            List<JoinRelation> tables = new List<JoinRelation>();
             SqlBuilder.Append(" SELECT ");
             SqlBuilder.Append(SelectFields.ToString().TrimEnd(','));
             SqlBuilder.Append(" FROM ");
             SqlBuilder.Append(JoinRelations[0].LeftTable);
+            if (WithAlias)
+            {
+                SqlBuilder.AppendFormat(" AS {0}", JoinRelations[0].LeftTableAlias);
+            }
             foreach (JoinRelation j in JoinRelations)
             {
                 if (j.JoinType == JoinType.Outer)
@@ -409,15 +475,31 @@ namespace DNet.DataAccess
                 {
                     SqlBuilder.Append(" INNER JOIN ");
                 }
-                if (tables.Count(m => m == j.RightTable) == 0)
+                if (WithAlias)
                 {
-                    SqlBuilder.Append(j.RightTable);
-                    tables.Add(j.RightTable);
+                    if (tables.Count(m => m.LeftTableAlias == j.RightTableAlias || m.RightTableAlias == j.RightTableAlias) == 0)
+                    {
+                        SqlBuilder.AppendFormat("{0} AS {1}", j.RightTable, j.RightTableAlias);
+                        tables.Add(j);
+                    }
+                    else
+                    {
+                        SqlBuilder.AppendFormat("{0} AS {1}", j.LeftTable, j.LeftTableAlias);
+                        tables.Add(j);
+                    }
                 }
                 else
                 {
-                    SqlBuilder.Append(j.LeftTable);
-                    tables.Add(j.LeftTable);
+                    if (tables.Count(m => m.LeftTable == j.RightTable || m.RightTable == j.RightTable) == 0)
+                    {
+                        SqlBuilder.Append(j.RightTable);
+                        tables.Add(j);
+                    }
+                    else
+                    {
+                        SqlBuilder.Append(j.LeftTable);
+                        tables.Add(j);
+                    }
                 }
                 SqlBuilder.Append(" ON ");
                 SqlBuilder.Append(j.OnSql.TrimEnd("AND".ToCharArray()));

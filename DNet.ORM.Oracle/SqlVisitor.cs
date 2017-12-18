@@ -65,6 +65,8 @@ namespace DNet.DataAccess
 
         public VisitorType SqlVisitorType { get; set; }
 
+        protected bool WithAlias { get; set; }
+
         public SqlVisitor(DataBaseType dbType)
         {
             this.parameters = new List<DbParameter>();
@@ -82,6 +84,11 @@ namespace DNet.DataAccess
         public SqlVisitor(DataBaseType dbType, int callIndex, VisitorType visitorType) : this(dbType, callIndex)
         {
             this.SqlVisitorType = visitorType;
+        }
+
+        public SqlVisitor(DataBaseType dbType, int callIndex, bool withAlias) : this(dbType, callIndex)
+        {
+            this.WithAlias = withAlias;
         }
 
         public string TranslateClause(Expression exp)
@@ -529,8 +536,17 @@ namespace DNet.DataAccess
         {
             if (memberExp.Expression != null && memberExp.Expression.NodeType == ExpressionType.Parameter)
             {
-                var entityInfo = Caches.EntityInfoCache.Get(memberExp.Expression.Type);
-                string fieldName = entityInfo.TableName + "." + GetFieldName(memberExp.Expression.Type, memberExp.Member.Name);
+                string alias = string.Empty;
+                if (WithAlias)
+                {
+                    alias = ((ParameterExpression)(memberExp.Expression)).Name;
+                }
+                else
+                {
+                    var entityInfo = Caches.EntityInfoCache.Get(memberExp.Expression.Type);
+                    alias = entityInfo.TableName;
+                }
+                string fieldName = alias + "." + GetFieldName(memberExp.Expression.Type, memberExp.Member.Name);
                 if (!string.IsNullOrEmpty(fieldName))
                 {
                     SqlBuilder.Append(fieldName);
@@ -560,7 +576,14 @@ namespace DNet.DataAccess
         protected override Expression VisitParameter(ParameterExpression node)
         {
             var entityInfo = Caches.EntityInfoCache.Get(node.Type);
-            SqlBuilder.AppendFormat("{0},", entityInfo.SelectFields);
+            if (WithAlias)
+            {
+                SqlBuilder.AppendFormat("{0},", entityInfo.SelectFields.Replace(entityInfo.TableName + ".", node.Name + "."));
+            }
+            else
+            {
+                SqlBuilder.AppendFormat("{0},", entityInfo.SelectFields);
+            }
             return node;
         }
 

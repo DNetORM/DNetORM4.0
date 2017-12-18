@@ -20,6 +20,10 @@ namespace DNet.DataAccess
 
         public string RightTable { get; set; }
 
+        public string LeftTableAlias { get; set; }
+
+        public string RightTableAlias { get; set; }
+
         public string OnSql { get; set; }
 
         public List<DbParameter> Parameters { get; set; }

@@ -18,6 +18,7 @@ namespace DNet.DataAccess
     /// </summary>
     public class DynamicVisitor : ExpressionVisitor, IVisitor
     {
+        protected bool WithAlias { get; set; }
 
         /// <summary>
         /// 动态属性
@@ -27,6 +28,11 @@ namespace DNet.DataAccess
         public DynamicVisitor()
         {
             DynamicMembers = new List<DynamicMember>();
+        }
+
+        public DynamicVisitor(bool withAlias):this()
+        {
+            WithAlias = withAlias;
         }
 
         public void Translate(Expression exp)
@@ -43,7 +49,14 @@ namespace DNet.DataAccess
             var entityInfo = Caches.EntityInfoCache.Get(node.Type);
             foreach (string key in entityInfo.Columns.Keys)
             {
-                DynamicMembers.Add(new DynamicMember { Key = key, Field = entityInfo.TableName + "." + entityInfo.Columns[key] });
+                if (WithAlias)
+                {
+                    DynamicMembers.Add(new DynamicMember { Key = key, Field = node.Name + "." + entityInfo.Columns[key] });
+                }
+                else
+                {
+                    DynamicMembers.Add(new DynamicMember { Key = key, Field = entityInfo.TableName + "." + entityInfo.Columns[key] });
+                }
             }
             return node;
         }
@@ -76,8 +89,17 @@ namespace DNet.DataAccess
         {
             if (memberExp.Expression != null && memberExp.Expression.NodeType == ExpressionType.Parameter)
             {
-                var entityInfo = Caches.EntityInfoCache.Get(memberExp.Expression.Type);
-                string fieldName = entityInfo.TableName + "." + GetFieldName(memberExp.Expression.Type, memberExp.Member.Name);
+                string alias = string.Empty;
+                if (WithAlias)
+                {
+                    alias = ((ParameterExpression)(memberExp.Expression)).Name;
+                }
+                else
+                {
+                    var entityInfo = Caches.EntityInfoCache.Get(memberExp.Expression.Type);
+                    alias = entityInfo.TableName;
+                }
+                string fieldName = alias + "." + GetFieldName(memberExp.Expression.Type, memberExp.Member.Name);
                 if (DynamicMembers.Count > 0)
                 {
                     DynamicMembers.Last().Field = fieldName;

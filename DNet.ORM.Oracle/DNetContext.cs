@@ -22,11 +22,25 @@ namespace DNet.DataAccess
     /// </summary>
     public class DNetContext : DbContext
     {
+        /// <summary>
+        ///  连接查询 不限制别名
+        /// </summary>
         public JoinQuery JoinQuery
         {
             get
             {
                 return new JoinQuery(this);
+            }
+        }
+
+        /// <summary>
+        /// 连接查询 遵循相同的参数别名(m,n)=>
+        /// </summary>
+        public JoinQuery JoinQueryAlias
+        {
+            get
+            {
+                return new JoinQuery(this, true);
             }
         }
         public DNetContext()

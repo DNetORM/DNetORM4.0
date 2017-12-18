@@ -22,6 +22,9 @@ namespace DNet.DataAccess
     /// </summary>
     public class DNetContext : DbContext
     {
+        /// <summary>
+        ///  连接查询 不限制别名
+        /// </summary>
         public JoinQuery JoinQuery
         {
             get
@@ -29,6 +32,18 @@ namespace DNet.DataAccess
                 return new JoinQuery(this);
             }
         }
+
+        /// <summary>
+        /// 连接查询 遵循相同的参数别名(m,n)=>
+        /// </summary>
+        public JoinQuery JoinQueryAlias
+        {
+            get
+            {
+                return new JoinQuery(this, true);
+            }
+        }
+
         public DNetContext()
         {
         }
@@ -156,7 +171,7 @@ namespace DNet.DataAccess
             updateAction(entity);
             return base.UpdateT(entity, infos.Distinct().ToList(), exp);
         }
-      
+
 
         /// <summary>
         /// 更新批量数据(实体类含有主键特性)
