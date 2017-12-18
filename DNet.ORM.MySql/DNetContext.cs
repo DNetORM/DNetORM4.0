@@ -23,7 +23,7 @@ namespace DNet.DataAccess
     public class DNetContext : DbContext
     {
         /// <summary>
-        ///  连接查询 不限制别名
+        ///  连接查询 不限制Lambda表达式树参数别名
         /// </summary>
         public JoinQuery JoinQuery
         {
@@ -34,7 +34,7 @@ namespace DNet.DataAccess
         }
 
         /// <summary>
-        /// 连接查询 遵循相同的参数别名(m,n)=>
+        /// 连接查询 遵循Lambda表达式树参数别名相同原则(m,n)=>
         /// </summary>
         public JoinQuery JoinQueryAlias
         {
