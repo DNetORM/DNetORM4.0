@@ -301,14 +301,14 @@ namespace DNet.DataAccess
                     SqlBuilder.Append("))");
                     return methodExp;
                 case "Count":
-                    if (methodExp.Method.DeclaringType == typeof(GroupBy))
+                    if (methodExp.Method.DeclaringType == typeof(SqlFunctions))
                     {
                         SqlBuilder.AppendFormat("COUNT({0})", TranslateClause(methodExp.Arguments[0]));
                         return methodExp;
                     }
                     goto default;
                 case "CountDistinct":
-                    if (methodExp.Method.DeclaringType == typeof(GroupBy))
+                    if (methodExp.Method.DeclaringType == typeof(SqlFunctions))
                     {
                         SqlBuilder.AppendFormat("COUNT(DISTINCT {0})", TranslateClause(methodExp.Arguments[0]));
                         return methodExp;
@@ -317,7 +317,7 @@ namespace DNet.DataAccess
                 case "Max":
                 case "Min":
                 case "Avg":
-                    if (methodExp.Method.DeclaringType == typeof(GroupBy))
+                    if (methodExp.Method.DeclaringType == typeof(SqlFunctions))
                     {
                         SqlBuilder.AppendFormat("{0}({1})", methodExp.Method.Name, TranslateClause(methodExp.Arguments[0]));
                         return methodExp;

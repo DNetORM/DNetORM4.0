@@ -64,5 +64,19 @@ namespace DNet.DataAccess.Dialect
         {
             return " CAST({0} AS INT) ";
         }
+
+        public string DateDiff(DateDiffType type)
+        {
+            switch (type)
+            {
+                case DateDiffType.Day:
+                    return " DATEDIFF({1},{0}) ";
+                case DateDiffType.Hour:
+                case DateDiffType.Minute:
+                default:
+                    throw new NotImplementedException("MySql DateDiff函数不支持Hour Minute此格式");
+            }
+
+        }
     }
 }

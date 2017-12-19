@@ -63,7 +63,7 @@
     <Compile Include="Cache\PropertyAccessor\MethodInvoker.cs" />
     <Compile Include="Cache\PropertyAccessor\PropertyAccessorExpression.cs" />
     <Compile Include="DataAccess\Dialect\ISqlDialect.cs" />
-    <Compile Include="DataAccess\Function\Group.cs" />
+    <Compile Include="DataAccess\Function\SqlFunctions.cs" />
     <Compile Include="DataAccess\IDatabase.cs" />
     <Compile Include="DataAccess\Join\DynamicMember.cs" />
     <Compile Include="DataAccess\Join\JoinRelation.cs" />
@@ -77,6 +77,7 @@
     <Compile Include="DataAccess\Visitor\MemberTypeVisitor.cs" />
     <Compile Include="DataAccess\Visitor\OrderByVisitor.cs" />
     <Compile Include="DataAccess\Visitor\ReplaceExpressionVisitor.cs" />
+    <Compile Include="Enum\DateDiffType.cs" />
     <Compile Include="Enum\VisitorType.cs" />
     <Compile Include="Enum\DataBaseType.cs" />
     <Compile Include="Enum\JoinLinkType.cs" />

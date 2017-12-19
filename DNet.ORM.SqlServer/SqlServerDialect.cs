@@ -66,5 +66,21 @@ namespace DNet.DataAccess.Dialect
         {
             return " CAST({0} AS INT) ";
         }
+
+        public string DateDiff(DateDiffType type)
+        {
+            switch(type)
+            {
+                case DateDiffType.Day:
+                    return " DATEDIFF(DAY,{0},{1}) ";
+                case DateDiffType.Hour:
+                    return " DATEDIFF(HOUR,{0},{1}) ";
+                case DateDiffType.Minute:
+                    return " DATEDIFF(MINUTE,{0},{1}) ";
+                default:
+                    throw new NotImplementedException("DateDiff函数不支持此格式");
+            }
+            
+        }
     }
 }

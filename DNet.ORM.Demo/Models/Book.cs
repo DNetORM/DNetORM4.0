@@ -14,5 +14,7 @@ namespace DNet.Entity
         public double? Price { get; set; }
 
         public DateTime? PublishDate { get; set; }
+
+        public DateTime? CreateDate { get; set; }
     }
 }

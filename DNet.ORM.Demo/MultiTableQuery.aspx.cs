@@ -22,19 +22,21 @@ namespace DNet.ORM.Demo
             using (DNetContext db = new DNetContext())
             {
 
+                var books = db.JoinQuery.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
+                    .Fields<Book, Author>((m, n) => new { BookName = m.BookName + "123", AuthorName = SqlFunctions.Count(n.AuthorName) })
+                    .OrderByAsc<Book>(m => m.BookName)
+                    .GroupBy<Book, Author>((m, n) => new { m.BookName, n.AuthorName })
+                    .Where<Book, Author>((m, n) => m.Price > 10 && n.IsValid == true)
+                    .GetList<dynamic>();
+
+
+
                 var join = db.JoinQueryAlias.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
                     .InnerJoin<Book, Author>((m1, n) => m1.AuthorID == n.AuthorID && n.IsValid == true)
                     .Fields<Book>(m1 => new Book { BookName=m1.BookName+"123" })
                     .OrderByAsc<Book>(m => m.BookName);
                 PageFilter page = new PageFilter { PageIndex = 1, PageSize = 10 };//分页参数前台传来
                 join.GetPage<Book>(page);
-
-                var books = db.JoinQuery.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
-                     .Fields<Book, Author>((m, n) => new { BookName= m.BookName+"123", AuthorName = GroupBy.Count(n.AuthorName) })
-                     .OrderByAsc<Book>(m => m.BookName)
-                     .GroupBy<Book, Author>((m, n) => new { m.BookName, n.AuthorName })
-                     .Where<Book, Author>((m, n) => m.Price > 10 && n.IsValid == true)
-                     .GetList<dynamic>();
 
                
 

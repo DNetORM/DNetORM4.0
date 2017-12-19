@@ -60,5 +60,10 @@ namespace DNet.DataAccess.Dialect
         {
             return " TO_NUMBER({0}) ";
         }
+
+        public string DateDiff(DateDiffType type)
+        {
+            throw new NotImplementedException("Oracle DateDiff函数不支持此格式");
+        }
     }
 }

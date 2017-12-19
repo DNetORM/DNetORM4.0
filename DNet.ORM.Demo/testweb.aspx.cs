@@ -16,13 +16,13 @@ namespace DNet.ORM.Demo
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+           
             System.Diagnostics.Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start(); //  开始监视代
             using (DNetContext db = new DNetContext())
             {
-                Expression<Func<Author, dynamic>> ex = m => new { m.AuthorID, AuthorName = m.AuthorName + "aaa" };
-                SqlVisitor wv = new SqlVisitor(DataBaseType.SqlServer);
-                wv.Translate(ex);
+
+                db.GetList<Book>(m=>((DateTime)m.PublishDate-(DateTime)m.CreateDate).TotalDays>10);
               
                 //获取动态类型
                 List<dynamic> name = db.GetDistinctList<Author>(m => m.AuthorName.StartsWith("王五") && m.IsValid == true, m => m.AuthorName + "aaa" );

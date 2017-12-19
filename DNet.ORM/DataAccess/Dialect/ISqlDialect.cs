@@ -27,5 +27,7 @@ namespace DNet.DataAccess.Dialect
         string IndexOf();
 
         string SelectIdentity();
+
+        string DateDiff(DateDiffType type);
     }
 }
