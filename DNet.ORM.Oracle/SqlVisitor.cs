@@ -313,7 +313,7 @@ namespace DNet.DataAccess
                     if (methodExp.Method.DeclaringType == typeof(SubQuery))
                     {
                         Expression opd1 = methodExp.Arguments[0];
-                        Expression opd2 = methodExp.Arguments[0];
+                        Expression opd2 = methodExp.Arguments[1];
                         if (methodExp.Arguments[0].NodeType == ExpressionType.Quote)
                         {
                             opd1 = ((UnaryExpression)(methodExp.Arguments[0])).Operand;
