@@ -23,7 +23,7 @@ namespace DNet.ORM.Demo
             {
               
                 //获取动态类型
-                List<dynamic> name = db.GetDistinctList<Book>(m => m.AuthorID==SubQuery.GetSingle<Author,int?>(n=>n.AuthorID==m.AuthorID,n=>n.AuthorID1), m => m.AuthorName + "aaa" );
+                List<dynamic> name = db.GetDistinctList<Book>(m =>SubQuery.GetList<Author,int?>(n=>n.AuthorID==1,n=>n.AuthorID1).Contains(m.AuthorID), m => m.AuthorName + "aaa" );
                 var r = db.GetList<Test>(m =>true);
             }
             stopwatch.Stop(); //  停止监视  
