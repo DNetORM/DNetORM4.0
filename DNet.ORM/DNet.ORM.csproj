@@ -70,6 +70,7 @@
     <Compile Include="DataAccess\Join\TableSelect.cs" />
     <Compile Include="DataAccess\SQL\PageFilter.cs" />
     <Compile Include="DataAccess\SQL\SqlConstructor.cs" />
+    <Compile Include="DataAccess\SQL\SubQuery.cs" />
     <Compile Include="DataAccess\SQL\WhereBuilder.cs" />
     <Compile Include="DataAccess\Visitor\DynamicVisitor.cs" />
     <Compile Include="DataAccess\Visitor\ExpressionExtension.cs" />

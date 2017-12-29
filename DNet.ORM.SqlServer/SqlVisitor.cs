@@ -1,6 +1,7 @@
 ﻿
 using DNet.Cache;
 using DNet.DataAccess.Dialect;
+using DNet.ORM;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -114,16 +115,6 @@ namespace DNet.DataAccess
             this.Visit(((LambdaExpression)exp).Body);
             return this.SqlBuilder.ToString();
         }
-
-        //public string Translate<T1>(Expression<Func<T1, dynamic>> exp) where T1 : class
-        //{
-        //    Es[typeof(T1).Name] = Caches.EntityInfoCache.Get(typeof(T1));
-        //    this.SqlBuilder = new StringBuilder();
-        //    this.Visit(exp.Body);
-        //    return this.SqlBuilder.ToString();
-        //}
-
-
 
         protected override Expression VisitMethodCall(MethodCallExpression methodExp)
         {
@@ -323,6 +314,24 @@ namespace DNet.DataAccess
                         return methodExp;
                     }
                     goto default;
+                case "GetSingle":
+                    if (methodExp.Method.DeclaringType == typeof(SubQuery))
+                    {
+                        Expression opd1 = methodExp.Arguments[0];
+                        Expression opd2 = methodExp.Arguments[0];
+                        if (methodExp.Arguments[0].NodeType == ExpressionType.Quote)
+                        {
+                            opd1 = ((UnaryExpression)(methodExp.Arguments[0])).Operand;
+                        }
+                        if (methodExp.Arguments[1].NodeType == ExpressionType.Quote)
+                        {
+                            opd2 = ((UnaryExpression)(methodExp.Arguments[1])).Operand;
+                        }
+                        var entityInfo = Caches.EntityInfoCache.Get(((LambdaExpression)opd1).Parameters[0].Type);
+                        SqlBuilder.AppendFormat("(SELECT {0} FROM {1} WHERE {2})", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body));
+                        return methodExp;
+                    }
+                    goto default;
                 default:
                     try
                     {
@@ -361,6 +370,11 @@ namespace DNet.DataAccess
                 else if (unaryExp.NodeType == ExpressionType.Not)
                 {
                     SqlBuilder.Append(" NOT ");
+                    this.Visit(unaryExp.Operand);
+                    return unaryExp;
+                }
+                else if (unaryExp.NodeType == ExpressionType.Quote)
+                {
                     this.Visit(unaryExp.Operand);
                     return unaryExp;
                 }

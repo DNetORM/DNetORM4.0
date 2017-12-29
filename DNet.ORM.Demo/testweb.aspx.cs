@@ -21,11 +21,9 @@ namespace DNet.ORM.Demo
             stopwatch.Start(); //  开始监视代
             using (DNetContext db = new DNetContext())
             {
-
-                db.GetList<Book>(m=>((DateTime)m.PublishDate-(DateTime)m.CreateDate).TotalDays>10);
               
                 //获取动态类型
-                List<dynamic> name = db.GetDistinctList<Author>(m => m.AuthorName.StartsWith("王五") && m.IsValid == true, m => m.AuthorName + "aaa" );
+                List<dynamic> name = db.GetDistinctList<Book>(m => m.AuthorID==SubQuery.GetSingle<Author,int?>(n=>n.AuthorID==m.AuthorID,n=>n.AuthorID1), m => m.AuthorName + "aaa" );
                 var r = db.GetList<Test>(m =>true);
             }
             stopwatch.Stop(); //  停止监视  
