@@ -530,6 +530,23 @@ namespace DNet.DataAccess
             return objs;
         }
 
+        public List<dynamic> GetList<T>(Expression<Func<T, bool>> exp, Expression<Func<T, dynamic>> select) where T : class, new()
+        {
+            StringBuilder selectSql = new StringBuilder();
+            List<DbParameter> parms = new List<DbParameter>();
+            GetSQLByLambda(selectSql, parms, exp, select);
+            List<dynamic> objs = new List<dynamic>();
+            using (var reader = DataBase.ExecuteReader(selectSql.ToString(), parms.ToArray()))
+            {
+                while (reader.Read())
+                {
+                    objs.Add(GetDynamicObject<dynamic>(reader));
+                }
+            }
+            return objs;
+        }
+
+
         /// <summary>
         /// 去重复获取TObject类型列表
         /// </summary>
@@ -571,9 +588,7 @@ namespace DNet.DataAccess
             {
                 while (reader.Read())
                 {
-                    T entityWhile = new T();
-                    SetEntityMembers<T>(reader, entityWhile);
-                    objs.Add(entityWhile);
+                    objs.Add(GetDynamicObject<dynamic>(reader));
                 }
             }
             return objs;

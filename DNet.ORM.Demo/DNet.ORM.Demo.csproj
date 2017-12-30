@@ -159,9 +159,9 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DNet.ORM.MySql\DNet.ORM.MySql.csproj">
-      <Project>{68532f70-e307-463b-9e73-c0057a3331ba}</Project>
-      <Name>DNet.ORM.MySql</Name>
+    <ProjectReference Include="..\DNet.ORM.SqlServer\DNet.ORM.SqlServer.csproj">
+      <Project>{ad45509e-7af1-4bee-afdc-fdf470611b02}</Project>
+      <Name>DNet.ORM.SqlServer</Name>
     </ProjectReference>
     <ProjectReference Include="..\DNet.ORM\DNet.ORM.csproj">
       <Project>{6a95eeab-41a1-4988-aa84-eed71124b25f}</Project>

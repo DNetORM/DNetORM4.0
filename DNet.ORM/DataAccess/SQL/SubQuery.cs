@@ -18,7 +18,7 @@ namespace DNet.ORM
         /// <param name="exp"></param>
         /// <param name="select"></param>
         /// <returns></returns>
-        public static int GetSingle<T>(Expression<Func<T, bool>> exp, Expression<Func<T, int?>> select) where T : class, new()
+        public static int? GetSingle<T>(Expression<Func<T, bool>> exp, Expression<Func<T, int?>> select) where T : class, new()
         {
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
@@ -38,7 +38,7 @@ namespace DNet.ORM
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
 
-        public static double GetSingle<T>(Expression<Func<T, bool>> exp, Expression<Func<T, double?>> select) where T : class, new()
+        public static double? GetSingle<T>(Expression<Func<T, bool>> exp, Expression<Func<T, double?>> select) where T : class, new()
         {
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
@@ -48,7 +48,7 @@ namespace DNet.ORM
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
 
-        public static DateTime GetSingle<T>(Expression<Func<T, bool>> exp, Expression<Func<T, DateTime?>> select) where T : class, new()
+        public static DateTime? GetSingle<T>(Expression<Func<T, bool>> exp, Expression<Func<T, DateTime?>> select) where T : class, new()
         {
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
@@ -63,7 +63,7 @@ namespace DNet.ORM
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
 
-        public static List<int> GetList<T>(Expression<Func<T, bool>> exp, Expression<Func<T, int?>> select) where T : class, new()
+        public static List<int?> GetList<T>(Expression<Func<T, bool>> exp, Expression<Func<T, int?>> select) where T : class, new()
         {
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
@@ -78,7 +78,7 @@ namespace DNet.ORM
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
 
-        public static List<double> GetList<T>(Expression<Func<T, bool>> exp, Expression<Func<T, double?>> select) where T : class, new()
+        public static List<double?> GetList<T>(Expression<Func<T, bool>> exp, Expression<Func<T, double?>> select) where T : class, new()
         {
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
@@ -88,7 +88,7 @@ namespace DNet.ORM
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
 
-        public static List<DateTime> GetList<T>(Expression<Func<T, bool>> exp, Expression<Func<T, DateTime?>> select) where T : class, new()
+        public static List<DateTime?> GetList<T>(Expression<Func<T, bool>> exp, Expression<Func<T, DateTime?>> select) where T : class, new()
         {
             throw new NotImplementedException("SQL子查询解析函数无需实现");
         }
