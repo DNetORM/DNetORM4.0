@@ -27,30 +27,31 @@ namespace DNet.ORM.Demo
             {
                 var author = db.GetSingle<Author>(m => true, q => q.OrderBy(m => m.AuthorID));
 
-                author = db.GetSingle<Author>(m => m.AuthorName.Contains("李四") && m.IsValid == true);
+                var book = db.GetSingle<Book>(m => ((DateTime)m.PublishDate).ToString("yyyy-MM-dd") == "2017-11-11");
 
-                var authors= db.GetList<Author>(m => m.AuthorName.StartsWith("张三") && m.IsValid == true);
+                var authors = db.GetList<Author>(m => string.IsNullOrEmpty(m.AuthorName) && m.IsValid == true);
 
-                //获取动态类型
-                List<dynamic> name = db.GetDistinctList<Author>(m => m.AuthorName.StartsWith("王五") && m.IsValid == true,m=>m.AuthorName+"aaa");
-                
-                List<string> name1 = db.GetDistinctList<Author,string>(m => m.AuthorName.StartsWith("王五") && m.IsValid == true, m => m.AuthorName);
-                
-                //获取最大值
+                List<dynamic> name = db.GetDistinctList<Author>(m => m.AuthorName.StartsWith("jim") && m.IsValid == true, m => m.AuthorName + "aaa");
+
+                List<string> name1 = db.GetDistinctList<Author, string>(m => m.AuthorName.IndexOf("jim") == 2 && m.IsValid == true, m => m.AuthorName);
+
+                var books = db.GetList<Book>(m => SubQuery.GetList<Author>(n => n.AuthorID > 10, n => n.AuthorID).Contains(m.AuthorID));
+
+                books = db.GetList<Book>(m => m.AuthorID >= SubQuery.GetSingle<Author>(n => n.AuthorID == 10, n => n.AuthorID));
+
                 var authorid = db.GetMax<Author>(m => (int)m.AuthorID);
 
-                //动态查询
                 WhereBuilder<Author> where = new WhereBuilder<Author>();
-                where.And(m=>m.AuthorName.Contains("张三"));
-                where.And(m => m.AuthorID==3);
-                where.Or(m=>m.IsValid==true);
+                where.And(m => m.AuthorName.Contains("jim"));
+                where.And(m => m.AuthorID == 3);
+                where.Or(m => m.IsValid == true);
                 db.GetList<Author>(where.WhereExpression);
 
-                //分页参数由前台传来
-                PageFilter page = new PageFilter { PageIndex=1, PageSize=10 };
-                page.And<Author>(m=> "守望者的天空".Contains(m.AuthorName));
-                page.OrderBy<Author>(q=>q.OrderBy(m=>m.AuthorName).OrderByDescending(m=>m.AuthorID));
-                PageDataSource<Author> pageSource= db.GetPage<Author>(page);
+
+                PageFilter page = new PageFilter { PageIndex = 1, PageSize = 10 };
+                page.And<Author>(m => "jim green".Contains(m.AuthorName));
+                page.OrderBy<Author>(q => q.OrderBy(m => m.AuthorName).OrderByDescending(m => m.AuthorID));
+                PageDataSource<Author> pageSource = db.GetPage<Author>(page);
             }
             stopwatch.Stop(); //  停止监视  
             TimeSpan timespan = stopwatch.Elapsed; //  获取当前实例测量得出的总时间  

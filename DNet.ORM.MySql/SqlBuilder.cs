@@ -31,7 +31,7 @@ namespace DNet.DataAccess
         {
             var entityInfo = Caches.EntityInfoCache.Get(typeof(T));
             string selectFields = Caches.EntityInfoCache.Get(typeof(T)).SelectFields;
-            selectFields = selectFields.Replace(entityInfo.TableName + ".", "," + tableAlias + ".");
+            selectFields = selectFields.Replace(entityInfo.TableName + ".",tableAlias + ".");
             return selectFields;
         }
 

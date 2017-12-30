@@ -24,11 +24,10 @@ namespace DNet.ORM.Demo
                     author.AuthorName = "jim";
                     var effect = db.Update(author);
                 }
-
-                //int authorid = db.GetMax<Author>(m => (int)m.AuthorID);
-                //db.Update<Author>(m => m.AuthorID = 1, m => m.Age, m => m.AuthorID == 1);
+                db.Update<Author>(m => m.AuthorName = "jim", m => m.AuthorID == 1);
+                db.Update<Author>(m => { m.AuthorName = "jim"; m.Age = 30; }, m => m.AuthorID == 1);
                 db.Update<Author>(m => new Author { AuthorName = m.AuthorName + "123", IsValid = true }, m => m.AuthorID == 1);
-                db.UpdateOnlyFields<Author>(new Author { AuthorName = "123", Age = 20, AuthorID = 1, IsValid = true }, m => m, m => m.AuthorID == 1);
+                db.UpdateOnlyFields<Author>(new Author { AuthorName = "123", Age = 20, AuthorID = 1, IsValid = true }, m => new { m.AuthorName, m.Age }, m => m.AuthorID == 1);
                 db.UpdateIgnoreFields<Author>(new Author { AuthorName = "123", Age = 20, AuthorID = 1, IsValid = true }, m => m.AuthorName, m => m.AuthorID == 1);
             }
             stopwatch.Stop(); //  停止监视  

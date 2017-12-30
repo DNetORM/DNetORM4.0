@@ -24,7 +24,7 @@ namespace DNet.ORM.Demo
                     List<Author> authors = new List<Author>();
                     for (int i = 0; i <= 100; i++)
                     {
-                        authors.Add(new Author { AuthorName = "测试" + i.ToString(), Age = 20, IsValid = true });
+                        authors.Add(new Author { AuthorName = "jack" + i.ToString(), Age = 20, IsValid = true });
                     }
                     db.Add(authors);
                     db.DataBase.Commit();

@@ -26,9 +26,12 @@ namespace DNet.ORM.Demo
                 sql.AppendFormat(@"SELECT {0},A.AuthorName FROM Book B 
 LEFT JOIN Author A ON A.AuthorID=B.AuthorID WHERE", SqlBuilder.GetSelectAllFields<Book>("B"));
                 sql.Append(" B.BookID>@BookID ");
-                parameters.Add(db.GetDbParameter("BookID",1));
+                parameters.Add(db.GetDbParameter("BookID", 1));
 
-                PageDataSource<Book> books = db.GetPage<Book>(sql.ToString(),new PageFilter { PageIndex=1, PageSize=5 }, parameters.ToArray());
+                PageFilter pageFilter = new PageFilter { PageIndex = 1, PageSize = 5 };
+                pageFilter.OrderText = "B.BookID ASC";
+                PageDataSource <Book> books = db.GetPage<Book>(sql.ToString(), pageFilter, parameters.ToArray());
+
                 List<Book> bks = db.GetList<Book>(sql.ToString(), parameters.ToArray());
             }
             stopwatch.Stop(); //  停止监视  

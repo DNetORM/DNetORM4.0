@@ -33,12 +33,10 @@ namespace DNet.ORM.Demo
 
                 var join = db.JoinQueryAlias.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
                     .InnerJoin<Book, Author>((m1, n) => m1.AuthorID == n.AuthorID && n.IsValid == true)
-                    .Fields<Book>(m1 => new Book { BookName = m1.BookName + "123" })
+                    .Fields<Book, Author>((m1, n) => new { AuthorName1 = m1.BookName + n.AuthorName, n })
                     .OrderByAsc<Book>(m => m.BookName);
                 PageFilter page = new PageFilter { PageIndex = 1, PageSize = 10 };//分页参数前台传来
                 join.GetPage<Book>(page);
-
-
 
             }
             stopwatch.Stop(); //  停止监视  

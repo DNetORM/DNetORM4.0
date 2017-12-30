@@ -15,6 +15,5 @@ namespace DNet.Entity
 
         public DateTime? PublishDate { get; set; }
 
-        public DateTime? CreateDate { get; set; }
     }
 }
