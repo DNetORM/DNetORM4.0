@@ -335,7 +335,14 @@ namespace DNet.DataAccess
                             opd2 = ((UnaryExpression)(methodExp.Arguments[1])).Operand;
                         }
                         var entityInfo = Caches.EntityInfoCache.Get(((LambdaExpression)opd1).Parameters[0].Type);
-                        SqlBuilder.AppendFormat("(SELECT {0} FROM {1} WHERE {2})", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body));
+                        if(WithAlias)
+                        {
+                            SqlBuilder.AppendFormat("(SELECT {0} FROM {1} AS {3} WHERE {2})", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body), ((LambdaExpression)opd1).Parameters[0].Name);
+                        }
+                        else
+                        {
+                            SqlBuilder.AppendFormat("(SELECT {0} FROM {1} WHERE {2})", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body));
+                        }
                         return methodExp;
                     }
                     goto default;
@@ -353,7 +360,14 @@ namespace DNet.DataAccess
                             opd2 = ((UnaryExpression)(methodExp.Arguments[1])).Operand;
                         }
                         var entityInfo = Caches.EntityInfoCache.Get(((LambdaExpression)opd1).Parameters[0].Type);
-                        SqlBuilder.AppendFormat("SELECT {0} FROM {1} WHERE {2}", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body));
+                        if (WithAlias)
+                        {
+                            SqlBuilder.AppendFormat("SELECT {0} FROM {1} AS {3} WHERE {2}", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body), ((LambdaExpression)opd1).Parameters[0].Name);
+                        }
+                        else
+                        {
+                            SqlBuilder.AppendFormat("SELECT {0} FROM {1} WHERE {2}", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body));
+                        }
                         return methodExp;
                     }
                     goto default;

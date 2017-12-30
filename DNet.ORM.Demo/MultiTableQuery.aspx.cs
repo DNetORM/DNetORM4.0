@@ -22,12 +22,12 @@ namespace DNet.ORM.Demo
             using (DNetContext db = new DNetContext())
             {
 
-                var books = db.JoinQuery.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
+                var books = db.JoinQueryAlias.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
                     .Fields<Book, Author>((m, n) => new { BookName = m.BookName + "123", AuthorName = SqlFunctions.Count(n.AuthorName) })
                     .OrderByAsc<Book>(m => m.BookName)
                     .GroupBy<Book, Author>((m, n) => new { m.BookName, n.AuthorName })
-                    .Where<Book, Author>((m, n) => m.Price > 10 && n.IsValid == true)
-                    .GetList<dynamic>();
+                    .Where<Book, Author>((m, n) => m.Price > 10 && n.IsValid == true&&SubQuery.GetList<Author>(n1 => n1.AuthorID >= 1, n1 => n1.AuthorID).Contains(m.AuthorID))
+                    .GetList<Book>();
 
 
 
