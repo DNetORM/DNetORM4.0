@@ -73,4 +73,26 @@ http://www.cnblogs.com/DNetORM/p/8000373.html
                 page.OrderBy<Author>(q => q.OrderBy(m => m.AuthorName).OrderByDescending(m => m.AuthorID));
                 PageDataSource<Author> pageSource = db.GetPage<Author>(page);
             }
+ 5.query (multi tables)    
+ 
+             using (DNetContext db = new DNetContext())
+            {
+
+                var books = db.JoinQuery.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
+                    .Fields<Book, Author>((m, n) => new { BookName = m.BookName + "123", AuthorName = SqlFunctions.Count(n.AuthorName) })
+                    .OrderByAsc<Book>(m => m.BookName)
+                    .GroupBy<Book, Author>((m, n) => new { m.BookName, n.AuthorName })
+                    .Where<Book, Author>((m, n) => m.Price > 10 && n.IsValid == true && SubQuery.GetList<Author>(n1 => n1.AuthorID >= 1, n1 => n1.AuthorID).Contains(m.AuthorID))
+                    .GetList<Book>();
+
+
+
+                var join = db.JoinQueryAlias.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
+                    .InnerJoin<Book, Author>((m1, n) => m1.AuthorID == n.AuthorID && n.IsValid == true)
+                    .Fields<Book>(m1 => new Book { BookName = m1.BookName + "123" })
+                    .OrderByAsc<Book>(m => m.BookName);
+                PageFilter page = new PageFilter { PageIndex = 1, PageSize = 10 };
+                join.GetPage<Book>(page);
+
+            }
 if you have some advice please send email to 307474178@qq.com
