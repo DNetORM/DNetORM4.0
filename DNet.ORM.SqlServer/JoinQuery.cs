@@ -42,7 +42,9 @@ namespace DNet.DataAccess
         /// 排序
         /// 最后拼接SQL的时候要Trim掉','
         /// </summary>
-        protected StringBuilder OrderBy { get; set; }
+        protected StringBuilder OrderByFields { get; set; }
+
+        protected StringBuilder PageOrderByFields { get; set; }
 
         /// <summary>
         /// 分组
@@ -62,9 +64,10 @@ namespace DNet.DataAccess
             JoinRelations = new List<JoinRelation>();
             WhereClause = new StringBuilder();
             Parameters = new List<DbParameter>();
-            OrderBy = new StringBuilder();
+            OrderByFields = new StringBuilder();
             GroupByFields = new StringBuilder();
             SelectFields = new StringBuilder();
+            PageOrderByFields = new StringBuilder();
         }
 
         private void Clear()
@@ -73,7 +76,7 @@ namespace DNet.DataAccess
             JoinRelations.Clear();
             WhereClause.Clear();
             Parameters.Clear();
-            OrderBy.Clear();
+            OrderByFields.Clear();
             GroupByFields.Clear();
             SelectFields.Clear();
         }
@@ -100,7 +103,7 @@ namespace DNet.DataAccess
             JoinRelation link = new JoinRelation { JoinType = JoinType.Outer };
             SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
             link.LeftTable = Caches.EntityInfoCache.Get(typeof(TLeft)).TableName;
-            if(WithAlias)
+            if (WithAlias)
             {
                 link.LeftTableAlias = on.Parameters[0].Name;
             }
@@ -187,7 +190,8 @@ namespace DNet.DataAccess
             visitor.Translate(orderBy);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
-                OrderBy.Append(c.Field + " ASC,");
+                OrderByFields.Append(c.Field + " ASC,");
+                PageOrderByFields.Append(c.Key + " ASC,");
             }
             return this;
         }
@@ -204,7 +208,8 @@ namespace DNet.DataAccess
             visitor.Translate(orderBy);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
-                OrderBy.Append(c.Field + " DESC,");
+                OrderByFields.Append(c.Field + " DESC,");
+                PageOrderByFields.Append(c.Key + " DESC,");
             }
             return this;
         }
@@ -332,7 +337,7 @@ namespace DNet.DataAccess
                 {
                     if (tables.Count(m => m.LeftTableAlias == j.RightTableAlias || m.RightTableAlias == j.RightTableAlias) == 0)
                     {
-                        SqlBuilder.AppendFormat("{0} AS {1}",j.RightTable,j.RightTableAlias);
+                        SqlBuilder.AppendFormat("{0} AS {1}", j.RightTable, j.RightTableAlias);
                         tables.Add(j);
                     }
                     else
@@ -367,10 +372,10 @@ namespace DNet.DataAccess
                 SqlBuilder.Append(" GROUP BY ");
                 SqlBuilder.Append(GroupByFields.ToString().Trim().TrimEnd(','));
             }
-            if (OrderBy.Length > 0)
+            if (OrderByFields.Length > 0)
             {
                 SqlBuilder.Append(" ORDER BY ");
-                SqlBuilder.Append(OrderBy.ToString().Trim().TrimEnd(','));
+                SqlBuilder.Append(OrderByFields.ToString().Trim().TrimEnd(','));
             }
             //开始组装sql
             return DbContext.GetList<TModel>(SqlBuilder.ToString(), Parameters.ToArray());
@@ -386,7 +391,7 @@ namespace DNet.DataAccess
             List<JoinRelation> tables = new List<JoinRelation>();
             SqlBuilder.Append(" SELECT COUNT(1) AS CT FROM ");
             SqlBuilder.Append(JoinRelations[0].LeftTable);
-            if(WithAlias)
+            if (WithAlias)
             {
                 SqlBuilder.AppendFormat(" AS {0}", JoinRelations[0].LeftTableAlias);
             }
@@ -439,10 +444,10 @@ namespace DNet.DataAccess
                 SqlBuilder.Append(" GROUP BY ");
                 SqlBuilder.Append(GroupByFields.ToString().Trim().TrimEnd(','));
             }
-            if (OrderBy.Length > 0)
+            if (OrderByFields.Length > 0)
             {
                 SqlBuilder.Append(" ORDER BY ");
-                SqlBuilder.Append(OrderBy.ToString().Trim().TrimEnd(','));
+                SqlBuilder.Append(OrderByFields.ToString().Trim().TrimEnd(','));
             }
             //开始组装sql
             return DbContext.GetSingle<int>(SqlBuilder.ToString(), Parameters.ToArray());
@@ -514,10 +519,9 @@ namespace DNet.DataAccess
                 SqlBuilder.Append(" GROUP BY ");
                 SqlBuilder.Append(GroupByFields.ToString().Trim().TrimEnd(','));
             }
-            if (OrderBy.Length > 0)
+            if (OrderByFields.Length > 0)
             {
-                SqlBuilder.Append(" ORDER BY ");
-                SqlBuilder.Append(OrderBy.ToString().Trim().TrimEnd(','));
+                page.OrderText = PageOrderByFields.ToString().Trim().TrimEnd(',');
             }
             //开始组装sql
             return DbContext.GetPage<TModel>(SqlBuilder.ToString(), page, Parameters.ToArray());
