@@ -44,8 +44,6 @@ namespace DNet.DataAccess
         /// </summary>
         protected StringBuilder OrderByFields { get; set; }
 
-        protected StringBuilder PageOrderByFields { get; set; }
-
         /// <summary>
         /// 分组
         /// 最后拼接SQL的时候要Trim掉','
@@ -67,7 +65,6 @@ namespace DNet.DataAccess
             OrderByFields = new StringBuilder();
             GroupByFields = new StringBuilder();
             SelectFields = new StringBuilder();
-            PageOrderByFields = new StringBuilder();
         }
 
         private void Clear()
@@ -191,7 +188,6 @@ namespace DNet.DataAccess
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
                 OrderByFields.Append(c.Field + " ASC,");
-                PageOrderByFields.Append(c.Key + " ASC,");
             }
             return this;
         }
@@ -209,7 +205,6 @@ namespace DNet.DataAccess
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
                 OrderByFields.Append(c.Field + " DESC,");
-                PageOrderByFields.Append(c.Key + " DESC,");
             }
             return this;
         }
@@ -521,7 +516,7 @@ namespace DNet.DataAccess
             }
             if (OrderByFields.Length > 0)
             {
-                page.OrderText = PageOrderByFields.ToString().Trim().TrimEnd(',');
+                page.OrderText = OrderByFields.ToString().Trim().TrimEnd(',');
             }
             //开始组装sql
             return DbContext.GetPage<TModel>(SqlBuilder.ToString(), page, Parameters.ToArray());

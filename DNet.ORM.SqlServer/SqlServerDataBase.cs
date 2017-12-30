@@ -104,7 +104,7 @@ namespace DNet.DataAccess
         public int ExecuteSql(string strSql)
         {
             SqlCommand command = new SqlCommand(strSql);
-            PrepareCommand(command,CurrentDbConnection, CurrentTransaction,CommandType.Text,null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
             int effectLines = 0;
             effectLines = command.ExecuteNonQuery();
             command.Dispose();
@@ -502,11 +502,10 @@ namespace DNet.DataAccess
             int startIndex = (currentPageIndex - 1) * pageSize;
             int endIndex = currentPageIndex * pageSize;
 
-            string rowNumber = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber ", orderText);
-            //sqlText = sqlText.Trim().Insert(6, rowNumber);
-            string sqlTextRecord = String.Format("SELECT * FROM(SELECT *,{1} FROM ({0}) TT1) TT2 WHERE rownumber>{2} and rownumber<={3}",
+            string rowNumber = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber, ", orderText);
+            sqlText = sqlText.Trim().Insert(6, rowNumber);
+            string sqlTextRecord = String.Format("SELECT * FROM({0}) T1 WHERE rownumber>{1} and rownumber<={2}",
                 sqlText,
-                rowNumber,
                 startIndex,
                 endIndex
                 );
@@ -547,14 +546,13 @@ namespace DNet.DataAccess
             int startIndex = (currentPageIndex - 1) * pageSize;
             int endIndex = currentPageIndex * pageSize;
 
-            string rowNumber = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber ", orderText);
-            //sqlText = sqlText.Trim().Insert(6, rowNumber);
-            string sqlTextRecord = String.Format("SELECT * FROM(SELECT *,{1} FROM ({0}) TT1) TT2 WHERE rownumber>{2} and rownumber<={3}",
-                sqlText,
-                rowNumber,
-                startIndex,
-                endIndex
-                );
+            string rowNumber = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber, ", orderText);
+            sqlText = sqlText.Trim().Insert(6, rowNumber);
+            string sqlTextRecord = String.Format("SELECT * FROM({0}) T1 WHERE rownumber>{1} and rownumber<={2}",
+              sqlText,
+              startIndex,
+              endIndex
+              );
 
             return ExecuteReader(sqlTextRecord);
         }
@@ -604,22 +602,13 @@ namespace DNet.DataAccess
             int startIndex = (currentPageIndex - 1) * pageSize;
             int endIndex = currentPageIndex * pageSize;
 
-            string orderBy = string.Empty;
-            string overOrderBy = string.Empty;
-            string whereCondition = string.Empty;
-            if (!string.IsNullOrEmpty(orderText))
-            {
-                orderBy = " ORDER BY " + orderText;
-                overOrderBy = String.Format(" (ROW_NUMBER() OVER({0})) as rownumber,", orderBy);
-                whereCondition = String.Format(" WHERE rownumber>{0} and rownumber<={1} {2}",
-                                                startIndex, endIndex, orderBy);
-            }
-
-            string sqlTextRecord = String.Format(@"SELECT * FROM (SELECT {0} TT1.* FROM ({1}) TT1) TT2 {2}",
-                overOrderBy,
-                sqlText,
-                whereCondition
-                );
+            string rowNumber = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber, ", orderText);
+            sqlText = sqlText.Trim().Insert(6, rowNumber);
+            string sqlTextRecord = String.Format("SELECT * FROM({0}) T1 WHERE rownumber>{1} and rownumber<={2}",
+              sqlText,
+              startIndex,
+              endIndex
+              );
 
             return Query(sqlTextRecord, commandParameters).Tables[0];
 

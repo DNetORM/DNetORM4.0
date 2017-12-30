@@ -523,7 +523,7 @@ namespace DNet.DataAccess
                 startIndex = 0;
             }
             int endIndex = currentPageIndex * pageSize;
-            string sqlTextRecord = @"SELECT * FROM ({0}) T {1} LIMIT {2}, {3}";
+            string sqlTextRecord = @"{0} {1} LIMIT {2},{3}";
             sqlTextRecord = String.Format(sqlTextRecord, sqlText, orderText, startIndex, pageSize);
 
             return Query(sqlTextRecord, commandParameters).Tables[0];
@@ -582,7 +582,7 @@ namespace DNet.DataAccess
                 startIndex = 0;
             }
             int endIndex = currentPageIndex * pageSize;
-            string sqlTextRecord = @"SELECT * FROM ({0}) T {1} LIMIT {2}, {3}";
+            string sqlTextRecord = @"{0} {1} LIMIT {2},{3}";
             sqlTextRecord = String.Format(sqlTextRecord, sqlText, orderText, startIndex, pageSize);
 
             return ExecuteReader(sqlTextRecord, commandParameters);
@@ -629,7 +629,7 @@ namespace DNet.DataAccess
                 startIndex = 0;
             }
             int endIndex = currentPageIndex * pageSize;
-            string sqlTextRecord = @"SELECT * FROM ({0}) T {1} LIMIT {2}, {3}";
+            string sqlTextRecord = @"{0} {1} LIMIT {2},{3}";
             sqlTextRecord = String.Format(sqlTextRecord, sqlText, orderText, startIndex, pageSize);
 
             return ExecuteReader(sqlTextRecord);
