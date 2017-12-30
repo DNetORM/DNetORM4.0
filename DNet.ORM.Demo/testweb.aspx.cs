@@ -24,7 +24,7 @@ namespace DNet.ORM.Demo
               
                 //获取动态类型
                 List<string> name = db.GetList<Book,string>(m =>SubQuery.GetList<Author>(n=>n.AuthorID>=1,n=>n.AuthorID).Contains(m.AuthorID), m => m.BookName + "aaa" );
-                var r = db.GetList<Test>(m =>true);
+                //var r = db.GetList<Test>(m =>true);
             }
             stopwatch.Stop(); //  停止监视  
             TimeSpan timespan = stopwatch.Elapsed; //  获取当前实例测量得出的总时间  

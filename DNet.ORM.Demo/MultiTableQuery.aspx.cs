@@ -26,19 +26,19 @@ namespace DNet.ORM.Demo
                     .Fields<Book, Author>((m, n) => new { BookName = m.BookName + "123", AuthorName = SqlFunctions.Count(n.AuthorName) })
                     .OrderByAsc<Book>(m => m.BookName)
                     .GroupBy<Book, Author>((m, n) => new { m.BookName, n.AuthorName })
-                    .Where<Book, Author>((m, n) => m.Price > 10 && n.IsValid == true&&SubQuery.GetList<Author>(n1 => n1.AuthorID >= 1, n1 => n1.AuthorID).Contains(m.AuthorID))
+                    .Where<Book, Author>((m, n) => m.Price > 10 && n.IsValid == true && SubQuery.GetList<Author>(n1 => n1.AuthorID >= 1, n1 => n1.AuthorID).Contains(m.AuthorID))
                     .GetList<Book>();
 
 
 
                 var join = db.JoinQueryAlias.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
                     .InnerJoin<Book, Author>((m1, n) => m1.AuthorID == n.AuthorID && n.IsValid == true)
-                    .Fields<Book>(m1 => new Book { BookName=m1.BookName+"123" })
+                    .Fields<Book>(m1 => new Book { BookName = m1.BookName + "123" })
                     .OrderByAsc<Book>(m => m.BookName);
                 PageFilter page = new PageFilter { PageIndex = 1, PageSize = 10 };//分页参数前台传来
                 join.GetPage<Book>(page);
 
-               
+
 
             }
             stopwatch.Stop(); //  停止监视  
