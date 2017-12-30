@@ -103,7 +103,7 @@ http://www.cnblogs.com/DNetORM/p/8000373.html
                 List<DbParameter> parameters = new List<DbParameter>();
 
                 sql.AppendFormat(@"SELECT {0},A.AuthorName FROM Book B 
-LEFT JOIN Author A ON A.AuthorID=B.AuthorID WHERE", SqlBuilder.GetSelectAllFields<Book>("B"));
+                LEFT JOIN Author A ON A.AuthorID=B.AuthorID WHERE", SqlBuilder.GetSelectAllFields<Book>("B"));
                 sql.Append(" B.BookID>@BookID ");
                 parameters.Add(db.GetDbParameter("BookID", 1));
 
