@@ -89,10 +89,71 @@ http://www.cnblogs.com/DNetORM/p/8000373.html
 
                 var join = db.JoinQueryAlias.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
                     .InnerJoin<Book, Author>((m1, n) => m1.AuthorID == n.AuthorID && n.IsValid == true)
-                    .Fields<Book>(m1 => new Book { BookName = m1.BookName + "123" })
+                    .Fields<Book, Author>((m1, n) => new { AuthorName1 = m1.BookName + n.AuthorName, n })
                     .OrderByAsc<Book>(m => m.BookName);
                 PageFilter page = new PageFilter { PageIndex = 1, PageSize = 10 };
                 join.GetPage<Book>(page);
 
+            }
+6.query (sql)
+
+            using (DNetContext db = new DNetContext())
+            {
+                StringBuilder sql = new StringBuilder();
+                List<DbParameter> parameters = new List<DbParameter>();
+
+                sql.AppendFormat(@"SELECT {0},A.AuthorName FROM Book B 
+LEFT JOIN Author A ON A.AuthorID=B.AuthorID WHERE", SqlBuilder.GetSelectAllFields<Book>("B"));
+                sql.Append(" B.BookID>@BookID ");
+                parameters.Add(db.GetDbParameter("BookID", 1));
+
+                PageFilter pageFilter = new PageFilter { PageIndex = 1, PageSize = 5 };
+                pageFilter.OrderText = "B.BookID ASC";
+                PageDataSource <Book> books = db.GetPage<Book>(sql.ToString(), pageFilter, parameters.ToArray());
+
+                List<Book> bks = db.GetList<Book>(sql.ToString(), parameters.ToArray());
+            }
+7.db transaction
+
+            using (DNetContext db = new DNetContext())
+            {
+                db.DataBase.BeginTransaction();
+                try
+                {
+                    List<Author> authors = new List<Author>();
+                    for (int i = 0; i <= 100; i++)
+                    {
+                        authors.Add(new Author { AuthorName = "jack" + i.ToString(), Age = 20, IsValid = true });
+                    }
+                    db.Add(authors);
+                    db.DataBase.Commit();
+                }
+                catch
+                {
+                    db.DataBase.Rollback();
+                }
+            }
+8.distributed transaction
+
+            DNetTransaction transaction = new DNetTransaction();
+            transaction.BeginTransaction();
+            try
+            {
+                using (DNetContext db = new DNetContext())
+                {
+                    db.DataBase.BeginTransaction();
+
+                    List<Author> authors = new List<Author>();
+                    for (int i = 0; i <= 100; i++)
+                    {
+                        authors.Add(new Author { AuthorName = "测试" + i.ToString(), Age = 20, IsValid = true });
+                    }
+                    db.Add(authors);
+                    transaction.Commit();
+                }
+            }
+            catch
+            {
+                transaction.Rollback();
             }
 if you have some advice please send email to 307474178@qq.com
