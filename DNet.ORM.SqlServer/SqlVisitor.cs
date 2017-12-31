@@ -456,7 +456,7 @@ namespace DNet.DataAccess
                     }
                     else
                     {
-                        SqlBuilder.Append(" = ");
+                        SqlBuilder.Append("=");
                     }
                     this.Visit(binaryExp.Right);
                     break;
@@ -468,7 +468,7 @@ namespace DNet.DataAccess
                     }
                     else
                     {
-                        SqlBuilder.Append(" <> ");
+                        SqlBuilder.Append("<>");
                     }
                     this.Visit(binaryExp.Right);
                     break;
@@ -481,7 +481,7 @@ namespace DNet.DataAccess
                     }
                     else
                     {
-                        SqlBuilder.Append(" < ");
+                        SqlBuilder.Append("<");
                         this.Visit(binaryExp.Right);
                     }
                     break;
@@ -494,7 +494,7 @@ namespace DNet.DataAccess
                     }
                     else
                     {
-                        SqlBuilder.Append(" <= ");
+                        SqlBuilder.Append("<=");
                         this.Visit(binaryExp.Right);
                     }
                     break;
@@ -507,7 +507,7 @@ namespace DNet.DataAccess
                     }
                     else
                     {
-                        SqlBuilder.Append(" > ");
+                        SqlBuilder.Append(">");
                         this.Visit(binaryExp.Right);
                     }
                     break;
@@ -520,28 +520,28 @@ namespace DNet.DataAccess
                     }
                     else
                     {
-                        SqlBuilder.Append(" >= ");
+                        SqlBuilder.Append(">=");
                         this.Visit(binaryExp.Right);
                     }
                     break;
                 case ExpressionType.Add:
                     this.Visit(binaryExp.Left);
-                    SqlBuilder.Append(" + ");
+                    SqlBuilder.Append("+");
                     this.Visit(binaryExp.Right);
                     break;
                 case ExpressionType.Subtract:
                     this.Visit(binaryExp.Left);
-                    SqlBuilder.Append(" - ");
+                    SqlBuilder.Append("-");
                     this.Visit(binaryExp.Right);
                     break;
                 case ExpressionType.Multiply:
                     this.Visit(binaryExp.Left);
-                    SqlBuilder.Append(" * ");
+                    SqlBuilder.Append("*");
                     this.Visit(binaryExp.Right);
                     break;
                 case ExpressionType.Divide:
                     this.Visit(binaryExp.Left);
-                    SqlBuilder.Append(" / ");
+                    SqlBuilder.Append("/");
                     this.Visit(binaryExp.Right);
                     break;
                 default:

@@ -29,7 +29,7 @@ LEFT JOIN Author A ON A.AuthorID=B.AuthorID WHERE", SqlBuilder.GetSelectAllField
                 parameters.Add(db.GetDbParameter("BookID", 1));
 
                 PageFilter pageFilter = new PageFilter { PageIndex = 1, PageSize = 5 };
-                pageFilter.OrderText = "B.BookID ASC";
+                //pageFilter.OrderText = "B.BookID ASC";
                 PageDataSource <Book> books = db.GetPage<Book>(sql.ToString(), pageFilter, parameters.ToArray());
 
                 List<Book> bks = db.GetList<Book>(sql.ToString(), parameters.ToArray());

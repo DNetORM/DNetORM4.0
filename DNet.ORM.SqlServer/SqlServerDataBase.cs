@@ -501,9 +501,15 @@ namespace DNet.DataAccess
             // 得到用于分页的SQL语句
             int startIndex = (currentPageIndex - 1) * pageSize;
             int endIndex = currentPageIndex * pageSize;
-
-            string rowNumber = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber, ", orderText);
-            sqlText = sqlText.Trim().Insert(6, rowNumber);
+            if (!string.IsNullOrEmpty(orderText))
+            {
+                orderText = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber,", orderText);
+            }
+            else
+            {
+                orderText = " (ROW_NUMBER() OVER(ORDER BY (SELECT 0))) AS rownumber,";
+            }
+            sqlText = sqlText.Trim().Insert(6, orderText);
             string sqlTextRecord = String.Format("SELECT * FROM({0}) T1 WHERE rownumber>{1} and rownumber<={2}",
                 sqlText,
                 startIndex,
@@ -545,9 +551,15 @@ namespace DNet.DataAccess
             // 得到用于分页的SQL语句
             int startIndex = (currentPageIndex - 1) * pageSize;
             int endIndex = currentPageIndex * pageSize;
-
-            string rowNumber = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber, ", orderText);
-            sqlText = sqlText.Trim().Insert(6, rowNumber);
+            if (!string.IsNullOrEmpty(orderText))
+            {
+                orderText = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber,", orderText);
+            }
+            else
+            {
+                orderText = " (ROW_NUMBER() OVER(ORDER BY (SELECT 0))) AS rownumber,";
+            }
+            sqlText = sqlText.Trim().Insert(6, orderText);
             string sqlTextRecord = String.Format("SELECT * FROM({0}) T1 WHERE rownumber>{1} and rownumber<={2}",
               sqlText,
               startIndex,
@@ -601,9 +613,15 @@ namespace DNet.DataAccess
             // 得到用于分页的SQL语句
             int startIndex = (currentPageIndex - 1) * pageSize;
             int endIndex = currentPageIndex * pageSize;
-
-            string rowNumber = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber, ", orderText);
-            sqlText = sqlText.Trim().Insert(6, rowNumber);
+            if (!string.IsNullOrEmpty(orderText))
+            {
+                orderText = String.Format(" (ROW_NUMBER() OVER(ORDER BY {0})) AS rownumber,", orderText);
+            }
+            else
+            {
+                orderText = " (ROW_NUMBER() OVER(ORDER BY (SELECT 0))) AS rownumber,";
+            }
+            sqlText = sqlText.Trim().Insert(6, orderText);
             string sqlTextRecord = String.Format("SELECT * FROM({0}) T1 WHERE rownumber>{1} and rownumber<={2}",
               sqlText,
               startIndex,
