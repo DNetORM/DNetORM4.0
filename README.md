@@ -31,6 +31,23 @@ first define the entity
         public bool? IsValid { get; set; }
     }
     
+then config the connection strings such as below
+
+<configuration>
+  <appSettings>
+    <add key="connectionName" value="DB"/>
+  </appSettings>
+  <connectionStrings>
+    <!--<add name="DB" connectionString="Data Source=localhost/XE;User Id=hr;Password=hr;" providerName="Oracle.ManagedDataAccess" />-->
+    <!--<add name="DB" connectionString="host=localhost;database=test;uid=root;pwd=sa123456;charset=utf8;" providerName="MySql.Data.MySqlClient" />-->
+    <add name="DB" connectionString="Data Source=localhost;Initial Catalog=test;Persist Security Info=True;User ID=sa;Password=123456;" providerName="System.Data.SqlClient"/>
+  </connectionStrings>
+  <system.web>
+    <compilation debug="true" targetFramework="4.0"/>
+    <httpRuntime/>
+  </system.web>
+</configuration>
+
 1.add
 
             using (DNetContext db = new DNetContext())
