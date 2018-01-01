@@ -42,11 +42,8 @@ then config the connection strings such as below
     <!--<add name="DB" connectionString="host=localhost;database=test;uid=root;pwd=sa123456;charset=utf8;" providerName="MySql.Data.MySqlClient" />-->
     <add name="DB" connectionString="Data Source=localhost;Initial Catalog=test;Persist Security Info=True;User ID=sa;Password=123456;" providerName="System.Data.SqlClient"/>
   </connectionStrings>
-  <system.web>
-    <compilation debug="true" targetFramework="4.0"/>
-    <httpRuntime/>
-  </system.web>
 </configuration>
+
 
 1.add
 
