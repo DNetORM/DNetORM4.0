@@ -11,7 +11,7 @@ using System.Diagnostics;
 using DNet.Transaction;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
-
+using System.IO;
 
 namespace DNet.DataAccess
 {
@@ -93,6 +93,87 @@ namespace DNet.DataAccess
             }
         }
 
+        #region<<生成实体工具>>
+
+        public int GenerateEntities()
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand();
+                command.Connection = conn;
+                conn.Open();
+                DataTable dt = conn.GetSchema("Tables");
+                foreach (DataRow row in dt.Rows)
+                {
+                    var tableName = row["TABLE_NAME"];
+                    string generatePath = System.AppDomain.CurrentDomain.BaseDirectory + "bin\\generate\\" + tableName + ".cs";
+                    if (!Directory.Exists(System.AppDomain.CurrentDomain.BaseDirectory + "bin\\generate\\"))
+                    {
+                        Directory.CreateDirectory(System.AppDomain.CurrentDomain.BaseDirectory + "bin\\generate\\");
+                    }
+                    if (File.Exists(generatePath))
+                    {
+                        File.Delete(generatePath);
+                    }
+                    FileStream fs1 = new FileStream(generatePath, FileMode.Create, FileAccess.Write);//创建写入文件 
+                    StreamWriter sw = new StreamWriter(fs1);
+                    sw.Write("using System;\nusing System.Collections.Generic;\n\nnamespace\n{\n    public class " + tableName + "\n    {\n");//开始写入值
+                    command.CommandText = "SELECT * FROM " + tableName;
+                    SqlDataReader dr = command.ExecuteReader(CommandBehavior.SchemaOnly);
+                    for (int i = 0; i < dr.FieldCount; i++)
+                    {
+                        string columnName = dr.GetName(i);
+                        var columnType = dr.GetFieldType(i);
+                        string typeBrief = string.Empty;
+                        switch (columnType.ToString())
+                        {
+                            case "System.Int32":
+                            case "System.UInt32":
+                                typeBrief = "int?";
+                                break;
+                            case "System.UInt64":
+                            case "System.Int64":
+                                typeBrief = "long?";
+                                break;
+                            case "System.Boolean":
+                                typeBrief = "bool?";
+                                break;
+                            case "System.String":
+                                typeBrief = "string";
+                                break;
+                            case "System.DateTime":
+                                typeBrief = "DateTime?";
+                                break;
+                            case "System.SByte":
+                            case "System.Byte":
+                                typeBrief = "byte?";
+                                break;
+                            case "System.Decimal":
+                                typeBrief = "decimal?";
+                                break;
+                            case "System.Single":
+                                typeBrief = "float?";
+                                break;
+                            case "System.Double":
+                                typeBrief = "double?";
+                                break;
+                            default:
+                                break;
+                        }
+                        sw.WriteLine("        public " + typeBrief + " " + columnName + " { get; set; }");
+                    }
+                    sw.WriteLine("    }");
+                    sw.WriteLine("}");
+                    sw.Close();
+                    fs1.Close();
+                    dr.Close();
+                }
+                conn.Close();
+                return 1;
+            }
+        }
+
+        #endregion
 
         #region  << 执行SQL语句 >>
 

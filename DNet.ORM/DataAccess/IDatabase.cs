@@ -17,6 +17,12 @@ namespace DNet.DataAccess
         /// </summary>
         DataBaseType DBType { get; }
 
+        #region <<实体生成工具>>
+
+        int GenerateEntities();
+
+        #endregion
+
         #region  << 执行SQL语句 >>
 
         /// <summary>
