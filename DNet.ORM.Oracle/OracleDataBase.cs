@@ -92,7 +92,7 @@ namespace DNet.DataAccess
 
         #region<<生成实体工具>>
 
-        public int GenerateEntities()
+        public int GenerateEntities(string nameSpace)
         {
             using (var conn = new OracleConnection(connectionString))
             {
@@ -114,7 +114,7 @@ namespace DNet.DataAccess
                     }
                     FileStream fs1 = new FileStream(generatePath, FileMode.Create, FileAccess.Write);//创建写入文件 
                     StreamWriter sw = new StreamWriter(fs1);
-                    sw.Write("using System;\nusing System.Collections.Generic;\n\nnamespace\n{\n    public class " + tableName + "\n    {\n");//开始写入值
+                    sw.Write("using System;\nusing System.Collections.Generic;\n\nnamespace " + nameSpace + "\n{\n    public class " + tableName + "\n    {\n");//开始写入值
                     command.CommandText = "SELECT * FROM " + tableName;
                     OracleDataReader dr = command.ExecuteReader(CommandBehavior.SchemaOnly);
                     for (int i = 0; i < dr.FieldCount; i++)
@@ -732,7 +732,7 @@ namespace DNet.DataAccess
         {
             if (CurrentTransaction == null)
             {
-                if(CurrentDbConnection.State != ConnectionState.Open)
+                if (CurrentDbConnection.State != ConnectionState.Open)
                     CurrentDbConnection.Open();
                 CurrentTransaction = CurrentDbConnection.BeginTransaction(level);
             }

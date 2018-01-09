@@ -95,7 +95,7 @@ namespace DNet.DataAccess
 
         #region<<生成实体工具>>
 
-        public int GenerateEntities()
+        public int GenerateEntities(string nameSpace)
         {
             using (var conn = new SqlConnection(connectionString))
             {
@@ -117,7 +117,7 @@ namespace DNet.DataAccess
                     }
                     FileStream fs1 = new FileStream(generatePath, FileMode.Create, FileAccess.Write);//创建写入文件 
                     StreamWriter sw = new StreamWriter(fs1);
-                    sw.Write("using System;\nusing System.Collections.Generic;\n\nnamespace\n{\n    public class " + tableName + "\n    {\n");//开始写入值
+                    sw.Write("using System;\nusing System.Collections.Generic;\n\nnamespace " + nameSpace + "\n{\n    public class " + tableName + "\n    {\n");//开始写入值
                     command.CommandText = "SELECT * FROM " + tableName;
                     SqlDataReader dr = command.ExecuteReader(CommandBehavior.SchemaOnly);
                     for (int i = 0; i < dr.FieldCount; i++)

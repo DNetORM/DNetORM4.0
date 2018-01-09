@@ -19,7 +19,7 @@ namespace DNet.DataAccess
 
         #region <<实体生成工具>>
 
-        int GenerateEntities();
+        int GenerateEntities(string nameSpace);
 
         #endregion
 
