@@ -768,6 +768,23 @@ namespace DNet.DataAccess
 
         #endregion
 
+        #region<<生成实体工具>>
+
+        public bool GenerateEntities(string nameSpace)
+        {
+            try
+            {
+                this.DataBase.GenerateEntities(nameSpace);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// 参数准备
         /// </summary>

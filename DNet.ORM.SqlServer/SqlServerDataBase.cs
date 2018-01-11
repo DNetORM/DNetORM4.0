@@ -127,6 +127,10 @@ namespace DNet.DataAccess
                         string typeBrief = string.Empty;
                         switch (columnType.ToString())
                         {
+                            case "System.Int16":
+                            case "System.UInt16":
+                                typeBrief = "short?";
+                                break;
                             case "System.Int32":
                             case "System.UInt32":
                                 typeBrief = "int?";
