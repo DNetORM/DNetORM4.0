@@ -72,6 +72,7 @@
     <Content Include="Add.aspx" />
     <Content Include="Delete.aspx" />
     <Content Include="DistributeTransaction.aspx" />
+    <Content Include="GenerateEntities.aspx" />
     <Content Include="Global.asax" />
     <Content Include="MultiTableQuery.aspx" />
     <Content Include="script.sql" />
@@ -111,6 +112,13 @@
     </Compile>
     <Compile Include="DistributeTransaction.aspx.designer.cs">
       <DependentUpon>DistributeTransaction.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="GenerateEntities.aspx.cs">
+      <DependentUpon>GenerateEntities.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GenerateEntities.aspx.designer.cs">
+      <DependentUpon>GenerateEntities.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
