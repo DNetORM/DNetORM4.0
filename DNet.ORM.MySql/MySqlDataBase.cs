@@ -114,7 +114,7 @@ namespace DNet.DataAccess
                     }
                     FileStream fs1 = new FileStream(generatePath, FileMode.Create, FileAccess.Write);//创建写入文件 
                     StreamWriter sw = new StreamWriter(fs1);
-                    sw.Write("using System;\nusing System.Collections.Generic;\n\nnamespace " + nameSpace + "\n{\n    public class " + tableName + "\n    {\n");//开始写入值
+                    sw.Write("using System;\r\nusing System.Collections.Generic;\r\n\r\nnamespace " + nameSpace + "\r\n{\r\n    public class " + tableName + "\r\n    {\r\n");//开始写入值
                     command.CommandText = "SELECT * FROM " + tableName;
                     MySqlDataReader dr = command.ExecuteReader(CommandBehavior.SchemaOnly);
                     for (int i = 0; i < dr.FieldCount; i++)
