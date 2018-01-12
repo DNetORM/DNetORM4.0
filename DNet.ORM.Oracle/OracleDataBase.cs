@@ -92,7 +92,13 @@ namespace DNet.DataAccess
 
         #region<<生成实体工具>>
 
-        public int GenerateEntities(string nameSpace)
+        /// <summary>
+        /// 生成实体类
+        /// </summary>
+        /// <param name="nameSpace"></param>
+        /// <param name="baseClass">父类</param>
+        /// <returns></returns>
+        public int GenerateEntities(string nameSpace, Type baseClass = null)
         {
             using (var conn = new OracleConnection(connectionString))
             {
@@ -114,57 +120,68 @@ namespace DNet.DataAccess
                     }
                     FileStream fs1 = new FileStream(generatePath, FileMode.Create, FileAccess.Write);//创建写入文件 
                     StreamWriter sw = new StreamWriter(fs1);
-                    sw.Write("using System;\r\nusing System.Collections.Generic;\r\n\r\nnamespace " + nameSpace + "\r\n{\r\n    public class " + tableName + "\r\n    {\r\n");//开始写入值
+                    sw.Write("using System;\r\nusing System.Collections.Generic;\r\nusing " + baseClass.Namespace + ";\r\n\r\nnamespace " + nameSpace + "\r\n{\r\n    public class " + tableName);//开始写入值
+
+                    List<string> baseClassProperties = new List<string>();
+                    if (baseClass != null)
+                    {
+                        sw.Write(" : " + baseClass.Name);
+                        baseClassProperties = baseClass.GetProperties().Select(m => m.Name).ToList();
+                    }
+                    sw.Write("\r\n    {\r\n");
                     command.CommandText = "SELECT * FROM " + tableName;
                     OracleDataReader dr = command.ExecuteReader(CommandBehavior.SchemaOnly);
                     for (int i = 0; i < dr.FieldCount; i++)
                     {
                         string columnName = dr.GetName(i);
-                        var columnType = dr.GetFieldType(i);
-                        string typeBrief = string.Empty;
-                        switch (columnType.ToString())
+                        if (baseClass != null && !baseClassProperties.Contains(columnName))
                         {
-                            case "System.Int16":
-                            case "System.UInt16":
-                                typeBrief = "short?";
-                                break;
-                            case "System.Int32":
-                            case "System.UInt32":
-                                typeBrief = "int?";
-                                break;
-                            case "System.UInt64":
-                            case "System.Int64":
-                                typeBrief = "long?";
-                                break;
-                            case "System.Boolean":
-                                typeBrief = "bool?";
-                                break;
-                            case "System.String":
-                                typeBrief = "string";
-                                break;
-                            case "System.DateTime":
-                                typeBrief = "DateTime?";
-                                break;
-                            case "System.SByte":
-                            case "System.Byte":
-                                typeBrief = "byte?";
-                                break;
-                            case "System.Decimal":
-                                typeBrief = "decimal?";
-                                break;
-                            case "System.Single":
-                                typeBrief = "float?";
-                                break;
-                            case "System.Double":
-                                typeBrief = "double?";
-                                break;
-                            default:
-                                break;
+                            var columnType = dr.GetFieldType(i);
+                            string typeBrief = string.Empty;
+                            switch (columnType.ToString())
+                            {
+                                case "System.Int16":
+                                case "System.UInt16":
+                                    typeBrief = "short?";
+                                    break;
+                                case "System.Int32":
+                                case "System.UInt32":
+                                    typeBrief = "int?";
+                                    break;
+                                case "System.UInt64":
+                                case "System.Int64":
+                                    typeBrief = "long?";
+                                    break;
+                                case "System.Boolean":
+                                    typeBrief = "bool?";
+                                    break;
+                                case "System.String":
+                                    typeBrief = "string";
+                                    break;
+                                case "System.DateTime":
+                                    typeBrief = "DateTime?";
+                                    break;
+                                case "System.SByte":
+                                case "System.Byte":
+                                    typeBrief = "byte?";
+                                    break;
+                                case "System.Decimal":
+                                    typeBrief = "decimal?";
+                                    break;
+                                case "System.Single":
+                                    typeBrief = "float?";
+                                    break;
+                                case "System.Double":
+                                    typeBrief = "double?";
+                                    break;
+                                default:
+                                    break;
+                            }
+                            sw.WriteLine("        public " + typeBrief + " " + columnName + " { get; set; }");
                         }
-                        sw.WriteLine("        public " + typeBrief + " " + columnName + " { get; set; }");
                     }
                     sw.WriteLine("    }");
-                    sw.WriteLine("}");
+                    sw.WriteLine("}\r\n");
                     sw.Close();
                     fs1.Close();
                     dr.Close();
