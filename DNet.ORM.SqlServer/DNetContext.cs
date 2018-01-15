@@ -595,6 +595,35 @@ namespace DNet.DataAccess
         }
 
         /// <summary>
+        /// 双表简单查询
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="TObject"></typeparam>
+        /// <param name="on"></param>
+        /// <param name="where"></param>
+        /// <param name="select"></param>
+        /// <returns></returns>
+        public List<TObject> GetJoin<T1,T2, TObject>(Expression<Func<T1,T2, bool>> on, Expression<Func<T1, T2, bool>> where, Expression<Func<T1,T2, dynamic>> select) where T1 : class, new() where T2 : class, new()
+        {
+            return this.JoinQuery.LeftJoin(on).Where(where).Fields(select).GetList<TObject>();
+        }
+
+        /// <summary>
+        /// 双表简单查询
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="on"></param>
+        /// <param name="where"></param>
+        /// <param name="select"></param>
+        /// <returns></returns>
+        public List<dynamic> GetJoin<T1, T2>(Expression<Func<T1, T2, bool>> on, Expression<Func<T1, T2, bool>> where, Expression<Func<T1, T2, dynamic>> select) where T1 : class, new() where T2 : class, new()
+        {
+            return this.JoinQuery.LeftJoin(on).Where(where).Fields(select).GetList<dynamic>();
+        }
+
+        /// <summary>
         /// 获取分页数据
         /// </summary>
         /// <typeparam name="T"></typeparam>

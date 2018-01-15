@@ -22,6 +22,9 @@ namespace DNet.ORM.Demo
             using (DNetContext db = new DNetContext())
             {
 
+                var query = db.GetJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true, (m, n) => m.Price > 10 && n.IsValid == true, (m, n) => new { BookName = m.BookName + n.AuthorName, n.AuthorName });
+
+
                 var books = db.JoinQuery.LeftJoin<Book, Author>((m, n) => m.AuthorID == n.AuthorID && n.IsValid == true)
                     .Fields<Book, Author>((m, n) => new { BookName = m.BookName + "123", AuthorName = SqlFunctions.Count(n.AuthorName) })
                     .OrderByAsc<Book>(m => m.BookName)
