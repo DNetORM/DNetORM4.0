@@ -116,7 +116,6 @@ namespace DNet.DataAccess
             return this.SqlBuilder.ToString();
         }
 
-
         protected override Expression VisitMethodCall(MethodCallExpression methodExp)
         {
             switch (methodExp.Method.Name)

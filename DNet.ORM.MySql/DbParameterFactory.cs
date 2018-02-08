@@ -14,7 +14,6 @@ namespace DNet.DataAccess
 {
     public class DbParameterFactory
     {
-
         /// <summary>
         /// 创建DbParameter
         /// </summary>

@@ -202,7 +202,6 @@ namespace DNet.DataAccess
         /// <returns>影响的记录数</returns>
         public int ExecuteSql(string strSql)
         {
-
             MySqlCommand command = new MySqlCommand(strSql);
             PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
             int effectLines = 0;
@@ -218,7 +217,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public int ExecuteSqlIdentity(string strSql)
         {
-
             MySqlCommand command = new MySqlCommand(strSql);
             PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
             object effectLines = command.ExecuteScalar();
@@ -228,7 +226,6 @@ namespace DNet.DataAccess
                 return Convert.ToInt32(effectLines);
             }
             return 0;
-
         }
 
         /// <summary>
@@ -257,7 +254,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public int ExecuteSqlIdentity(string strSql, params DbParameter[] cmdParms)
         {
-
             MySqlCommand command = new MySqlCommand(strSql);
             PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             object effectLines = command.ExecuteScalar();
@@ -268,7 +264,6 @@ namespace DNet.DataAccess
                 return Convert.ToInt32(effectLines);
             }
             return 0;
-
         }
 
         /// <summary>
@@ -279,7 +274,6 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public int ExecuteSqlByTime(string strSql, int times)
         {
-
             MySqlCommand command = new MySqlCommand(strSql);
             command.CommandTimeout = times;
             PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
@@ -287,7 +281,6 @@ namespace DNet.DataAccess
             effectLines = command.ExecuteNonQuery();
             command.Dispose();
             return effectLines;
-
         }
 
         /// <summary>
@@ -307,7 +300,6 @@ namespace DNet.DataAccess
             command.Parameters.Clear();
             command.Dispose();
             return effectLines;
-
         }
 
         /// <summary>
@@ -328,7 +320,6 @@ namespace DNet.DataAccess
             if (typeof(T) == typeof(int))
                 obj = Convert.ToInt32(obj);
             return (T)obj;
-
         }
 
         /// <summary>
@@ -351,7 +342,6 @@ namespace DNet.DataAccess
             if (typeof(T) == typeof(int))
                 obj = Convert.ToInt32(obj);
             return (T)obj;
-
         }
 
         /// <summary>
@@ -424,7 +414,6 @@ namespace DNet.DataAccess
             adpter.Fill(ds);
             command.Dispose();
             return ds;
-
         }
 
         /// <summary>
@@ -650,7 +639,6 @@ namespace DNet.DataAccess
             // 得到总记录数
             string sqlTextCount = String.Format("SELECT COUNT(1) FROM ({0}) T", sqlText);
             recordCount = this.GetSingle<int>(sqlTextCount, commandParameters);
-
             // 计算总页面数
             if (pageSize <= 0)
             {
@@ -664,7 +652,6 @@ namespace DNet.DataAccess
             {
                 pageCount = recordCount / pageSize;
             }
-
             // 得到当前页面索引
             if (pageIndex < 1)
                 pageIndex = 1;
@@ -673,12 +660,10 @@ namespace DNet.DataAccess
             {
                 currentPageIndex = pageCount;
             }
-
             if (!String.IsNullOrEmpty(orderText))
             {
                 orderText = " ORDER BY " + orderText;
             }
-
             // 得到用于分页的SQL语句
             int startIndex = (currentPageIndex - 1) * pageSize;
             if (startIndex < 0)
@@ -688,7 +673,6 @@ namespace DNet.DataAccess
             int endIndex = currentPageIndex * pageSize;
             string sqlTextRecord = @"{0} {1} LIMIT {2},{3}";
             sqlTextRecord = String.Format(sqlTextRecord, sqlText, orderText, startIndex, pageSize);
-
             return ExecuteReader(sqlTextRecord, commandParameters);
         }
 
@@ -697,7 +681,6 @@ namespace DNet.DataAccess
             // 得到总记录数
             string sqlTextCount = String.Format("SELECT COUNT(1) FROM ({0}) T", sqlText);
             recordCount = this.GetSingle<int>(sqlTextCount);
-
             // 计算总页面数
             if (pageSize <= 0)
             {
@@ -711,7 +694,6 @@ namespace DNet.DataAccess
             {
                 pageCount = recordCount / pageSize;
             }
-
             // 得到当前页面索引
             if (pageIndex < 1)
                 pageIndex = 1;
@@ -720,12 +702,10 @@ namespace DNet.DataAccess
             {
                 currentPageIndex = pageCount;
             }
-
             if (!String.IsNullOrEmpty(orderText))
             {
                 orderText = " ORDER BY " + orderText;
             }
-
             // 得到用于分页的SQL语句
             int startIndex = (currentPageIndex - 1) * pageSize;
             if (startIndex < 0)
@@ -735,7 +715,6 @@ namespace DNet.DataAccess
             int endIndex = currentPageIndex * pageSize;
             string sqlTextRecord = @"{0} {1} LIMIT {2},{3}";
             sqlTextRecord = String.Format(sqlTextRecord, sqlText, orderText, startIndex, pageSize);
-
             return ExecuteReader(sqlTextRecord);
         }
 

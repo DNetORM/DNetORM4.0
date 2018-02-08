@@ -61,8 +61,6 @@ namespace DNet.DataAccess
             DbContext = new DNetContext(settings);
         }
 
-
-
         /// <summary>
         /// 插入单条数据
         /// </summary>

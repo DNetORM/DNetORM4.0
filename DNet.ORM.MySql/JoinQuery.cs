@@ -384,7 +384,6 @@ namespace DNet.DataAccess
                 DbContext.Dispose();
             }
             return result;
-
         }
 
         /// <summary>

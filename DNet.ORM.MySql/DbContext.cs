@@ -234,7 +234,6 @@ namespace DNet.DataAccess
             {
                 throw ex;
             }
-
         }
 
         /// <summary>
