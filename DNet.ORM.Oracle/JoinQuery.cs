@@ -56,6 +56,11 @@ namespace DNet.DataAccess
 
         protected bool WithAlias { get; set; }
 
+        /// <summary>
+        /// 是否自动Dispose DbContext
+        /// </summary>
+        public bool IsAutoDisposeDbContext { get; set; }
+
         public JoinQuery()
         {
             SqlBuilder = new StringBuilder();
@@ -373,7 +378,12 @@ namespace DNet.DataAccess
                 SqlBuilder.Append(OrderByFields.ToString().Trim().TrimEnd(','));
             }
             //开始组装sql
-            return DbContext.GetList<TModel>(SqlBuilder.ToString(), Parameters.ToArray());
+            List<TModel> result = DbContext.GetList<TModel>(SqlBuilder.ToString(), Parameters.ToArray());
+            if (this.IsAutoDisposeDbContext)
+            {
+                DbContext.Dispose();
+            }
+            return result;
 
         }
 
@@ -445,7 +455,12 @@ namespace DNet.DataAccess
                 SqlBuilder.Append(OrderByFields.ToString().Trim().TrimEnd(','));
             }
             //开始组装sql
-            return DbContext.GetSingle<int>(SqlBuilder.ToString(), Parameters.ToArray());
+            int result = DbContext.GetSingle<int>(SqlBuilder.ToString(), Parameters.ToArray());
+            if (this.IsAutoDisposeDbContext)
+            {
+                DbContext.Dispose();
+            }
+            return result;
         }
 
         /// <summary>
@@ -519,7 +534,13 @@ namespace DNet.DataAccess
                 page.OrderText = OrderByFields.ToString().Trim().TrimEnd(',');
             }
             //开始组装sql
-            return DbContext.GetPage<TModel>(SqlBuilder.ToString(), page, Parameters.ToArray());
+            //开始组装sql
+            PageDataSource<TModel> result = DbContext.GetPage<TModel>(SqlBuilder.ToString(), page, Parameters.ToArray());
+            if (this.IsAutoDisposeDbContext)
+            {
+                DbContext.Dispose();
+            }
+            return result;
         }
     }
 }

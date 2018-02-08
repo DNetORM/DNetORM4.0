@@ -46,6 +46,7 @@
     <Compile Include="DbContext.cs" />
     <Compile Include="DbFactory.cs" />
     <Compile Include="DbParameterFactory.cs" />
+    <Compile Include="BaseDao.cs" />
     <Compile Include="DNetContext.cs" />
     <Compile Include="JoinQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
