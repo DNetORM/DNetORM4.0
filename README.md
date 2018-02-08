@@ -190,4 +190,4 @@ then config the connection strings such as demo,DNetContext also receive a Conne
             {
                 transaction.Rollback();
             }
-if you have some advice please send email to 307474178@qq.com
+
