@@ -120,8 +120,11 @@ namespace DNet.DataAccess
                     }
                     FileStream fs1 = new FileStream(generatePath, FileMode.Create, FileAccess.Write);//创建写入文件 
                     StreamWriter sw = new StreamWriter(fs1);
-                    sw.Write("using System;\r\nusing System.Collections.Generic;\r\nusing " + baseClass.Namespace + ";\r\n\r\nnamespace " + nameSpace + "\r\n{\r\n    public class " + tableName);//开始写入值
-
+                    if (baseClass != null)
+                    {
+                        sw.Write("using " + baseClass.Namespace + ";\r\n");//开始写入值
+                    }
+                    sw.Write("using System;\r\nusing System.Collections.Generic;\r\nnamespace " + nameSpace + "\r\n{\r\n    public class " + tableName);//开始写入值
                     List<string> baseClassProperties = new List<string>();
                     if (baseClass != null)
                     {
@@ -134,7 +137,7 @@ namespace DNet.DataAccess
                     for (int i = 0; i < dr.FieldCount; i++)
                     {
                         string columnName = dr.GetName(i);
-                        if (baseClass != null && !baseClassProperties.Contains(columnName))
+                        if (!baseClassProperties.Contains(columnName))
                         {
                             var columnType = dr.GetFieldType(i);
                             string typeBrief = string.Empty;
