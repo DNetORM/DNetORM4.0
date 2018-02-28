@@ -625,8 +625,7 @@ namespace DNet.DataAccess
             {
                 SqlVisitor lambdaTranslator = new SqlVisitor(this.DataBase.DBType, 1);
                 string where = lambdaTranslator.Translate(exp);
-                selectSql.Append(" WHERE ");
-                selectSql.Append(where);
+                selectSql.AppendFormat(" WHERE {0}", where);
                 foreach (DbParameter parm in lambdaTranslator.Parameters)
                 {
                     parms.Add(parm);
@@ -643,7 +642,6 @@ namespace DNet.DataAccess
         protected void GetSQLByLambda<TIn, TResult>(StringBuilder selectSql, List<DbParameter> parms, Expression<Func<TIn, bool>> exp, Expression<Func<TIn, TResult>> select) where TIn : class, new()
         {
             EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(TIn));
-            StringBuilder fieldBuilder = new StringBuilder();
             SqlVisitor selectTranslator = new SqlVisitor(this.DataBase.DBType, 0);
             string fields = selectTranslator.Translate(select);
             foreach (DbParameter parm in selectTranslator.Parameters)
