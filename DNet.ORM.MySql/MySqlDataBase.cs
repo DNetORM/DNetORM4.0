@@ -103,6 +103,7 @@ namespace DNet.DataAccess
             using (var conn = new MySqlConnection(connectionString))
             {
                 MySqlCommand command = new MySqlCommand();
+                command.CommandTimeout = 120;
                 command.Connection = conn;
                 conn.Open();
                 DataTable dt = conn.GetSchema("Tables");
