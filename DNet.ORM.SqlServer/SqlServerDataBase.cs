@@ -357,7 +357,7 @@ namespace DNet.DataAccess
             SqlDataReader dr = null;
             try
             {
-                dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                dr = command.ExecuteReader(CommandBehavior.Default);
                 return dr;
             }
             catch (Exception ex)
@@ -384,7 +384,7 @@ namespace DNet.DataAccess
             SqlDataReader dr = null;
             try
             {
-                dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                dr = command.ExecuteReader(CommandBehavior.Default);
                 return dr;
             }
             catch (Exception ex)

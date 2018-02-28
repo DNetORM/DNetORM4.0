@@ -359,7 +359,7 @@ namespace DNet.DataAccess
             MySqlDataReader dr = null;
             try
             {
-                dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                dr = command.ExecuteReader(CommandBehavior.Default);
             }
             catch (Exception ex)
             {
@@ -387,7 +387,7 @@ namespace DNet.DataAccess
             MySqlDataReader dr = null;
             try
             {
-                dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                dr = command.ExecuteReader(CommandBehavior.Default);
             }
             catch (Exception ex)
             {

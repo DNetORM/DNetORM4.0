@@ -345,7 +345,7 @@ namespace DNet.DataAccess
             OracleDataReader dr = null;
             try
             {
-                dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                dr = command.ExecuteReader(CommandBehavior.Default);
             }
             catch (Exception ex)
             {
@@ -373,7 +373,7 @@ namespace DNet.DataAccess
             OracleDataReader dr = null;
             try
             {
-                dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+                dr = command.ExecuteReader(CommandBehavior.Default);
             }
             catch (Exception ex)
             {

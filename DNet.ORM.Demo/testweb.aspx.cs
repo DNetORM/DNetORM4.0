@@ -23,7 +23,7 @@ namespace DNet.ORM.Demo
             {
               
                 //获取动态类型
-                List<string> name = db.GetList<Book,string>(m =>SubQuery.GetList<Author>(n=>n.AuthorID>=1,n=>n.AuthorID).Contains(m.AuthorID), m => m.BookName + "aaa" );
+                List<string> name = db.GetList<Book,string>(m =>true, m => m.BookName + "aaa" );
                 //var r = db.GetList<Test>(m =>true);
             }
             stopwatch.Stop(); //  停止监视  
