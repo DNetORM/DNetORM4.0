@@ -135,7 +135,7 @@ namespace DNet.DataAccess
                         baseClassProperties = baseClass.GetProperties().Select(m => m.Name).ToList();
                     }
                     sw.Write("\r\n    {\r\n");
-                    command.CommandText = "SELECT * FROM " + tableName;
+                    command.CommandText = string.Format("SELECT * FROM [{0}]",tableName);
                     SqlDataReader dr = command.ExecuteReader(CommandBehavior.SchemaOnly);
                     for (int i = 0; i < dr.FieldCount; i++)
                     {
