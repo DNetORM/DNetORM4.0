@@ -365,10 +365,6 @@ namespace DNet.DataAccess
                 CurrentDbConnection.Close();
                 throw ex;
             }
-            finally
-            {
-                command.Dispose();
-            }
         }
 
         /// <summary>
@@ -396,7 +392,6 @@ namespace DNet.DataAccess
             finally
             {
                 command.Parameters.Clear();
-                command.Dispose();
             }
         }
 
