@@ -11,7 +11,7 @@ namespace DNet.DataAccess
     public interface IDatabase
     {
         string ConnectionString { get; }
-      
+
         /// <summary>
         /// 数据库类型
         /// </summary>
@@ -245,6 +245,6 @@ namespace DNet.DataAccess
         #endregion
 
         void Dispose();
-        
+
     }
 }

@@ -65,6 +65,7 @@
     <Compile Include="DataAccess\Dialect\ISqlDialect.cs" />
     <Compile Include="DataAccess\Function\SqlFunctions.cs" />
     <Compile Include="DataAccess\IDatabase.cs" />
+    <Compile Include="DataAccess\IDbContext.cs" />
     <Compile Include="DataAccess\Join\DynamicMember.cs" />
     <Compile Include="DataAccess\Join\JoinRelation.cs" />
     <Compile Include="DataAccess\Join\TableSelect.cs" />

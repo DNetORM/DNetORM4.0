@@ -157,7 +157,7 @@ namespace DNet.DataAccess
         {
             SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
             visitor.Translate(where);
-            WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
+            WhereClause.AppendFormat("{0} AND ", visitor.SqlBuilder.ToString());
             Parameters.AddRange(visitor.Parameters);
             return this;
         }
@@ -166,7 +166,7 @@ namespace DNet.DataAccess
         {
             SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
             visitor.Translate(where);
-            WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
+            WhereClause.AppendFormat("{0} AND ", visitor.SqlBuilder.ToString());
             Parameters.AddRange(visitor.Parameters);
             return this;
         }
@@ -175,7 +175,7 @@ namespace DNet.DataAccess
         {
             SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
             visitor.Translate(where);
-            WhereClause.Append(visitor.SqlBuilder.ToString() + " AND ");
+            WhereClause.AppendFormat("{0} AND ", visitor.SqlBuilder.ToString()); ;
             Parameters.AddRange(visitor.Parameters);
             return this;
         }
@@ -192,7 +192,7 @@ namespace DNet.DataAccess
             visitor.Translate(orderBy);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
-                OrderByFields.Append(c.Field + " ASC,");
+                OrderByFields.AppendFormat("{0} ASC,", c.Field);
             }
             return this;
         }
@@ -209,7 +209,7 @@ namespace DNet.DataAccess
             visitor.Translate(orderBy);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
-                OrderByFields.Append(c.Field + " DESC,");
+                OrderByFields.AppendFormat("{0} DESC,", c.Field);
             }
             return this;
         }
@@ -280,7 +280,7 @@ namespace DNet.DataAccess
             visitor.Translate(select);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
-                GroupByFields.Append(c.Field + ",");
+                GroupByFields.AppendFormat("{0},", c.Field);
             }
             return this;
         }
@@ -291,7 +291,7 @@ namespace DNet.DataAccess
             visitor.Translate(select);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
-                GroupByFields.Append(c.Field + ",");
+                GroupByFields.AppendFormat("{0},", c.Field);
             }
             return this;
         }
@@ -302,7 +302,7 @@ namespace DNet.DataAccess
             visitor.Translate(select);
             foreach (DynamicMember c in visitor.DynamicMembers)
             {
-                GroupByFields.Append(c.Field + ",");
+                GroupByFields.AppendFormat("{0},", c.Field);
             }
             return this;
         }
@@ -315,10 +315,7 @@ namespace DNet.DataAccess
         public List<TModel> GetList<TModel>()
         {
             List<JoinRelation> tables = new List<JoinRelation>();
-            SqlBuilder.Append(" SELECT ");
-            SqlBuilder.Append(SelectFields.ToString().TrimEnd(','));
-            SqlBuilder.Append(" FROM ");
-            SqlBuilder.Append(JoinRelations[0].LeftTable);
+            SqlBuilder.AppendFormat(" SELECT {0} FROM {1}", SelectFields.ToString().TrimEnd(','), JoinRelations[0].LeftTable);
             if (WithAlias)
             {
                 SqlBuilder.AppendFormat(" AS {0}", JoinRelations[0].LeftTableAlias);
@@ -359,23 +356,19 @@ namespace DNet.DataAccess
                         tables.Add(j);
                     }
                 }
-                SqlBuilder.Append(" ON ");
-                SqlBuilder.Append(j.OnSql.TrimEnd("AND".ToCharArray()));
+                SqlBuilder.AppendFormat(" ON {0}", j.OnSql.TrimEnd("AND".ToCharArray()));
             }
             if (WhereClause.Length > 0)
             {
-                SqlBuilder.Append(" WHERE ");
-                SqlBuilder.Append(WhereClause.ToString().Trim().TrimEnd("AND".ToCharArray()));
+                SqlBuilder.AppendFormat(" WHERE {0}", WhereClause.ToString().Trim().TrimEnd("AND".ToCharArray()));
             }
             if (GroupByFields.Length > 0)
             {
-                SqlBuilder.Append(" GROUP BY ");
-                SqlBuilder.Append(GroupByFields.ToString().Trim().TrimEnd(','));
+                SqlBuilder.AppendFormat(" GROUP BY {0}", GroupByFields.ToString().Trim().TrimEnd(','));
             }
             if (OrderByFields.Length > 0)
             {
-                SqlBuilder.Append(" ORDER BY ");
-                SqlBuilder.Append(OrderByFields.ToString().Trim().TrimEnd(','));
+                SqlBuilder.AppendFormat(" ORDER BY {0}", OrderByFields.ToString().Trim().TrimEnd(','));
             }
             //开始组装sql
             List<TModel> result = DbContext.GetList<TModel>(SqlBuilder.ToString(), Parameters.ToArray());
@@ -384,7 +377,6 @@ namespace DNet.DataAccess
                 DbContext.Dispose();
             }
             return result;
-
         }
 
         /// <summary>
@@ -394,8 +386,7 @@ namespace DNet.DataAccess
         public int GetCount()
         {
             List<JoinRelation> tables = new List<JoinRelation>();
-            SqlBuilder.Append(" SELECT COUNT(1) AS CT FROM ");
-            SqlBuilder.Append(JoinRelations[0].LeftTable);
+            SqlBuilder.AppendFormat(" SELECT COUNT(1) AS CT FROM {0}", JoinRelations[0].LeftTable);
             if (WithAlias)
             {
                 SqlBuilder.AppendFormat(" AS {0}", JoinRelations[0].LeftTableAlias);
@@ -436,23 +427,19 @@ namespace DNet.DataAccess
                         tables.Add(j);
                     }
                 }
-                SqlBuilder.Append(" ON ");
-                SqlBuilder.Append(j.OnSql.TrimEnd("AND".ToCharArray()));
+                SqlBuilder.AppendFormat(" ON {0}", j.OnSql.TrimEnd("AND".ToCharArray()));
             }
             if (WhereClause.Length > 0)
             {
-                SqlBuilder.Append(" WHERE ");
-                SqlBuilder.Append(WhereClause.ToString().Trim().TrimEnd("AND".ToCharArray()));
+                SqlBuilder.AppendFormat(" WHERE {0}", WhereClause.ToString().Trim().TrimEnd("AND".ToCharArray()));
             }
             if (GroupByFields.Length > 0)
             {
-                SqlBuilder.Append(" GROUP BY ");
-                SqlBuilder.Append(GroupByFields.ToString().Trim().TrimEnd(','));
+                SqlBuilder.AppendFormat(" GROUP BY {0}", GroupByFields.ToString().Trim().TrimEnd(','));
             }
             if (OrderByFields.Length > 0)
             {
-                SqlBuilder.Append(" ORDER BY ");
-                SqlBuilder.Append(OrderByFields.ToString().Trim().TrimEnd(','));
+                SqlBuilder.AppendFormat(" ORDER BY {0}", OrderByFields.ToString().Trim().TrimEnd(','));
             }
             //开始组装sql
             int result = DbContext.GetSingle<int>(SqlBuilder.ToString(), Parameters.ToArray());
@@ -472,10 +459,7 @@ namespace DNet.DataAccess
         public PageDataSource<TModel> GetPage<TModel>(PageFilter page)
         {
             List<JoinRelation> tables = new List<JoinRelation>();
-            SqlBuilder.Append(" SELECT ");
-            SqlBuilder.Append(SelectFields.ToString().TrimEnd(','));
-            SqlBuilder.Append(" FROM ");
-            SqlBuilder.Append(JoinRelations[0].LeftTable);
+            SqlBuilder.AppendFormat(" SELECT {0} FROM {1}", SelectFields.ToString().TrimEnd(','), JoinRelations[0].LeftTable);
             if (WithAlias)
             {
                 SqlBuilder.AppendFormat(" AS {0}", JoinRelations[0].LeftTableAlias);
@@ -516,25 +500,23 @@ namespace DNet.DataAccess
                         tables.Add(j);
                     }
                 }
-                SqlBuilder.Append(" ON ");
-                SqlBuilder.Append(j.OnSql.TrimEnd("AND".ToCharArray()));
+                SqlBuilder.AppendFormat(" ON {0}", j.OnSql.TrimEnd("AND".ToCharArray()));
             }
             if (WhereClause.Length > 0)
             {
-                SqlBuilder.Append(" WHERE ");
-                SqlBuilder.Append(WhereClause.ToString().Trim().TrimEnd("AND".ToCharArray()));
+                SqlBuilder.AppendFormat(" WHERE {0}", WhereClause.ToString().Trim().TrimEnd("AND".ToCharArray()));
             }
             if (GroupByFields.Length > 0)
             {
-                SqlBuilder.Append(" GROUP BY ");
-                SqlBuilder.Append(GroupByFields.ToString().Trim().TrimEnd(','));
+                SqlBuilder.AppendFormat(" GROUP BY {0}", GroupByFields.ToString().Trim().TrimEnd(','));
             }
             if (OrderByFields.Length > 0)
             {
                 page.OrderText = OrderByFields.ToString().Trim().TrimEnd(',');
             }
             //开始组装sql
-            PageDataSource<TModel> result= DbContext.GetPage<TModel>(SqlBuilder.ToString(), page, Parameters.ToArray());
+            //开始组装sql
+            PageDataSource<TModel> result = DbContext.GetPage<TModel>(SqlBuilder.ToString(), page, Parameters.ToArray());
             if (this.IsAutoDisposeDbContext)
             {
                 DbContext.Dispose();
