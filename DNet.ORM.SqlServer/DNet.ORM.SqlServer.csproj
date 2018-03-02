@@ -54,7 +54,7 @@
     <Compile Include="SqlDialectFactory.cs" />
     <Compile Include="SqlServerDataBase.cs" />
     <Compile Include="SqlServerDialect.cs" />
-    <Compile Include="SqlVisitor.cs" />
+    <Compile Include="SqlServerVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DNet.ORM\DNet.ORM.csproj">

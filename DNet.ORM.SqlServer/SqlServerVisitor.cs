@@ -664,7 +664,7 @@ namespace DNet.DataAccess
                 var entityInfo = Caches.EntityInfoCache.Get(assignment.Member.DeclaringType);
                 SqlBuilder.AppendFormat(" {0}=", entityInfo.Columns[assignment.Member.Name]);
                 this.Visit(assignment.Expression);
-                SqlBuilder.AppendFormat(",");
+                SqlBuilder.Append(",");
             }
             else
             {

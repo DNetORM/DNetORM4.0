@@ -116,6 +116,7 @@ namespace DNet.DataAccess
             return this.SqlBuilder.ToString();
         }
 
+
         protected override Expression VisitMethodCall(MethodCallExpression methodExp)
         {
             switch (methodExp.Method.Name)
@@ -450,7 +451,7 @@ namespace DNet.DataAccess
                     }
                     else
                     {
-                        SqlBuilder.Append("=");
+                        SqlBuilder.Append(" = ");
                     }
                     this.Visit(binaryExp.Right);
                     break;
@@ -669,7 +670,7 @@ namespace DNet.DataAccess
                 var entityInfo = Caches.EntityInfoCache.Get(assignment.Member.DeclaringType);
                 SqlBuilder.AppendFormat(" {0}=", entityInfo.Columns[assignment.Member.Name]);
                 this.Visit(assignment.Expression);
-                SqlBuilder.AppendFormat(",", entityInfo.Columns[assignment.Member.Name]);
+                SqlBuilder.Append(",");
             }
             else
             {
