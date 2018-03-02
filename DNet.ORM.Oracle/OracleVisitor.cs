@@ -329,14 +329,13 @@ namespace DNet.DataAccess
                         {
                             opd2 = ((UnaryExpression)(methodExp.Arguments[1])).Operand;
                         }
-                        var entityInfo = Caches.EntityInfoCache.Get(((LambdaExpression)opd1).Parameters[0].Type);
                         if (WithAlias)
                         {
-                            SqlBuilder.AppendFormat("(SELECT {0} FROM {1} AS {3} WHERE {2})", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body), ((LambdaExpression)opd1).Parameters[0].Name);
+                            SqlBuilder.AppendFormat("(SELECT {0} FROM {1} AS {3} WHERE {2})", TranslateClause(((LambdaExpression)opd2).Body), GetTableName(((LambdaExpression)opd1).Parameters[0].Type), TranslateClause(((LambdaExpression)opd1).Body), ((LambdaExpression)opd1).Parameters[0].Name);
                         }
                         else
                         {
-                            SqlBuilder.AppendFormat("(SELECT {0} FROM {1} WHERE {2})", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body));
+                            SqlBuilder.AppendFormat("(SELECT {0} FROM {1} WHERE {2})", TranslateClause(((LambdaExpression)opd2).Body), GetTableName(((LambdaExpression)opd1).Parameters[0].Type), TranslateClause(((LambdaExpression)opd1).Body));
                         }
                         return methodExp;
                     }
@@ -354,14 +353,13 @@ namespace DNet.DataAccess
                         {
                             opd2 = ((UnaryExpression)(methodExp.Arguments[1])).Operand;
                         }
-                        var entityInfo = Caches.EntityInfoCache.Get(((LambdaExpression)opd1).Parameters[0].Type);
                         if (WithAlias)
                         {
-                            SqlBuilder.AppendFormat("SELECT {0} FROM {1} AS {3} WHERE {2}", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body), ((LambdaExpression)opd1).Parameters[0].Name);
+                            SqlBuilder.AppendFormat("SELECT {0} FROM {1} AS {3} WHERE {2}", TranslateClause(((LambdaExpression)opd2).Body), GetTableName(((LambdaExpression)opd1).Parameters[0].Type), TranslateClause(((LambdaExpression)opd1).Body), ((LambdaExpression)opd1).Parameters[0].Name);
                         }
                         else
                         {
-                            SqlBuilder.AppendFormat("SELECT {0} FROM {1} WHERE {2}", TranslateClause(((LambdaExpression)opd2).Body), entityInfo.TableName, TranslateClause(((LambdaExpression)opd1).Body));
+                            SqlBuilder.AppendFormat("SELECT {0} FROM {1} WHERE {2}", TranslateClause(((LambdaExpression)opd2).Body), GetTableName(((LambdaExpression)opd1).Parameters[0].Type), TranslateClause(((LambdaExpression)opd1).Body));
                         }
                         return methodExp;
                     }
@@ -564,11 +562,6 @@ namespace DNet.DataAccess
             {
                 if (exp.NodeType == ExpressionType.MemberAccess && ((MemberExpression)exp).Expression.NodeType == ExpressionType.Parameter)
                 {
-                    //var entityInfo = Caches.EntityInfoCache.Get(((MemberExpression)exp).Expression.Type);
-                    //if (entityInfo!=null)
-                    //{
-                    //    return false;
-                    //}
                     return false;
                 }
                 object result = Expression.Lambda(exp).Compile().DynamicInvoke();
@@ -606,8 +599,7 @@ namespace DNet.DataAccess
                 }
                 else
                 {
-                    var entityInfo = Caches.EntityInfoCache.Get(memberExp.Expression.Type);
-                    alias = entityInfo.TableName;
+                    alias = GetTableName(memberExp.Expression.Type);
                 }
                 string fieldName = alias + "." + GetFieldName(memberExp.Expression.Type, memberExp.Member.Name);
                 if (!string.IsNullOrEmpty(fieldName))
@@ -667,8 +659,7 @@ namespace DNet.DataAccess
         {
             if (this.SqlVisitorType == VisitorType.UpdateSet)
             {
-                var entityInfo = Caches.EntityInfoCache.Get(assignment.Member.DeclaringType);
-                SqlBuilder.AppendFormat(" {0}=", entityInfo.Columns[assignment.Member.Name]);
+                SqlBuilder.AppendFormat(" {0}=", GetFieldName(assignment.Member.DeclaringType, assignment.Member.Name));
                 this.Visit(assignment.Expression);
                 SqlBuilder.Append(",");
             }
@@ -678,6 +669,12 @@ namespace DNet.DataAccess
                 SqlBuilder.AppendFormat(" AS {0},", assignment.Member.Name);
             }
             return assignment;
+        }
+
+        public string GetTableName(Type tableType)
+        {
+            var entityInfo = Caches.EntityInfoCache.Get(tableType);
+            return entityInfo.TableName;
         }
 
         public string GetFieldName(Type tableType, string memberName)

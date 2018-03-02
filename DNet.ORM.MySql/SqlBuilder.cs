@@ -35,6 +35,25 @@ namespace DNet.DataAccess
             return selectFields;
         }
 
+        public static string GetTableName(Type tableType)
+        {
+            var entityInfo = Caches.EntityInfoCache.Get(tableType);
+            return entityInfo.TableName;
+        }
+
+        public static string GetFieldName(Type tableType, string memberName)
+        {
+            var entityInfo = Caches.EntityInfoCache.Get(tableType);
+            if (entityInfo.Columns.Keys.Contains(memberName))
+            {
+                return entityInfo.Columns[memberName];
+            }
+            else
+            {
+                return memberName;
+            }
+        }
+
         /// <summary>
         /// 获取in的sql
         /// </summary>
