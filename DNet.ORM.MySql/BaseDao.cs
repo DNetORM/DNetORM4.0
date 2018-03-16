@@ -21,7 +21,7 @@ namespace DNet.DataAccess
     /// 为DAL层提供继承基类
     /// Author Jack Liu
     /// </summary>
-    public class BaseDao<T> where T : class, new()
+    public class BaseDao<T> : IBaseDao where T : class, new()
     {
         public DNetContext DbContext { get; set; }
 
@@ -32,7 +32,7 @@ namespace DNet.DataAccess
         {
             get
             {
-                var jq= new JoinQuery(DbContext);
+                var jq = new JoinQuery(DbContext);
                 jq.IsAutoDisposeDbContext = true;
                 return jq;
             }
@@ -45,7 +45,7 @@ namespace DNet.DataAccess
         {
             get
             {
-                var jq = new JoinQuery(DbContext,true);
+                var jq = new JoinQuery(DbContext, true);
                 jq.IsAutoDisposeDbContext = true;
                 return jq;
             }
@@ -79,7 +79,7 @@ namespace DNet.DataAccess
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public int Add(List<T> entities) 
+        public int Add(List<T> entities)
         {
             using (DbContext)
             {
@@ -92,7 +92,7 @@ namespace DNet.DataAccess
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public int Delete(T entity) 
+        public int Delete(T entity)
         {
             using (DbContext)
             {
@@ -105,7 +105,7 @@ namespace DNet.DataAccess
         /// </summary>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public int Delete(Expression<Func<T, bool>> exp) 
+        public int Delete(Expression<Func<T, bool>> exp)
         {
             using (DbContext)
             {
@@ -118,7 +118,7 @@ namespace DNet.DataAccess
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public int Delete(List<T> entities) 
+        public int Delete(List<T> entities)
         {
             using (DbContext)
             {
@@ -145,7 +145,7 @@ namespace DNet.DataAccess
         /// <param name="entity"></param>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public int Update(T entity, Expression<Func<T, bool>> exp) 
+        public int Update(T entity, Expression<Func<T, bool>> exp)
         {
             using (DbContext)
             {
@@ -173,7 +173,7 @@ namespace DNet.DataAccess
         /// <param name="updateAction"></param>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public int Update(Action<T> updateAction, Expression<Func<T, bool>> exp) 
+        public int Update(Action<T> updateAction, Expression<Func<T, bool>> exp)
         {
             using (DbContext)
             {
@@ -187,7 +187,7 @@ namespace DNet.DataAccess
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public int Update(List<T> entities) 
+        public int Update(List<T> entities)
         {
             using (DbContext)
             {
@@ -202,7 +202,7 @@ namespace DNet.DataAccess
         /// <param name="ignoreFields"></param>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public int UpdateIgnoreFields(T entity, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp) 
+        public int UpdateIgnoreFields(T entity, Expression<Func<T, dynamic>> ignoreFields, Expression<Func<T, bool>> exp)
         {
             using (DbContext)
             {
@@ -217,7 +217,7 @@ namespace DNet.DataAccess
         /// <param name="onlyFields"></param>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public int UpdateOnlyFields(T entity, Expression<Func<T, dynamic>> onlyFields, Expression<Func<T, bool>> exp) 
+        public int UpdateOnlyFields(T entity, Expression<Func<T, dynamic>> onlyFields, Expression<Func<T, bool>> exp)
         {
             using (DbContext)
             {
@@ -230,7 +230,7 @@ namespace DNet.DataAccess
         /// </summary>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public bool IsExists(Expression<Func<T, bool>> exp) 
+        public bool IsExists(Expression<Func<T, bool>> exp)
         {
             using (DbContext)
             {
@@ -257,11 +257,11 @@ namespace DNet.DataAccess
         /// <param name="exp"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public dynamic GetMax(Expression<Func<T, bool>> exp, Expression<Func<T, dynamic>> key) 
+        public dynamic GetMax(Expression<Func<T, bool>> exp, Expression<Func<T, dynamic>> key)
         {
             using (DbContext)
             {
-                return DbContext.GetMax(exp,key);
+                return DbContext.GetMax(exp, key);
             }
         }
 
@@ -288,7 +288,7 @@ namespace DNet.DataAccess
         {
             using (DbContext)
             {
-                return DbContext.GetMin(exp,key);
+                return DbContext.GetMin(exp, key);
             }
         }
 
@@ -310,7 +310,7 @@ namespace DNet.DataAccess
         /// </summary>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public T GetSingle(Expression<Func<T, bool>> exp) 
+        public T GetSingle(Expression<Func<T, bool>> exp)
         {
             using (DbContext)
             {
@@ -338,7 +338,7 @@ namespace DNet.DataAccess
         /// <param name="exp"></param>
         /// <param name="select"></param>
         /// <returns></returns>
-        public dynamic GetSingle(Expression<Func<T, bool>> exp, Expression<Func<T, dynamic>> select) 
+        public dynamic GetSingle(Expression<Func<T, bool>> exp, Expression<Func<T, dynamic>> select)
         {
             using (DbContext)
             {
@@ -365,7 +365,7 @@ namespace DNet.DataAccess
         /// <param name="exp"></param>
         /// <param name="select"></param>
         /// <returns></returns>
-        public List<T> GetList(Expression<Func<T, bool>> exp, Expression<Func<T, T>> select) 
+        public List<T> GetList(Expression<Func<T, bool>> exp, Expression<Func<T, T>> select)
         {
             using (DbContext)
             {
@@ -418,7 +418,7 @@ namespace DNet.DataAccess
         /// <param name="exp"></param>
         /// <param name="select"></param>
         /// <returns></returns>
-        public List<TObject> GetDistinctList<TObject>(Expression<Func<T, bool>> exp, Expression<Func<T, dynamic>> select) 
+        public List<TObject> GetDistinctList<TObject>(Expression<Func<T, bool>> exp, Expression<Func<T, dynamic>> select)
         {
             using (DbContext)
             {
@@ -502,7 +502,7 @@ namespace DNet.DataAccess
         {
             using (DbContext)
             {
-                return DbContext.GetPage<TObject>(sql,pageFilter);
+                return DbContext.GetPage<TObject>(sql, pageFilter);
             }
         }
 
@@ -611,7 +611,7 @@ namespace DNet.DataAccess
         /// <returns></returns>
         public DbParameter GetDbParameter(string name, object value)
         {
-            return DbParameterFactory.CreateDbParameter(name,value);
+            return DbParameterFactory.CreateDbParameter(name, value);
         }
 
         /// <summary>

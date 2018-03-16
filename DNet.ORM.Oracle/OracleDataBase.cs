@@ -182,6 +182,9 @@ namespace DNet.DataAccess
                                 case "System.Double":
                                     typeBrief = "double?";
                                     break;
+                                case "System.Byte[]":
+                                    typeBrief = "byte[]";
+                                    break;
                                 default:
                                     break;
                             }

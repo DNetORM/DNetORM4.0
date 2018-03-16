@@ -48,10 +48,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseDao.cs" />
+    <Compile Include="DaoFactory.cs" />
     <Compile Include="DbContext.cs" />
     <Compile Include="DbFactory.cs" />
     <Compile Include="DbParameterFactory.cs" />
     <Compile Include="DNetContext.cs" />
+    <Compile Include="IBaseDao.cs" />
     <Compile Include="JoinQuery.cs" />
     <Compile Include="MySqlDataBase.cs" />
     <Compile Include="MySqlDialect.cs" />

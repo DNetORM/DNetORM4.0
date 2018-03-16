@@ -21,7 +21,7 @@ namespace DNet.DataAccess
     /// 为DAL层提供继承基类
     /// Author Jack Liu
     /// </summary>
-    public class BaseDao<T> where T : class, new()
+    public class BaseDao<T> :IBaseDao where T : class, new()
     {
         public DNetContext DbContext { get; set; }
 
