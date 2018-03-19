@@ -642,6 +642,7 @@ namespace DNet.DataAccess
                 dataSource.RecordCount = recordCount;
                 dataSource.PageCount = pageCount;
                 dataSource.PageIndex = pageIndex;
+                dataSource.PageSize = pageFilter.PageSize;
                 dataSource.DataSource = new List<T>();
 
                 while (reader.Read())
