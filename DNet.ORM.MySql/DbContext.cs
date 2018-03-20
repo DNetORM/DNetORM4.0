@@ -600,10 +600,14 @@ namespace DNet.DataAccess
         {
             EntityInfo entityInfo = Caches.EntityInfoCache.Get(typeof(TIn));
             SqlVisitor selectTranslator = new SqlVisitor(this.DataBase.DBType, 0, VisitorType.SelectFields);
-            string fields = selectTranslator.Translate(select);
-            foreach (DbParameter parm in selectTranslator.Parameters)
+            string fields = string.Empty;
+            if (select != null)
             {
-                parms.Add(parm);
+                fields = selectTranslator.Translate(select);
+                foreach (DbParameter parm in selectTranslator.Parameters)
+                {
+                    parms.Add(parm);
+                }
             }
             switch (selectType)
             {

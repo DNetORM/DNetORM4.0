@@ -21,9 +21,10 @@ namespace DNet.ORM.Demo
             stopwatch.Start(); //  开始监视代
             using (DNetContext db = new DNetContext())
             {
-                var books = db.GetList<Book>(m => SubQuery.GetList<Author>(n => n.AuthorID > 10, n => n.AuthorID).Contains(m.AuthorID));
+                var  b = db.GetMax<Book>(m => m.BookID);
+                //var books = db.GetList<Book>(m => SubQuery.GetList<Author>(n => n.AuthorID > 10, n => n.AuthorID).Contains(m.AuthorID));
                 //获取动态类型
-                List<string> name = db.GetList<Book,string>(m =>true, m => m.BookName + "aaa" );
+                //List<string> name = db.IsExists<Book,string>(m =>true, m => m.BookName + "aaa" );
                 //var r = db.GetList<Test>(m =>true);
             }
             stopwatch.Stop(); //  停止监视  
