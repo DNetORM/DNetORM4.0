@@ -21,6 +21,7 @@ namespace DNet.ORM.Demo
             stopwatch.Start(); //  开始监视代
             using (DNetContext db = new DNetContext())
             {
+                
                 var  b = db.GetMax<Book>(m => m.BookID);
                 //var books = db.GetList<Book>(m => SubQuery.GetList<Author>(n => n.AuthorID > 10, n => n.AuthorID).Contains(m.AuthorID));
                 //获取动态类型

@@ -421,7 +421,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql)
         {
             MySqlCommand command = new MySqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
             MySqlDataAdapter adpter = new MySqlDataAdapter(command);
             DataSet ds = new DataSet();
             adpter.Fill(ds);
@@ -438,7 +438,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql, params DbParameter[] cmdParms)
         {
             MySqlCommand command = new MySqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, cmdParms);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             MySqlDataAdapter adpter = new MySqlDataAdapter(command);
             DataSet ds = new DataSet();
             adpter.Fill(ds);
@@ -455,7 +455,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql, int times)
         {
             MySqlCommand command = new MySqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
             command.CommandTimeout = times;
             MySqlDataAdapter adpter = new MySqlDataAdapter(command);
             DataSet ds = new DataSet();
@@ -473,7 +473,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql, int times, params DbParameter[] cmdParms)
         {
             MySqlCommand command = new MySqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, cmdParms);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             command.CommandTimeout = times;
             MySqlDataAdapter adpter = new MySqlDataAdapter(command);
             DataSet ds = new DataSet();
@@ -500,7 +500,7 @@ namespace DNet.DataAccess
             }
 
             MySqlCommand command = new MySqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, cmdParms);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             MySqlDataAdapter adpter = new MySqlDataAdapter(command);
             DataSet ds = new DataSet();
             adpter.Fill(ds);
@@ -519,7 +519,7 @@ namespace DNet.DataAccess
         public int RunProcedure(string storedProcName)
         {
             MySqlCommand command = new MySqlCommand(storedProcName);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.StoredProcedure, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.StoredProcedure, null);
             int effectLines = 0;
             effectLines = command.ExecuteNonQuery();
             command.Dispose();
@@ -533,7 +533,7 @@ namespace DNet.DataAccess
         {
 
             MySqlCommand command = new MySqlCommand(storedProcName);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.StoredProcedure, parameters);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.StoredProcedure, parameters);
             int effectLines = 0;
             effectLines = command.ExecuteNonQuery();
             command.Parameters.Clear();
@@ -552,7 +552,7 @@ namespace DNet.DataAccess
         public object RunProcedure(string storedProcName, DbParameter OutParameter, params DbParameter[] InParameters)
         {
             MySqlCommand command = new MySqlCommand(storedProcName);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.StoredProcedure, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.StoredProcedure, null);
             command.Parameters.Add(OutParameter);
             command.Parameters.AddRange(InParameters);
             command.ExecuteNonQuery();

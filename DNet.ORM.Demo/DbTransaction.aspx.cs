@@ -22,14 +22,16 @@ namespace DNet.ORM.Demo
                 try
                 {
                     List<Author> authors = new List<Author>();
-                    for (int i = 0; i <= 100; i++)
+                    for (int i = 0; i <= 10; i++)
                     {
                         authors.Add(new Author { AuthorName = "jack" + i.ToString(), Age = 20, IsValid = true });
                     }
                     db.Add(authors);
+
+                    var aus = db.GetList<Author>(m=>true);
                     db.DataBase.Commit();
                 }
-                catch
+                catch(Exception ex)
                 {
                     db.DataBase.Rollback();
                 }

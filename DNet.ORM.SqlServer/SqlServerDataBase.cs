@@ -368,7 +368,7 @@ namespace DNet.DataAccess
         public IDataReader ExecuteReader(string strSql)
         {
             SqlCommand command = new SqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
             SqlDataReader dr = null;
             try
             {
@@ -391,7 +391,7 @@ namespace DNet.DataAccess
         public IDataReader ExecuteReader(string strSql, params DbParameter[] cmdParms)
         {
             SqlCommand command = new SqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, cmdParms);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             SqlDataReader dr = null;
             try
             {
@@ -418,7 +418,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql)
         {
             SqlCommand command = new SqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
             SqlDataAdapter adpter = new SqlDataAdapter(command);
             DataSet ds = new DataSet();
             adpter.Fill(ds);
@@ -435,7 +435,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql, params DbParameter[] cmdParms)
         {
             SqlCommand command = new SqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, cmdParms);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             SqlDataAdapter adpter = new SqlDataAdapter(command);
             DataSet ds = new DataSet();
             adpter.Fill(ds);
@@ -460,7 +460,7 @@ namespace DNet.DataAccess
                 strSql += orderBy;
             }
             SqlCommand command = new SqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, cmdParms);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             SqlDataAdapter adpter = new SqlDataAdapter(command);
             DataSet ds = new DataSet();
             adpter.Fill(ds);
@@ -477,7 +477,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql, int times)
         {
             SqlCommand command = new SqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
             command.CommandTimeout = times;
             SqlDataAdapter adpter = new SqlDataAdapter(command);
             DataSet ds = new DataSet();
@@ -495,7 +495,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql, int times, params DbParameter[] cmdParms)
         {
             SqlCommand command = new SqlCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, cmdParms);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             command.CommandTimeout = times;
             SqlDataAdapter adpter = new SqlDataAdapter(command);
             DataSet ds = new DataSet();
@@ -515,7 +515,7 @@ namespace DNet.DataAccess
         public int RunProcedure(string storedProcName)
         {
             SqlCommand command = new SqlCommand(storedProcName);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.StoredProcedure, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.StoredProcedure, null);
             int effectLines = 0;
             effectLines = command.ExecuteNonQuery();
             command.Dispose();
@@ -528,7 +528,7 @@ namespace DNet.DataAccess
         public int RunProcedure(string storedProcName, params DbParameter[] parameters)
         {
             SqlCommand command = new SqlCommand(storedProcName);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.StoredProcedure, parameters);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.StoredProcedure, parameters);
             int effectLines = 0;
             effectLines = command.ExecuteNonQuery();
             command.Parameters.Clear();
@@ -547,7 +547,7 @@ namespace DNet.DataAccess
         public object RunProcedure(string storedProcName, DbParameter OutParameter, params DbParameter[] InParameters)
         {
             SqlCommand command = new SqlCommand(storedProcName);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.StoredProcedure, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.StoredProcedure, null);
             command.Parameters.Add(OutParameter);
             command.Parameters.Add(InParameters);
             command.ExecuteNonQuery();

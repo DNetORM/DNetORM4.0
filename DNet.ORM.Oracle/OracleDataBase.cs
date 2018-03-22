@@ -408,7 +408,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql)
         {
             OracleCommand command = new OracleCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
             OracleDataAdapter adpter = new OracleDataAdapter(command);
             DataSet ds = new DataSet();
             adpter.Fill(ds);
@@ -424,7 +424,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql, params DbParameter[] cmdParms)
         {
             OracleCommand command = new OracleCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, cmdParms);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             OracleDataAdapter adpter = new OracleDataAdapter(command);
             DataSet ds = new DataSet();
             adpter.Fill(ds);
@@ -441,7 +441,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql, int times)
         {
             OracleCommand command = new OracleCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, null);
             command.CommandTimeout = times;
             OracleDataAdapter adpter = new OracleDataAdapter(command);
             DataSet ds = new DataSet();
@@ -460,7 +460,7 @@ namespace DNet.DataAccess
         public DataSet Query(string strSql, int times, params DbParameter[] cmdParms)
         {
             OracleCommand command = new OracleCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, cmdParms);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             command.CommandTimeout = times;
             OracleDataAdapter adpter = new OracleDataAdapter(command);
             DataSet ds = new DataSet();
@@ -479,7 +479,7 @@ namespace DNet.DataAccess
                 strSql += orderBy;
             }
             OracleCommand command = new OracleCommand(strSql);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.Text, cmdParms);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.Text, cmdParms);
             OracleDataAdapter adpter = new OracleDataAdapter(command);
             DataSet ds = new DataSet();
             adpter.Fill(ds);
@@ -498,7 +498,7 @@ namespace DNet.DataAccess
         public int RunProcedure(string storedProcName)
         {
             OracleCommand command = new OracleCommand(storedProcName);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.StoredProcedure, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.StoredProcedure, null);
             int effectLines = 0;
             effectLines = command.ExecuteNonQuery();
             command.Dispose();
@@ -511,7 +511,7 @@ namespace DNet.DataAccess
         public int RunProcedure(string storedProcName, params DbParameter[] parameters)
         {
             OracleCommand command = new OracleCommand(storedProcName);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.StoredProcedure, parameters);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.StoredProcedure, parameters);
             int effectLines = 0;
             effectLines = command.ExecuteNonQuery();
             command.Parameters.Clear();
@@ -531,7 +531,7 @@ namespace DNet.DataAccess
         public object RunProcedure(string storedProcName, DbParameter OutParameter, params DbParameter[] InParameters)
         {
             OracleCommand command = new OracleCommand(storedProcName);
-            PrepareCommand(command, CurrentDbConnection, null, CommandType.StoredProcedure, null);
+            PrepareCommand(command, CurrentDbConnection, CurrentTransaction, CommandType.StoredProcedure, null);
             command.Parameters.Add(OutParameter);
             command.Parameters.AddRange(InParameters);
             command.ExecuteNonQuery();
