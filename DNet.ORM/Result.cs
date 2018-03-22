@@ -152,4 +152,75 @@ namespace DNet
         /// </summary>
         public T ResultObj { get; set; }
     }
+
+
+    /// <summary>
+    /// 具有多个结果集的反馈类型 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class Results<T> : Result
+    {
+        public Results()
+            : base()
+        {
+            this.ResultsObj = new List<Result<T>>();
+            FailCount = 0;
+            SuccessCount = 0;
+        }
+
+        /// <summary>
+        /// 失败条目
+        /// </summary>
+        public int FailCount { get; set; }
+
+        /// <summary>
+        /// 成功条目
+        /// </summary>
+        public int SuccessCount { get; set; }
+
+        /// <summary>
+        /// 查询结果
+        /// </summary>
+        public List<Result<T>> ResultsObj { get; set; }
+
+        /// <summary>
+        /// 判断是否完全处理正确
+        /// </summary>
+        /// <param name="successMessage"></param>
+        /// <param name="failMessage"></param>
+        /// <returns></returns>
+        public Results<T> Self(string successMessage, string failMessage)
+        {
+            if (FailCount == 0)
+            {
+                this.Message = successMessage;
+                this.Flag = Flag.OK;
+            }
+            else
+            {
+                this.Message = failMessage;
+                this.Flag = Flag.Warning;
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// 判断是否完全处理正确
+        /// </summary>
+        /// <param name="successMessage"></param>
+        /// <returns></returns>
+        public Results<T> Self(string successMessage)
+        {
+            if (FailCount == 0)
+            {
+                this.Message = successMessage;
+                this.Flag = Flag.OK;
+            }
+            else
+            {
+                this.Flag = Flag.Warning;
+            }
+            return this;
+        }
+    }
 }
