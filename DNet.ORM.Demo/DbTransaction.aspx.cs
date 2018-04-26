@@ -18,7 +18,6 @@ namespace DNet.ORM.Demo
             stopwatch.Start(); //  开始监视代
             using (DNetContext db = new DNetContext())
             {
-                db.DataBase.BeginTransaction();
                 try
                 {
                     List<Author> authors = new List<Author>();
