@@ -18,6 +18,9 @@ namespace DNet.ORM.Demo
             stopwatch.Start(); //  开始监视代
             using (DNetContext db = new DNetContext())
             {
+
+                db.Update<Author>(m => { m.token = "";m.Age = 20; }, m => m.AuthorID == 1);
+
                 var author = db.GetSingle<Author>(m => true, q => q.OrderBy(m => m.AuthorID));
                 if (author != null)
                 {

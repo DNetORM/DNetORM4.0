@@ -166,7 +166,7 @@ namespace DNet.DataAccess
             T entity = new T();
             List<string> infos = (from instruction in updateAction.Method.GetInstructions()
                                   where instruction.OpCode.OperandType == OperandType.InlineMethod && instruction.OpCode.Name == "callvirt" && ((MethodInfo)instruction.Operand).Name.StartsWith("set_")
-                                  select ((MethodInfo)instruction.Operand).Name.TrimStart("set_".ToCharArray())).ToList();
+                                  select ((MethodInfo)instruction.Operand).Name.Substring(4)).ToList();
             updateAction(entity);
             return base.UpdateT(entity, infos.Distinct().ToList(), exp);
         }

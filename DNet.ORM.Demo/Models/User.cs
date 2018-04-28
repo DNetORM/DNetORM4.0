@@ -8,6 +8,7 @@ namespace DNet.Entity
         //[Sequence("emp_sequence")]
         public int? AuthorID { get; set; }
         public string AuthorName { get; set; }
+        public string token { get; set; }
         public int? Age { get; set; }
         public bool? IsValid { get; set; }
     }
