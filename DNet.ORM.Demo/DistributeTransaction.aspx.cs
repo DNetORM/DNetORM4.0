@@ -23,8 +23,6 @@ namespace DNet.ORM.Demo
             {
                 using (DNetContext db = new DNetContext())
                 {
-                    db.DataBase.BeginTransaction();
-
                     List<Author> authors = new List<Author>();
                     for (int i = 0; i <= 100; i++)
                     {

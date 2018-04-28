@@ -20,6 +20,7 @@ namespace DNet.ORM.Demo
             {
                 try
                 {
+                    db.DataBase.BeginTransaction();
                     List<Author> authors = new List<Author>();
                     for (int i = 0; i <= 10; i++)
                     {
