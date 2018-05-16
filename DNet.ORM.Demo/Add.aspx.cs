@@ -19,7 +19,7 @@ namespace DNet.ORM.Demo
             using (DNetContext db = new DNetContext())
             {
                 var authorid = db.Add(new Author { AuthorName = "张三", Age = 30, IsValid = true });
-                db.Add(new Book { BookName = "从入门到放弃", Price = 20.5, PublishDate = DateTime.Now, AuthorID = authorid });
+                db.Add(new Book { BookName = "从入门到放弃", Price = 20.5, PublishDate = DateTime.Now, AuthorID = authorid }); 
             }
             stopwatch.Stop(); //  停止监视  
             TimeSpan timespan = stopwatch.Elapsed; //  获取当前实例测量得出的总时间  
