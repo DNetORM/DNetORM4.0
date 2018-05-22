@@ -175,8 +175,6 @@ then config the connection strings such as demo,DNetContext also receive a Conne
             {
                 using (DNetContext db = new DNetContext())
                 {
-                    db.DataBase.BeginTransaction();
-
                     List<Author> authors = new List<Author>();
                     for (int i = 0; i <= 100; i++)
                     {
