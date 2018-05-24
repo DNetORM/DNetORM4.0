@@ -19,7 +19,7 @@ namespace DNet.ORM.Demo
             using (DNetContext db = new DNetContext())
             {
 
-                db.Update<Author>(m => { m.token = "";m.Age = 20; }, m => m.AuthorID == 1);
+                db.Update<Author>(m => { m.token = "";m.Age = 20;m.AuthorName = "testname"; }, m => m.AuthorID == 12);
 
                 var author = db.GetSingle<Author>(m => true, q => q.OrderBy(m => m.AuthorID));
                 if (author != null)

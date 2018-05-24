@@ -26,7 +26,7 @@ namespace DNet.ORM.Demo
             using (DNetContext db = new DNetContext())
             {
                 var author = db.GetSingle<Author>(m => true, q => q.OrderBy(m => m.AuthorID));
-
+              
                 var book = db.GetSingle<Book>(m => ((DateTime)m.PublishDate).ToString("yyyy-MM-dd") == "2017-11-11");
 
                 var authors = db.GetList<Author>(m => string.IsNullOrEmpty(m.AuthorName) && m.IsValid == true);
