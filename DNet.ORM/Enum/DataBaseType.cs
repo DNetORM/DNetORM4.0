@@ -10,7 +10,8 @@ namespace DNet
     {
         SqlServer,
         Oracle,
-        MySql
+        MySql,
+        SQLite
     }
  
 

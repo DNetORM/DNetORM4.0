@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNet.ORM.Oracle", "DNet.ORM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNet.ORM.SqlServer", "DNet.ORM.SqlServer\DNet.ORM.SqlServer.csproj", "{AD45509E-7AF1-4BEE-AFDC-FDF470611B02}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNet.ORM.SQLite", "DNet.ORM.SQLite\DNet.ORM.SQLite.csproj", "{B682A498-6491-4D0B-AE5B-95A6855742FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{AD45509E-7AF1-4BEE-AFDC-FDF470611B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD45509E-7AF1-4BEE-AFDC-FDF470611B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD45509E-7AF1-4BEE-AFDC-FDF470611B02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B682A498-6491-4D0B-AE5B-95A6855742FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B682A498-6491-4D0B-AE5B-95A6855742FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B682A498-6491-4D0B-AE5B-95A6855742FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B682A498-6491-4D0B-AE5B-95A6855742FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
