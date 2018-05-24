@@ -740,7 +740,7 @@ namespace DNet.DataAccess
         /// </summary>
         public string ParameterPrefix
         {
-            get { return "?"; }
+            get { return "@"; }
         }
 
 

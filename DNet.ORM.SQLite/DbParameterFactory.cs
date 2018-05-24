@@ -30,7 +30,7 @@ namespace DNet.DataAccess
 
         public static string GetParameterPrefix()
         {
-            return "?";
+            return "@";
         }
     }
 }

@@ -10,7 +10,7 @@ namespace DNet.DataAccess.Dialect
     {
         public string Contains()
         {
-            return " LIKE CONCAT('%',{0},'%')";
+            return " LIKE ('%'||{0}||'%')";
         }
 
         public string DateTimeToChar()
@@ -20,7 +20,7 @@ namespace DNet.DataAccess.Dialect
 
         public string EndsWith()
         {
-            return " LIKE CONCAT('%',{0})";
+            return " LIKE ('%'||{0})";
         }
 
         public string IndexOf()
@@ -42,12 +42,12 @@ namespace DNet.DataAccess.Dialect
 
         public string SelectIdentity()
         {
-            return "; SELECT LAST_INSERT_ID()";
+            return "; SELECT LAST_INSERT_ROWID()";
         }
 
         public string StartsWith()
         {
-            return " LIKE CONCAT({0},'%')";
+            return " LIKE ({0}||'%')";
         }
 
         public string ToChar()

@@ -31,6 +31,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -61,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DbTransaction.aspx" />
+    <Content Include="App_Data\test.db" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -163,13 +165,11 @@
       <DependentUpon>Update.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DNet.ORM.SqlServer\DNet.ORM.SqlServer.csproj">
-      <Project>{ad45509e-7af1-4bee-afdc-fdf470611b02}</Project>
-      <Name>DNet.ORM.SqlServer</Name>
+    <ProjectReference Include="..\DNet.ORM.SQLite\DNet.ORM.SQLite.csproj">
+      <Project>{b682a498-6491-4d0b-ae5b-95a6855742fa}</Project>
+      <Name>DNet.ORM.SQLite</Name>
     </ProjectReference>
     <ProjectReference Include="..\DNet.ORM\DNet.ORM.csproj">
       <Project>{6a95eeab-41a1-4988-aa84-eed71124b25f}</Project>

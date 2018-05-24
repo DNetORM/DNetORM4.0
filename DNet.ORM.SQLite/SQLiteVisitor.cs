@@ -519,9 +519,9 @@ namespace DNet.DataAccess
                 case ExpressionType.Add:
                     if (binaryExp.Type == typeof(string))
                     {
-                        SqlBuilder.Append("CONCAT(");
+                        SqlBuilder.Append("(");
                         this.Visit(binaryExp.Left);
-                        SqlBuilder.Append(",");
+                        SqlBuilder.Append("||");
                         this.Visit(binaryExp.Right);
                         SqlBuilder.Append(")");
                     }

@@ -21,7 +21,7 @@ namespace DNet.ORM.Demo
                 var author = db.GetSingle<Author>(m => true, q => q.OrderBy(m => m.AuthorID));
                 var effect = db.Delete(author);
 
-                int authorid = db.GetMax<Author>(m => (int)m.AuthorID);
+                long? authorid = db.GetMax<Author>(m => m.AuthorID);
                 db.Delete<Author>(m => m.AuthorID == authorid);
 
             }
