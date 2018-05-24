@@ -15,7 +15,7 @@ namespace DNet.DataAccess.Dialect
 
         public string DateTimeToChar()
         {
-           return " DATE_FORMAT({0},'{1}') ";
+           return " strftime({0},'{1}','localtime') ";
         }
 
         public string EndsWith()
@@ -25,7 +25,7 @@ namespace DNet.DataAccess.Dialect
 
         public string IndexOf()
         {
-            return " LOCATE({0},{1})-1 ";
+            throw new NotImplementedException("SQLite 不支持IndexOf等价的函数");
         }
 
         public string ParseTimeFormat(string clrFormat)
@@ -35,8 +35,8 @@ namespace DNet.DataAccess.Dialect
                    .Replace("MM", "%m")
                    .Replace("dd", "%d")
                    .Replace("HH", "%H")
-                   .Replace("mm", "%i")
-                   .Replace("ss", "%s");
+                   .Replace("mm", "%M")
+                   .Replace("ss", "%S");
             return clrFormat;
         }
 
@@ -74,7 +74,7 @@ namespace DNet.DataAccess.Dialect
                 case DateDiffType.Hour:
                 case DateDiffType.Minute:
                 default:
-                    throw new NotImplementedException("MySql DateDiff函数不支持Hour Minute此格式");
+                    throw new NotImplementedException("SQLite DateDiff函数不支持Hour Minute此格式");
             }
 
         }

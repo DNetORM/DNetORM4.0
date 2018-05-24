@@ -210,7 +210,7 @@ namespace DNet.DataAccess
                         MemberType = mtVisitor.Translate(methodExp.Arguments[0]);
                         if (MemberType != null)
                         {
-                            SqlBuilder.AppendFormat(SqlDialect.ToChar(), Translate(methodExp.Arguments[0]));
+                            SqlBuilder.AppendFormat(SqlDialect.ToChar(), TranslateClause(methodExp.Arguments[0]));
                             return methodExp;
                         }
                     }
@@ -220,7 +220,7 @@ namespace DNet.DataAccess
                         MemberType = mtVisitor.Translate(methodExp.Object);
                         if (MemberType != null)
                         {
-                            SqlBuilder.AppendFormat(SqlDialect.ToChar(), Translate(methodExp.Object));
+                            SqlBuilder.AppendFormat(SqlDialect.ToChar(), TranslateClause(methodExp.Object));
                             return methodExp;
                         }
                     }
@@ -233,7 +233,7 @@ namespace DNet.DataAccess
                             if (MemberType != null)
                             {
                                 string timeFormat = ((ConstantExpression)methodExp.Arguments[0]).Value as string;
-                                SqlBuilder.AppendFormat(SqlDialect.DateTimeToChar(), Translate(methodExp.Object), SqlDialect.ParseTimeFormat(timeFormat));
+                                SqlBuilder.AppendFormat(SqlDialect.DateTimeToChar(), TranslateClause(methodExp.Object), SqlDialect.ParseTimeFormat(timeFormat));
                                 return methodExp;
                             }
                         }
@@ -264,7 +264,7 @@ namespace DNet.DataAccess
                         }
                         else if (MemberType == typeof(string))
                         {
-                            SqlBuilder.AppendFormat(SqlDialect.ToDateTime(), Translate(methodExp.Arguments[0]));
+                            SqlBuilder.AppendFormat(SqlDialect.ToDateTime(), TranslateClause(methodExp.Arguments[0]));
                             return methodExp;
                         }
                     }

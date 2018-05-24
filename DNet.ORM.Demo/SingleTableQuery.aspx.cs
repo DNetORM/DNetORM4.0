@@ -33,7 +33,7 @@ namespace DNet.ORM.Demo
 
                 List<dynamic> name = db.GetDistinctList<Author>(m => m.AuthorName.StartsWith("jim") && m.IsValid == true, m => m.AuthorName + "aaa");
 
-                List<string> name1 = db.GetDistinctList<Author, string>(m => m.AuthorName.IndexOf("jim") == 2 && m.IsValid == true, m => m.AuthorName);
+                //List<string> name1 = db.GetDistinctList<Author, string>(m => m.AuthorName.IndexOf("jim") == 2 && m.IsValid == true, m => m.AuthorName);
 
                 var books = db.GetList<Book>(m => SubQuery.GetList<Author>(n => n.AuthorID > 10, n => n.AuthorID).Contains(m.AuthorID));
 
