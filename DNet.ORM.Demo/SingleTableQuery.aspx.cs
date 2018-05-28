@@ -28,7 +28,7 @@ namespace DNet.ORM.Demo
                 var author = db.GetSingle<Author>(m => true, q => q.OrderBy(m => m.AuthorID));
               
                 var book = db.GetSingle<Book>(m => ((DateTime)m.PublishDate).ToString("yyyy-MM-dd") == "2017-11-11");
-
+              
                 var authors = db.GetList<Author>(m => string.IsNullOrEmpty(m.AuthorName) && m.IsValid == true);
 
                 List<dynamic> name = db.GetDistinctList<Author>(m => m.AuthorName.StartsWith("jim") && m.IsValid == true, m => m.AuthorName + "aaa");

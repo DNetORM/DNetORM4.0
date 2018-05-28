@@ -32,7 +32,7 @@ namespace DNet.ORM.Demo
                     transaction.Commit();
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 transaction.Rollback();
             }

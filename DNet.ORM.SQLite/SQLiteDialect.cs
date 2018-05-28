@@ -57,7 +57,7 @@ namespace DNet.DataAccess.Dialect
 
         public string ToDateTime()
         {
-            return " CAST({0} AS DATETIME) ";
+            return " DATETIME({0}) ";
         }
 
         public string ToNumber()
