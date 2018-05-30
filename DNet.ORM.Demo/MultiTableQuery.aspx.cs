@@ -39,7 +39,7 @@ namespace DNet.ORM.Demo
                     .Fields<Book, Author>((m1, n) => new { AuthorName1 = m1.BookName + n.AuthorName, n })
                     .OrderByAsc<Book>(m => m.BookName);
                 PageFilter page = new PageFilter { PageIndex = 1, PageSize = 10 };//分页参数前台传来
-                join.GetPage<Book>(page);
+              var pagesource=join.GetPage<Book>(page);
 
             }
             stopwatch.Stop(); //  停止监视  

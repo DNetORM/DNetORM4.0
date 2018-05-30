@@ -52,7 +52,7 @@ namespace DNet.DataAccess
                 foreach (var v in values)
                 {
                     i++;
-                    result.Sql.AppendFormat("@{0}{1},", columnName, i);
+                    result.Sql.AppendFormat(":{0}{1},", columnName, i);
                     result.Parameters.Add(DbParameterFactory.CreateDbParameter(columnName + i.ToString(), v));
                 }
                 result.Sql.Remove(result.Sql.Length - 1, 1);
@@ -79,7 +79,7 @@ namespace DNet.DataAccess
                 foreach (var v in values)
                 {
                     i++;
-                    result.Sql.AppendFormat("@{0}{1},", columnName, i);
+                    result.Sql.AppendFormat(":{0}{1},", columnName, i);
                     result.Parameters.Add(DbParameterFactory.CreateDbParameter(columnName + i.ToString(), v));
                 }
                 result.Sql.Remove(result.Sql.Length - 1, 1);
