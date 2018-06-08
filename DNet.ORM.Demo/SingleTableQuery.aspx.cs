@@ -48,9 +48,9 @@ namespace DNet.ORM.Demo
                 db.GetList<Author>(where.WhereExpression);
 
 
-                PageFilter page = new PageFilter { PageIndex = 1, PageSize = 10 };
-                page.And<Author>(m => "jim green".Contains(m.AuthorName));
-                page.OrderBy<Author>(q => q.OrderBy(m => m.AuthorName).OrderByDescending(m => m.AuthorID));
+                PageFilter<Author> page = new PageFilter<Author> { PageIndex = 1, PageSize = 10 };
+                page.And(m => "jim green".Contains(m.AuthorName));
+                page.OrderBy(q => q.OrderBy(m => m.AuthorName).OrderByDescending(m => m.AuthorID));
                 PageDataSource<Author> pageSource = db.GetPage<Author>(page);
             }
             stopwatch.Stop(); //  停止监视  

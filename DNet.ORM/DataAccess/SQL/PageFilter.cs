@@ -20,76 +20,9 @@ namespace DNet
     [DataContract]
     public class PageFilter
     {
-
         private string orderText;
         private int pageIndex;
         private int pageSize;
-        public Expression WhereExpression { get; set; }
-
-        /// <summary>
-        /// 添加AND条件
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        public void And<T>(Expression<Func<T, bool>> value)
-        {
-            if (WhereExpression != null)
-            {
-                Expression<Func<T, bool>> exp = (Expression<Func<T, bool>>)WhereExpression;
-                WhereExpression = exp.And<T>(value);
-            }
-            else
-            {
-                WhereExpression = value;
-            }
-        }
-
-        /// <summary>
-        /// 添加OR条件
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        public void Or<T>(Expression<Func<T, bool>> value)
-        {
-            if (WhereExpression != null)
-            {
-                Expression<Func<T, bool>> exp = (Expression<Func<T, bool>>)WhereExpression;
-                WhereExpression = exp.Or<T>(value);
-            }
-            else
-            {
-                WhereExpression = value;
-            }
-        }
-
-        /// <summary>
-        /// 添加OrderBy
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        public void OrderBy<T>(Expression<Func<IEnumerable<T>, IOrderedEnumerable<T>>> value)
-        {
-            if (value != null)
-            {
-                OrderByVisitor<T> orderByVisitor = new OrderByVisitor<T>();
-                OrderText = orderByVisitor.Translate(value);
-            }
-        }
-
-        /// <summary>
-        /// 添加OrderBy 别名
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        /// <param name="alias"></param>
-        public void OrderBy<T>(Expression<Func<IEnumerable<T>, IOrderedEnumerable<T>>> value,string alias)
-        {
-            if (value != null)
-            {
-                OrderByVisitor<T> orderByVisitor = new OrderByVisitor<T>();
-                OrderText = orderByVisitor.Translate(value, alias);
-            }
-        }
 
         public PageFilter()
         {
@@ -176,6 +109,87 @@ namespace DNet
                     this.pageSize = value;
                 }
             }
+        }
+    }
+
+    public class PageFilter<T>:PageFilter
+    {
+        public Expression WhereExpression { get; set; }
+        /// <summary>
+        /// 添加AND条件
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        public void And(Expression<Func<T, bool>> value)
+        {
+            if (WhereExpression != null)
+            {
+                Expression<Func<T, bool>> exp = (Expression<Func<T, bool>>)WhereExpression;
+                WhereExpression = exp.And<T>(value);
+            }
+            else
+            {
+                WhereExpression = value;
+            }
+        }
+
+        /// <summary>
+        /// 添加OR条件
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        public void Or(Expression<Func<T, bool>> value)
+        {
+            if (WhereExpression != null)
+            {
+                Expression<Func<T, bool>> exp = (Expression<Func<T, bool>>)WhereExpression;
+                WhereExpression = exp.Or<T>(value);
+            }
+            else
+            {
+                WhereExpression = value;
+            }
+        }
+
+        /// <summary>
+        /// 添加OrderBy
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        public void OrderBy(Expression<Func<IEnumerable<T>, IOrderedEnumerable<T>>> value)
+        {
+            if (value != null)
+            {
+                OrderByVisitor<T> orderByVisitor = new OrderByVisitor<T>();
+                OrderText = orderByVisitor.Translate(value);
+            }
+        }
+
+        /// <summary>
+        /// 添加OrderBy 别名
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="alias"></param>
+        public void OrderBy(Expression<Func<IEnumerable<T>, IOrderedEnumerable<T>>> value, string alias)
+        {
+            if (value != null)
+            {
+                OrderByVisitor<T> orderByVisitor = new OrderByVisitor<T>();
+                OrderText = orderByVisitor.Translate(value, alias);
+            }
+        }
+
+        public PageFilter():base()
+        {
+        }
+
+        public PageFilter(int pageIndex, int pageSize):base(pageIndex, pageSize)
+        {
+        }
+
+        public PageFilter(int pageIndex, int pageSize, string orderText):base(pageIndex, pageSize, orderText)
+        {
         }
     }
 }
