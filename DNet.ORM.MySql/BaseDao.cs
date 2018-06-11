@@ -480,7 +480,7 @@ namespace DNet.DataAccess
         /// </summary>
         /// <param name="pageFilter"></param>
         /// <returns></returns>
-        public PageDataSource<T> GetPage(PageFilter pageFilter)
+        public PageDataSource<T> GetPage(PageFilter<T> pageFilter)
         {
             using (DbContext)
             {

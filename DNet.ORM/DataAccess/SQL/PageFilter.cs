@@ -115,6 +115,7 @@ namespace DNet
     public class PageFilter<T>:PageFilter
     {
         public Expression WhereExpression { get; set; }
+
         /// <summary>
         /// 添加AND条件
         /// </summary>
