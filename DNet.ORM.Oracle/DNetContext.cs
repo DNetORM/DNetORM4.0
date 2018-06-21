@@ -634,7 +634,14 @@ namespace DNet.DataAccess
         {
             StringBuilder selectSql = new StringBuilder();
             List<DbParameter> parms = new List<DbParameter>();
-            GetSQLByLambda(selectSql, parms, (Expression<Func<T, bool>>)((PageFilter<T>)pageFilter).WhereExpression);
+            if (pageFilter is PageFilter<T>)
+            {
+                GetSQLByLambda(selectSql, parms, (Expression<Func<T, bool>>)((PageFilter<T>)pageFilter).WhereExpression);
+            }
+            else
+            {
+                GetSQLByLambda<T>(selectSql, parms, null);
+            }
             PageDataSource<T> dataSource = new PageDataSource<T>();
             int recordCount, pageCount, pageIndex;
             using (var reader = DataBase.ExecutePageReader(selectSql.ToString(), pageFilter.OrderText, pageFilter.PageIndex, pageFilter.PageSize, out recordCount, out pageCount, out pageIndex, parms.ToArray()))
