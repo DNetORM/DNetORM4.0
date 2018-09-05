@@ -290,7 +290,7 @@ namespace DNet.DataAccess
         /// <param name="entity"></param>
         /// <param name="updateSql"></param>
         /// <param name="parms"></param>
-        protected int UpdateT<T>(T entity)
+        protected int UpdateT<T>(T entity, bool isAllUpdate = false)
         {
             try
             {
@@ -311,6 +311,10 @@ namespace DNet.DataAccess
                     {
                         updateValues.AppendFormat("{0}={1}{2},", entityInfo.Columns[property.Name], DataBase.ParameterPrefix, property.Name);
                         parms.Add(DataBase.GetDbParameter(property.Name, propertyValue));
+                    }
+                    else if (isAllUpdate)
+                    {
+                        updateValues.AppendFormat("{0}=NULL", entityInfo.Columns[property.Name]);
                     }
                 }
                 updateSql.AppendFormat("{0} WHERE ", updateValues.ToString().TrimEnd(','));
@@ -335,7 +339,7 @@ namespace DNet.DataAccess
         /// <param name="entity"></param>
         /// <param name="exp"></param>
         /// <returns></returns>
-        protected int UpdateT<T>(T entity, Expression<Func<T, bool>> exp) where T : class, new()
+        protected int UpdateT<T>(T entity, Expression<Func<T, bool>> exp, bool isAllUpdate = false) where T : class, new()
         {
             try
             {
@@ -352,6 +356,10 @@ namespace DNet.DataAccess
                     {
                         updateValues.AppendFormat("{0}={1}{2},", entityInfo.Columns[property.Name], DataBase.ParameterPrefix, property.Name);
                         parms.Add(DataBase.GetDbParameter(property.Name, propertyValue));
+                    }
+                    else if (isAllUpdate)
+                    {
+                        updateValues.AppendFormat("{0}=NULL", entityInfo.Columns[property.Name]);
                     }
                 }
                 updateSql.AppendFormat("{0} WHERE ", updateValues.ToString().TrimEnd(','));

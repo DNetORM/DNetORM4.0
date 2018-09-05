@@ -131,6 +131,22 @@ namespace DNet.DataAccess
         }
 
         /// <summary>
+        /// 更新单一数据(实体类含有主键特性) 默认是false
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="isAllUpdate">是否全部更新字段 默认是false</param>
+        /// <returns></returns>
+        public int Update<T>(T entity, bool isAllUpdate = false) where T : class, new()
+        {
+            if (entity != null)
+            {
+                return base.UpdateT(entity, isAllUpdate);
+            }
+            return 0;
+        }
+
+        /// <summary>
         /// 根据lambda表达式更新实体类
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -140,6 +156,19 @@ namespace DNet.DataAccess
         public int Update<T>(T entity, Expression<Func<T, bool>> exp) where T : class, new()
         {
             return base.UpdateT(entity, exp);
+        }
+
+        /// <summary>
+        /// 根据lambda表达式更新实体类
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="exp"></param>
+        /// <param name="isAllUpdate">默认是false</param>
+        /// <returns></returns>
+        public int Update<T>(T entity, Expression<Func<T, bool>> exp, bool isAllUpdate = false) where T : class, new()
+        {
+            return base.UpdateT(entity, exp, isAllUpdate);
         }
 
         /// <summary>
