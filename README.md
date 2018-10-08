@@ -189,3 +189,4 @@ then config the connection strings such as demo,DNetContext also receive a Conne
                 transaction.Rollback();
             }
 
+xuanyu
