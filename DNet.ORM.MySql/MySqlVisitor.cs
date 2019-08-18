@@ -104,6 +104,7 @@ namespace DNet.DataAccess
         public string Translate(Expression exp)
         {
             this.SqlBuilder = new StringBuilder();
+
             //m=>true
             if (((LambdaExpression)exp).Body.NodeType == ExpressionType.Constant)
             {

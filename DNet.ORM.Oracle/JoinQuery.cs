@@ -156,27 +156,36 @@ namespace DNet.DataAccess
         public JoinQuery Where<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class, new()
         {
             SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
-            visitor.Translate(where);
-            WhereClause.AppendFormat("{0} AND ", visitor.SqlBuilder.ToString());
-            Parameters.AddRange(visitor.Parameters);
+            if (where != null)
+            {
+                visitor.Translate(where);
+                WhereClause.AppendFormat("{0} AND ", visitor.SqlBuilder.ToString());
+                Parameters.AddRange(visitor.Parameters);
+            }
             return this;
         }
 
         public JoinQuery Where<T1, T2>(Expression<Func<T1, T2, bool>> where) where T1 : class, new() where T2 : class, new()
         {
             SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
-            visitor.Translate(where);
-            WhereClause.AppendFormat("{0} AND ", visitor.SqlBuilder.ToString());
-            Parameters.AddRange(visitor.Parameters);
+            if (where != null)
+            {
+                visitor.Translate(where);
+                WhereClause.AppendFormat("{0} AND ", visitor.SqlBuilder.ToString());
+                Parameters.AddRange(visitor.Parameters);
+            }
             return this;
         }
 
         public JoinQuery Where<T1, T2, T3>(Expression<Func<T1, T2, T3, bool>> where) where T1 : class, new() where T2 : class, new() where T3 : class, new()
         {
             SqlVisitor visitor = new SqlVisitor(DbContext.DataBase.DBType, callIndex++, WithAlias);
-            visitor.Translate(where);
-            WhereClause.AppendFormat("{0} AND ", visitor.SqlBuilder.ToString()); ;
-            Parameters.AddRange(visitor.Parameters);
+            if (where != null)
+            {
+                visitor.Translate(where);
+                WhereClause.AppendFormat("{0} AND ", visitor.SqlBuilder.ToString()); ;
+                Parameters.AddRange(visitor.Parameters);
+            }
             return this;
         }
 

@@ -104,6 +104,10 @@ namespace DNet.DataAccess
         public string Translate(Expression exp)
         {
             this.SqlBuilder = new StringBuilder();
+            if (exp == null)
+            {
+                return " 1=1 ";
+            }
             //m=>true
             if (((LambdaExpression)exp).Body.NodeType == ExpressionType.Constant)
             {
@@ -334,7 +338,7 @@ namespace DNet.DataAccess
                         {
                             opd2 = ((UnaryExpression)(methodExp.Arguments[1])).Operand;
                         }
-                        if(WithAlias)
+                        if (WithAlias)
                         {
                             SqlBuilder.AppendFormat("(SELECT {0} FROM {1} AS {3} WHERE {2})", TranslateClause(((LambdaExpression)opd2).Body), GetTableName(((LambdaExpression)opd1).Parameters[0].Type), TranslateClause(((LambdaExpression)opd1).Body), ((LambdaExpression)opd1).Parameters[0].Name);
                         }
