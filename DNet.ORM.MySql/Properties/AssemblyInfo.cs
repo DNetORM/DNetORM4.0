@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("DNet.ORM.MySql")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A lightweight ORM for .net support mysql")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("liuyang")]
 [assembly: AssemblyProduct("DNet.ORM.MySql")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
