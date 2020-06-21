@@ -806,7 +806,18 @@ namespace DNet.DataAccess
                     }
                     else
                     {
-                        return (TObject)Convert.ChangeType(reader[0], typeof(TObject));
+                         if (!typeof(TObject).IsGenericType)
+                        {
+                          return (TObject)Convert.ChangeType(reader[0], typeof(TObject));
+                        }
+                        else
+                        {
+                            Type genericTypeDefinition = typeof(TObject).GetGenericTypeDefinition();
+                            if (genericTypeDefinition == typeof(Nullable<>))
+                            {
+                               return (TObject)Convert.ChangeType(reader[0], Nullable.GetUnderlyingType(typeof(TObject)));
+                            }
+                        }
                     }
                 }
                 else
