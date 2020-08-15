@@ -314,7 +314,7 @@ namespace DNet.DataAccess
                     }
                     else if (isAllUpdate)
                     {
-                        updateValues.AppendFormat("{0}=NULL", entityInfo.Columns[property.Name]);
+                        updateValues.AppendFormat("{0}=NULL,", entityInfo.Columns[property.Name]);
                     }
                 }
                 updateSql.AppendFormat("{0} WHERE ", updateValues.ToString().TrimEnd(','));
@@ -359,7 +359,7 @@ namespace DNet.DataAccess
                     }
                     else if (isAllUpdate)
                     {
-                        updateValues.AppendFormat("{0}=NULL", entityInfo.Columns[property.Name]);
+                        updateValues.AppendFormat("{0}=NULL,", entityInfo.Columns[property.Name]);
                     }
                 }
                 updateSql.AppendFormat("{0} WHERE ", updateValues.ToString().TrimEnd(','));
